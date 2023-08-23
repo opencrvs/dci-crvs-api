@@ -1,11 +1,13 @@
 {
-  "name": "dci-crvs-mediator",
+  "name": "dci-crvs-api",
   "version": "0.1",
   "main": "src/index.ts",
   "author": "Pyry Rouvila <pyry@opencrvs.org>",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon --exec ts-node src/index.ts"
+    "start": "nodemon --exec ts-node src/index.ts",
+    "test": "node --require ts-node/register --test src/**/*.test.ts",
+    "test:watch": "node --require ts-node/register --test --watch src/**/*.test.ts"
   },
   "dependencies": {
     "@hapi/hapi": "^21.3.2",
