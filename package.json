@@ -1,5 +1,5 @@
 {
-  "name": "dci-crvs-mediator",
+  "name": "dci-crvs-api",
   "version": "0.1",
   "main": "src/index.ts",
   "author": "Pyry Rouvila <pyry@opencrvs.org>",
