@@ -6,7 +6,7 @@ import {
 } from "./constants";
 import { SearchCriteria, SearchResponse } from "./opencrvs-api-types";
 
-const AUTHENTICATE_SYSTEM_CLIENT_URL = new URL(
+export const AUTHENTICATE_SYSTEM_CLIENT_URL = new URL(
   "authenticateSystemClient",
   OPENCRVS_AUTH_URL
 );
@@ -30,12 +30,17 @@ export async function authenticateClient(
   return response.token;
 }
 
+export const RECORD_SEARCH_URL = new URL(
+  "advancedRecordSearch",
+  OPENCRVS_RECORD_SEARCH_URL
+);
+
 export async function recordSearch(
   token: string,
   criteria: SearchCriteria,
-  searchUrl = OPENCRVS_RECORD_SEARCH_URL
+  searchUrl = RECORD_SEARCH_URL
 ) {
-  const request = await fetch(`${searchUrl}advancedRecordSearch`, {
+  const request = await fetch(searchUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

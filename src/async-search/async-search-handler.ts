@@ -10,7 +10,7 @@ export async function asyncSearchHandler(
     parameters: { motherFamilyName: "Last" },
   });
 
-  console.log(result.body.hits.hits);
+  console.log(result);
 
   return { message: { ack_status: "ACK" } };
 }

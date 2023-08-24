@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.5.3",
+    "msw": "0.0.0-fetch.rc-16",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.2",
     "ts-node": "^10.9.1"
