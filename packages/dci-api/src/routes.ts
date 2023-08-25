@@ -1,5 +1,5 @@
 import * as Hapi from "@hapi/hapi";
-import { asyncSearchHandler } from "./async-search/async-search-handler";
+import { syncSearchHandler } from "./sync-search/sync-search-handler";
 import { healthcheckHandler } from "./healthcheck/healthcheck-handler";
 
 export const routes = [
@@ -10,7 +10,7 @@ export const routes = [
   },
   {
     method: "POST",
-    path: "/registry/search",
-    handler: asyncSearchHandler,
+    path: "/registry/sync/search",
+    handler: syncSearchHandler,
   },
 ] satisfies Hapi.ServerRoute<Hapi.ReqRefDefaults>[];

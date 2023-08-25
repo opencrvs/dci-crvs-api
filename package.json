@@ -4,20 +4,12 @@
   "main": "src/index.ts",
   "author": "Pyry Rouvila <pyry@opencrvs.org>",
   "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "start": "nodemon --exec ts-node src/index.ts",
-    "test": "node --require ts-node/register --test src/**/*.test.ts",
-    "test:watch": "node --require ts-node/register --test --watch src/**/*.test.ts"
-  },
-  "dependencies": {
-    "@hapi/hapi": "^21.3.2",
-    "typescript": "^5.1.6"
-  },
-  "devDependencies": {
-    "@types/node": "^20.5.3",
-    "msw": "0.0.0-fetch.rc-16",
-    "nodemon": "^3.0.1",
-    "prettier": "^3.0.2",
-    "ts-node": "^10.9.1"
+    "start": "npm start --workspaces",
+    "test": "npm run test --workspaces",
+    "test:watch": "npm run test:watch --workspaces"
   }
 }

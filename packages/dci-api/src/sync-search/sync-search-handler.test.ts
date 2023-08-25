@@ -7,11 +7,11 @@ import { http } from "msw";
 import {
   AUTHENTICATE_SYSTEM_CLIENT_URL,
   RECORD_SEARCH_URL,
-} from "../opencrvs-api";
+} from "opencrvs-api";
 import testPayload from "./test-payload.json";
-import testResponse from "./test-response.json";
+import testResponse from "./test-opencrvs-api-response.json";
 
-describe("POST /registry/search", () => {
+describe("POST /registry/sync/search", () => {
   let server: Hapi.Server;
 
   beforeEach(async () => {
@@ -36,15 +36,12 @@ describe("POST /registry/search", () => {
       async () => {
         const res = await server.inject({
           method: "POST",
-          url: "/registry/search",
+          url: "/registry/sync/search",
           payload: testPayload,
         });
 
         assert.strictEqual(res.statusCode, 200);
-        assert.strictEqual(
-          res.payload,
-          JSON.stringify({ message: { ack_status: "ACK" } })
-        );
+        assert.strictEqual(JSON.parse(res.payload).header.version, "1.0.0");
       }
     )
   );
