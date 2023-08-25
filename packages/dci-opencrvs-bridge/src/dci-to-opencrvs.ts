@@ -1,5 +1,5 @@
 import { SearchCriteria } from "opencrvs-api";
-import { components } from "./registry-core-api";
+import { components } from "dci-api";
 
 export function searchRequestToAdvancedSearchParameters(
   request: components["schemas"]["SearchRequest"]

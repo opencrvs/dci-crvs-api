@@ -1,5 +1,5 @@
 import { SearchResponse, BirthCompositionBody } from "opencrvs-api";
-import { operations, components } from "./registry-core-api";
+import { operations, components } from "dci-api";
 
 function civilRegPerson(
   birthComposition: BirthCompositionBody

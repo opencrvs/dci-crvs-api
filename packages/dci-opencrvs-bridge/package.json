@@ -4,13 +4,7 @@
   "description": "Supplies tools and types for converting DCI search queries into OpenCRVS search queries, and converting the search results into DCI search results.",
   "main": "src/index.ts",
   "license": "ISC",
-  "scripts": {
-    "generate-openapi-types": "openapi-typescript https://raw.githubusercontent.com/spdci/standards/draft/release/yaml/registry_core_api_v1.0.0.yaml -o ./src/registry-core-api.d.ts"
-  },
   "dependencies": {
     "typescript": "^5.1.6"
-  },
-  "devDependencies": {
-    "openapi-typescript": "^6.5.3"
   }
 }

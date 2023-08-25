@@ -1387,9 +1387,7 @@ export interface operations {
             action?: "search";
           };
           /** @description The search data using which registry search to be performed */
-          message: components["schemas"]["SearchRequest"];
-          // | components["schemas"]["EncryptedMessage"];
-          // TODO: Implement EncryptedMessages
+          message: components["schemas"]["SearchRequest"]; // | components["schemas"]["EncryptedMessage"];
         };
         "multipart/form-data": components["schemas"]["FileInfo"] & {
           /** @enum {unknown} */
@@ -1418,7 +1416,7 @@ export interface operations {
             action?: "on-search";
           };
           message?: components["schemas"]["SearchResponse"];
-          //  | components["schemas"]["EncryptedMessage"];
+          // | components["schemas"]["EncryptedMessage"];
         };
         "multipart/form-data": components["schemas"]["FileInfo"] & {
           /** @enum {unknown} */
