@@ -61,5 +61,3 @@ export function registrySyncSearchBuilder(
     },
   } satisfies operations["post_reg_sync_search"]["responses"]["default"]["content"]["application/json"];
 }
-
-export type * from "./registry-core-api";

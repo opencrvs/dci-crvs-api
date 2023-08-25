@@ -1,7 +1,7 @@
 {
-  "name": "opencrvs-to-dci-builder",
+  "name": "dci-opencrvs-bridge",
   "version": "0.1",
-  "description": "Supplies tools and types for building DCI compliant API responses",
+  "description": "Supplies tools and types for converting DCI search queries into OpenCRVS search queries, and converting the search results into DCI search results.",
   "main": "src/index.ts",
   "license": "ISC",
   "scripts": {
