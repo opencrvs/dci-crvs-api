@@ -13,10 +13,12 @@ export async function syncSearchHandler(
   const searchResult = await advancedRecordSearch(token, {
     parameters: { motherFamilyName: "Last" },
   });
+  const resultTimestamp = new Date().toISOString();
 
   const dciStandardizedResult = registrySyncSearchBuilder(
     searchResult.body,
-    payload
+    payload,
+    resultTimestamp
   );
   console.log(JSON.stringify(dciStandardizedResult, null, 4));
   return dciStandardizedResult;
