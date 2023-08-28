@@ -4,6 +4,7 @@ import {
   OPENCRVS_CLIENT_SECRET,
   OPENCRVS_RECORD_SEARCH_URL,
 } from "./constants";
+import { AuthorizationError } from "./error";
 import type {
   BirthComposition,
   RequestEvent,
@@ -31,6 +32,11 @@ export async function authenticateClient(
       client_secret: clientSecret,
     }),
   });
+
+  if (!request.ok) {
+    throw new AuthorizationError(request.statusText);
+  }
+
   const response = (await request.json()) as { token: string };
   return response.token;
 }

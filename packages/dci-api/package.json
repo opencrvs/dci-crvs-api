@@ -11,6 +11,7 @@
     "generate-openapi-types": "openapi-typescript https://raw.githubusercontent.com/spdci/standards/draft/release/yaml/registry_core_api_v1.0.0.yaml -o ./src/registry-core-api.d.ts"
   },
   "dependencies": {
+    "@hapi/boom": "^10.0.1",
     "@hapi/hapi": "^21.3.2",
     "typescript": "^5.1.6"
   },

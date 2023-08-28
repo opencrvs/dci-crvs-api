@@ -38,10 +38,5 @@ export async function syncSearchHandler(
 
   const token = await authenticateClient();
   const result = await search(token, payload.message);
-
-  const dciStandardizedResult = registrySyncSearchBuilder(result, payload);
-
-  console.log(JSON.stringify(dciStandardizedResult, null, 4));
-
-  return dciStandardizedResult;
+  return registrySyncSearchBuilder(result, payload);
 }

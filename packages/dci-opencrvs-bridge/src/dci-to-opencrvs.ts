@@ -1,5 +1,6 @@
 import type { SearchCriteria } from "opencrvs-api";
 import type { components } from "dci-api";
+import { ParseError } from "./error";
 
 export function searchRequestToAdvancedSearchParameters(
   request: components["schemas"]["SearchRequest"]["search_request"][number]
@@ -23,13 +24,13 @@ export function searchRequestToAdvancedSearchParameters(
   if (query.identifiers?.[0]?.identifier_type === "BRN") {
     parameters.registrationNumber = query.identifiers[0].identifier_value;
   } else {
-    throw new Error(
+    throw new ParseError(
       `Unsupported search request: ${JSON.stringify(request, null, 4)}`
     );
   }
 
   if ((sort?.length ?? 0) > 1) {
-    throw new Error(
+    throw new ParseError(
       `Sorting by more than one attribute is not supported: ${JSON.stringify(
         request,
         null,

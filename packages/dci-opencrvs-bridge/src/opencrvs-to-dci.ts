@@ -26,6 +26,29 @@ function civilRegPerson(
       childFirstNames: birthComposition.childFirstNames,
       childFamilyName: birthComposition.childFamilyName,
     }),
+    gender: birthComposition.gender,
+
+    related_persons: [
+      ...(birthComposition.motherFirstNames !== undefined
+        ? [
+            {
+              relationship: "mother",
+              name: `${birthComposition.motherFirstNames} ${birthComposition.motherFamilyName}`,
+              sub: birthComposition.motherIdentifier,
+            },
+          ]
+        : []),
+      ...(birthComposition.fatherFirstNames !== undefined
+        ? [
+            {
+              relationship: "father",
+              name: `${birthComposition.fatherFirstNames} ${birthComposition.fatherFamilyName}`,
+              sub: birthComposition.fatherIdentifier,
+            },
+          ]
+        : []),
+      // TODO: informant?
+    ],
   };
 }
 

@@ -1,6 +1,9 @@
 import * as Hapi from "@hapi/hapi";
 import { HOST, PORT, DEFAULT_TIMEOUT_MS } from "./constants";
 import { routes } from "./routes";
+import { ParseError } from "dci-opencrvs-bridge";
+import { AuthorizationError } from "opencrvs-api/src/error";
+import * as Boom from "@hapi/boom";
 
 const server = new Hapi.Server({
   host: HOST,
@@ -12,6 +15,18 @@ const server = new Hapi.Server({
 });
 
 server.route(routes);
+
+server.ext("onPreResponse", (request, reply) => {
+  if (request.response instanceof ParseError) {
+    return Boom.badRequest(request.response);
+  }
+
+  if (request.response instanceof AuthorizationError) {
+    return Boom.unauthorized(request.response);
+  }
+
+  return reply.continue;
+});
 
 export async function start() {
   await server.start();
