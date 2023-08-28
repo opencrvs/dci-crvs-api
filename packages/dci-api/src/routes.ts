@@ -5,7 +5,7 @@ import { healthcheckHandler } from "./healthcheck/healthcheck-handler";
 export const routes = [
   {
     method: "GET",
-    path: "/ping",
+    path: "/health",
     handler: healthcheckHandler,
   },
   {

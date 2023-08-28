@@ -3,7 +3,7 @@ import assert from "node:assert";
 import type * as Hapi from "@hapi/hapi";
 import { init } from "../server";
 
-describe("GET /ping", () => {
+describe("GET /health", () => {
   let server: Hapi.Server;
 
   beforeEach(async () => {
@@ -17,7 +17,7 @@ describe("GET /ping", () => {
   it("responds with success", async () => {
     const res = await server.inject({
       method: "GET",
-      url: "/ping",
+      url: "/health",
     });
 
     assert.strictEqual(res.statusCode, 200);
