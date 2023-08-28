@@ -97,7 +97,7 @@ interface Explanation {
   details: Explanation[];
 }
 
-enum EVENT {
+export enum Event {
   BIRTH = "Birth",
   DEATH = "Death",
   MARRIAGE = "Marriage",
@@ -137,7 +137,7 @@ interface IOperationHistory {
 interface ICompositionBody {
   compositionId?: string;
   compositionType?: string;
-  event?: EVENT;
+  event?: Event;
   type?: string;
   contactRelationship?: string;
   contactNumber?: string;
@@ -200,6 +200,7 @@ export interface BirthCompositionBody extends ICompositionBody {
 export interface BirthComposition extends BirthCompositionBody {
   childFirstNames: string;
   childFamilyName: string;
+  event: Event;
 }
 
 export interface SearchResponse<T> {

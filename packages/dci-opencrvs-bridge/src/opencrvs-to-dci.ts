@@ -1,4 +1,8 @@
-import type { SearchResponse, BirthComposition } from "opencrvs-api";
+import {
+  type SearchResponse,
+  type BirthComposition,
+  Event,
+} from "opencrvs-api";
 import type { operations, components } from "dci-api";
 
 function name({
@@ -28,22 +32,38 @@ function civilRegPerson(
   };
 }
 
+function eventType(event: Event) {
+  switch (event) {
+    case Event.BIRTH:
+      return "1" satisfies components["schemas"]["dci_VitalEvents"];
+    case Event.DEATH:
+      return "2" satisfies components["schemas"]["dci_VitalEvents"];
+    case Event.MARRIAGE:
+      return "4" satisfies components["schemas"]["dci_VitalEvents"];
+    default:
+      throw new Error("Unimplemented event type");
+  }
+}
+
 function searchResponseBuilder(
-  response: SearchResponse<BirthComposition>,
+  composition: BirthComposition,
   {
     referenceId,
     timestamp,
-  }: { referenceId: string; timestamp: components["schemas"]["DateTime"] }
+  }: {
+    referenceId: string;
+    timestamp: components["schemas"]["DateTime"];
+  }
 ): components["schemas"]["SearchResponse"]["search_response"][number] {
   return {
     reference_id: referenceId,
     timestamp,
     status: "succ",
+    event_type: eventType(composition.event),
     registry_type: "civil",
-    event_type: "1",
     registry_data: {
       record_type: "person",
-      record: civilRegPerson(response.hits.hits[0]._source),
+      record: civilRegPerson(composition),
     },
   };
 }
@@ -67,12 +87,12 @@ export function registrySyncSearchBuilder(
     },
     message: {
       transaction_id: request.message.transaction_id,
-      search_response: [
-        searchResponseBuilder(response, {
+      search_response: response.hits.hits.map(({ _source }) =>
+        searchResponseBuilder(_source, {
           referenceId: request.message.search_request[0].reference_id,
           timestamp: iso8601Timestamp,
-        }),
-      ],
+        })
+      ),
     },
   } satisfies operations["post_reg_sync_search"]["responses"]["default"]["content"]["application/json"];
 }
