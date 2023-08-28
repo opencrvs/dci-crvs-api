@@ -19,7 +19,6 @@
     "msw": "0.0.0-fetch.rc-16",
     "nodemon": "^3.0.1",
     "openapi-typescript": "^6.5.3",
-    "prettier": "^3.0.2",
     "ts-node": "^10.9.1"
   }
 }
