@@ -6,11 +6,11 @@ API reference can be found [here](https://spdci.github.io/standards/release/html
 
 Table of currently supported and compliant endpoints:
 
-| Endpoint              | Description                                                           | Implementation status |
-| --------------------- | --------------------------------------------------------------------- | --------------------- |
-| `/health`             | Health check endpoint                                                 | 🔄 Upcoming for v0.1  |
-| `/registry/search`    | Search person(s) in registry using an identifier or custom attributes | 🔄 Upcoming for v0.1  |
-| `/registry/on-search` | Search results through a callback                                     | 🔄 Upcoming for v0.1  |
+| Endpoint                | Description                                                                             | Implementation status |
+| ----------------------- | --------------------------------------------------------------------------------------- | --------------------- |
+| `/health`               | Health check endpoint                                                                   | 🔄 Upcoming for v0.1  |
+| `/registry/search`      | Search person(s) in registry using an identifier or custom attributes (async, callback) | 🔄 Upcoming for v0.1  |
+| `/registry/sync/search` | Search person(s) in registry using an identifier or custom attributes (sync)            | 🔄 Upcoming for v0.1  |
 
 The package is a Node & TypeScript project and the API is built using [Hapi](https://hapi.dev/) as per OpenCRVS convention.
 
