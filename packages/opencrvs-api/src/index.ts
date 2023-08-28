@@ -4,7 +4,7 @@ import {
   OPENCRVS_CLIENT_SECRET,
   OPENCRVS_RECORD_SEARCH_URL,
 } from "./constants";
-import { SearchCriteria, SearchResponse } from "./types";
+import type { SearchCriteria, SearchResponse } from "./types";
 
 export const AUTHENTICATE_SYSTEM_CLIENT_URL = new URL(
   "authenticateSystemClient",

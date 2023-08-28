@@ -1,4 +1,5 @@
-import { SetupServer, setupServer } from "msw/node";
+import { setupServer } from "msw/node";
+import type { SetupServer } from "msw/node";
 
 type ServerOptions = Parameters<typeof setupServer>;
 
@@ -7,7 +8,7 @@ export const withRequestInterception =
     const server = setupServer(...handlers);
     server.listen();
 
-    return Promise.resolve(test(server)).finally(() => {
+    return await Promise.resolve(test(server)).finally(() => {
       server.resetHandlers();
       server.close();
     });

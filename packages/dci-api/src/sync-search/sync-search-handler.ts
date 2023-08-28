@@ -1,10 +1,10 @@
-import * as Hapi from "@hapi/hapi";
+import type * as Hapi from "@hapi/hapi";
 import { authenticateClient, advancedRecordSearch } from "opencrvs-api";
 import {
   registrySyncSearchBuilder,
   searchRequestToAdvancedSearchParameters,
 } from "dci-opencrvs-bridge";
-import { operations } from "../registry-core-api";
+import type { operations } from "../registry-core-api";
 
 export async function syncSearchHandler(
   request: Hapi.Request,

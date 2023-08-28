@@ -1,15 +1,32 @@
-import { SearchResponse, BirthCompositionBody } from "opencrvs-api";
-import { operations, components } from "dci-api";
+import type { SearchResponse, BirthCompositionBody } from "opencrvs-api";
+import type { operations, components } from "dci-api";
+
+function name({
+  childFirstNames,
+  childFamilyName,
+}: {
+  childFirstNames: string;
+  childFamilyName: string;
+}) {
+  return {
+    given_name: childFirstNames.split(" ")[0],
+    middle_name: childFirstNames.split(" ")[1],
+    family_name: childFamilyName,
+  };
+}
 
 function civilRegPerson(
   birthComposition: BirthCompositionBody
 ): components["schemas"]["civilReg_PersonRecord"] {
   return {
     sub: birthComposition.compositionId,
-    given_name: birthComposition.childFirstNames, // TODO: How to parse name?
-    middle_name: birthComposition.childFirstNames, // TODO: How to parse name?
-    family_name: birthComposition.childFamilyName, // TODO: How to parse name?
     birthdate: birthComposition.childDoB,
+    ...name({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      childFirstNames: birthComposition.childFirstNames!,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      childFamilyName: birthComposition.childFamilyName!,
+    }),
   };
 }
 

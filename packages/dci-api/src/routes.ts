@@ -1,4 +1,4 @@
-import * as Hapi from "@hapi/hapi";
+import type * as Hapi from "@hapi/hapi";
 import { syncSearchHandler } from "./sync-search/sync-search-handler";
 import { healthcheckHandler } from "./healthcheck/healthcheck-handler";
 
@@ -13,4 +13,4 @@ export const routes = [
     path: "/registry/sync/search",
     handler: syncSearchHandler,
   },
-] satisfies Hapi.ServerRoute<Hapi.ReqRefDefaults>[];
+] satisfies Array<Hapi.ServerRoute<Hapi.ReqRefDefaults>>;

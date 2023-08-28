@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, it } from "node:test";
 import assert from "node:assert";
-import * as Hapi from "@hapi/hapi";
+import type * as Hapi from "@hapi/hapi";
 import { init } from "../server";
 import { withRequestInterception } from "../test-utilities";
 import { http } from "msw";

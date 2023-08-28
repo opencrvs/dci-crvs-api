@@ -1,5 +1,5 @@
 import { start } from "./server";
 
-start();
+void start();
 
 export type * from "./registry-core-api";

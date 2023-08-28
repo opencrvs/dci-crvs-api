@@ -1,5 +1,5 @@
-import { SearchCriteria } from "opencrvs-api";
-import { components } from "dci-api";
+import type { SearchCriteria } from "opencrvs-api";
+import type { components } from "dci-api";
 
 export function searchRequestToAdvancedSearchParameters(
   request: components["schemas"]["SearchRequest"]
@@ -11,7 +11,7 @@ export function searchRequestToAdvancedSearchParameters(
     }>;
   };
 
-  if (query.identifiers) {
+  if (query.identifiers !== undefined) {
     return {
       parameters: {
         nationalId: query.identifiers[0].identifier_value,
