@@ -196,6 +196,12 @@ export interface BirthCompositionBody extends ICompositionBody {
   informantIdentifier?: string;
 }
 
+/** Birth composition asserting that certain values should exist */
+export interface BirthComposition extends BirthCompositionBody {
+  childFirstNames: string;
+  childFamilyName: string;
+}
+
 export interface SearchResponse<T> {
   took: number;
   timed_out: boolean;

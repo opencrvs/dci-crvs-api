@@ -1,4 +1,4 @@
-import type { SearchResponse, BirthCompositionBody } from "opencrvs-api";
+import type { SearchResponse, BirthComposition } from "opencrvs-api";
 import type { operations, components } from "dci-api";
 
 function name({
@@ -16,22 +16,20 @@ function name({
 }
 
 function civilRegPerson(
-  birthComposition: BirthCompositionBody
+  birthComposition: BirthComposition
 ): components["schemas"]["civilReg_PersonRecord"] {
   return {
     sub: birthComposition.compositionId,
     birthdate: birthComposition.childDoB,
     ...name({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      childFirstNames: birthComposition.childFirstNames!,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      childFamilyName: birthComposition.childFamilyName!,
+      childFirstNames: birthComposition.childFirstNames,
+      childFamilyName: birthComposition.childFamilyName,
     }),
   };
 }
 
 function searchResponseBuilder(
-  response: SearchResponse<BirthCompositionBody>,
+  response: SearchResponse<BirthComposition>,
   {
     referenceId,
     timestamp,
@@ -51,7 +49,7 @@ function searchResponseBuilder(
 }
 
 export function registrySyncSearchBuilder(
-  response: SearchResponse<BirthCompositionBody>,
+  response: SearchResponse<BirthComposition>,
   request: operations["post_reg_sync_search"]["requestBody"]["content"]["application/json"],
   iso8601Timestamp: components["schemas"]["DateTime"]
 ) {
