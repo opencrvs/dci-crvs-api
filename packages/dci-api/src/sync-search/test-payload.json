@@ -24,15 +24,15 @@
           "query": {
             "identifiers": [
               {
-                "identifier_type": "UIN",
-                "identifier_value": "987654321"
+                "identifier_type": "BRN",
+                "identifier_value": "2023BIYCGRT"
               }
             ]
           },
           "record_type": "person",
           "sort": [
             {
-              "attribute_name": "UIN",
+              "attribute_name": "dateOfDeclaration",
               "sort_order": "asc"
             }
           ],

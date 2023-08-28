@@ -1,9 +1,6 @@
-import {
-  type SearchResponse,
-  type BirthComposition,
-  Event,
-} from "opencrvs-api";
+import { type BirthComposition, Event } from "opencrvs-api";
 import type { operations, components } from "dci-api";
+import type { SearchResponseWithMetadata } from "./types";
 
 function name({
   childFirstNames,
@@ -69,10 +66,13 @@ function searchResponseBuilder(
 }
 
 export function registrySyncSearchBuilder(
-  response: SearchResponse<BirthComposition>,
-  request: operations["post_reg_sync_search"]["requestBody"]["content"]["application/json"],
-  iso8601Timestamp: components["schemas"]["DateTime"]
+  responses: Array<SearchResponseWithMetadata<BirthComposition>>,
+  request: operations["post_reg_sync_search"]["requestBody"]["content"]["application/json"]
 ) {
+  const totalCount = responses
+    .map((response) => response.response.hits.total.value)
+    .reduce((a, b) => a + b, 0);
+
   return {
     signature: "<<todo>>",
     header: {
@@ -81,17 +81,20 @@ export function registrySyncSearchBuilder(
       message_ts: new Date().toISOString(),
       action: "on-search",
       status: "succ",
-      total_count: response.hits.total.value,
+      total_count: totalCount,
       sender_id: request.header.sender_id,
       receiver_id: request.header.receiver_id,
     },
     message: {
       transaction_id: request.message.transaction_id,
-      search_response: response.hits.hits.map(({ _source }) =>
-        searchResponseBuilder(_source, {
-          referenceId: request.message.search_request[0].reference_id,
-          timestamp: iso8601Timestamp,
-        })
+      search_response: responses.flatMap(
+        ({ response, originalRequest, responseFinishedTimestamp }) =>
+          response.hits.hits.map(({ _source }) =>
+            searchResponseBuilder(_source, {
+              referenceId: originalRequest.reference_id,
+              timestamp: responseFinishedTimestamp.toISOString(),
+            })
+          )
       ),
     },
   } satisfies operations["post_reg_sync_search"]["responses"]["default"]["content"]["application/json"];

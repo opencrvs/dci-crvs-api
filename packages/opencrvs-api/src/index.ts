@@ -4,7 +4,12 @@ import {
   OPENCRVS_CLIENT_SECRET,
   OPENCRVS_RECORD_SEARCH_URL,
 } from "./constants";
-import type { BirthComposition, SearchCriteria, SearchResponse } from "./types";
+import type {
+  BirthComposition,
+  RequestEvent,
+  SearchCriteria,
+  SearchResponse,
+} from "./types";
 
 export const AUTHENTICATE_SYSTEM_CLIENT_URL = new URL(
   "authenticateSystemClient",
@@ -49,10 +54,7 @@ export async function advancedRecordSearch(
     body: JSON.stringify(criteria),
   });
   const response = await request.json();
-  return response as {
-    body: SearchResponse<BirthComposition>;
-    statusCode: number;
-  };
+  return response as RequestEvent<SearchResponse<BirthComposition>>;
 }
 
 export * from "./types";

@@ -228,3 +228,8 @@ export interface SearchResponse<T> {
   };
   aggregations?: any;
 }
+
+export interface RequestEvent<T> {
+  body: T;
+  statusCode: number | null;
+}
