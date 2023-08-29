@@ -1,5 +1,7 @@
-import { start } from "./server";
+import { createServer } from "./server";
 
-void start();
+createServer().then(async (server) => {
+  await server.start();
+});
 
 export type * from "./registry-core-api";
