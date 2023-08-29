@@ -24,19 +24,11 @@ export function searchRequestToAdvancedSearchParameters(
   if (query.identifiers?.[0]?.identifier_type === "BRN") {
     parameters.registrationNumber = query.identifiers[0].identifier_value;
   } else {
-    throw new ParseError(
-      `Unsupported search request: ${JSON.stringify(request, null, 4)}`
-    );
+    throw new ParseError("Unsupported identifier type");
   }
 
   if ((sort?.length ?? 0) > 1) {
-    throw new ParseError(
-      `Sorting by more than one attribute is not supported: ${JSON.stringify(
-        request,
-        null,
-        4
-      )}`
-    );
+    throw new ParseError("Sorting by more than one attribute is not supported");
   }
 
   if (sort?.[0]?.attribute_name === "dateOfDeclaration") {
