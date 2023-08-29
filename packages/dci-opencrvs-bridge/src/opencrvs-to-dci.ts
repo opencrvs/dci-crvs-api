@@ -1,6 +1,7 @@
 import { type BirthComposition, Event } from "opencrvs-api";
 import type { operations, components } from "dci-api";
 import type { SearchResponseWithMetadata } from "./types";
+import { ParseError } from "./error";
 
 function name({
   childFirstNames,
@@ -19,6 +20,13 @@ function name({
 function civilRegPerson(
   birthComposition: BirthComposition
 ): components["schemas"]["civilReg_PersonRecord"] {
+  const isMotherDefined = birthComposition.motherFirstNames !== undefined;
+  const isFatherDefined = birthComposition.fatherFirstNames !== undefined;
+  const isInformantRelationshipUniqueAndDefined =
+    birthComposition.contactRelationship !== "FATHER" &&
+    birthComposition.contactRelationship !== "MOTHER" &&
+    birthComposition.informantFirstNames !== undefined;
+
   return {
     sub: birthComposition.compositionId,
     birthdate: birthComposition.childDoB,
@@ -29,7 +37,7 @@ function civilRegPerson(
     gender: birthComposition.gender,
 
     related_persons: [
-      ...(birthComposition.motherFirstNames !== undefined
+      ...(isMotherDefined
         ? [
             {
               relationship: "mother",
@@ -38,7 +46,7 @@ function civilRegPerson(
             },
           ]
         : []),
-      ...(birthComposition.fatherFirstNames !== undefined
+      ...(isFatherDefined
         ? [
             {
               relationship: "father",
@@ -47,7 +55,15 @@ function civilRegPerson(
             },
           ]
         : []),
-      // TODO: informant?
+      ...(isInformantRelationshipUniqueAndDefined
+        ? [
+            {
+              relationship: birthComposition.contactRelationship, // TODO: How to map into a DCI relationship
+              name: `${birthComposition.informantFirstNames} ${birthComposition.informantFamilyName}`,
+              sub: birthComposition.informantIdentifier,
+            },
+          ]
+        : []),
     ],
   };
 }
@@ -61,7 +77,7 @@ function eventType(event: Event) {
     case Event.MARRIAGE:
       return "4" satisfies components["schemas"]["dci_VitalEvents"];
     default:
-      throw new Error("Unimplemented event type");
+      throw new ParseError("Unimplemented event type");
   }
 }
 
