@@ -1,48 +1,51 @@
-import { type BirthComposition, Event } from "opencrvs-api";
+import {
+  type BirthComposition,
+  type DeathComposition,
+  Event,
+} from "opencrvs-api";
 import type { operations, components } from "dci-api";
 import type { SearchResponseWithMetadata } from "./types";
 import { ParseError } from "./error";
 
 function name({
-  childFirstNames,
-  childFamilyName,
+  firstNames,
+  familyName,
 }: {
-  childFirstNames: string;
-  childFamilyName: string;
+  firstNames: string;
+  familyName: string;
 }) {
   return {
-    given_name: childFirstNames.split(" ")[0],
-    middle_name: childFirstNames.split(" ")[1],
-    family_name: childFamilyName,
+    given_name: firstNames.split(" ")[0],
+    middle_name: firstNames.split(" ")[1],
+    family_name: familyName,
   };
 }
 
-function civilRegPerson(
-  birthComposition: BirthComposition
+function birthCivilRegPerson(
+  composition: BirthComposition
 ): components["schemas"]["civilReg_PersonRecord"] {
-  const isMotherDefined = birthComposition.motherFirstNames !== undefined;
-  const isFatherDefined = birthComposition.fatherFirstNames !== undefined;
+  const isMotherDefined = composition.motherFirstNames !== undefined;
+  const isFatherDefined = composition.fatherFirstNames !== undefined;
   const isInformantRelationshipUniqueAndDefined =
-    birthComposition.contactRelationship !== "FATHER" &&
-    birthComposition.contactRelationship !== "MOTHER" &&
-    birthComposition.informantFirstNames !== undefined;
+    composition.contactRelationship !== "FATHER" &&
+    composition.contactRelationship !== "MOTHER" &&
+    composition.informantFirstNames !== undefined;
 
   return {
-    sub: birthComposition.compositionId,
-    birthdate: birthComposition.childDoB,
+    sub: composition.compositionId,
+    birthdate: composition.childDoB,
     ...name({
-      childFirstNames: birthComposition.childFirstNames,
-      childFamilyName: birthComposition.childFamilyName,
+      firstNames: composition.childFirstNames,
+      familyName: composition.childFamilyName,
     }),
-    gender: birthComposition.gender,
-
+    gender: composition.gender,
     related_persons: [
       ...(isMotherDefined
         ? [
             {
               relationship: "mother",
-              name: `${birthComposition.motherFirstNames} ${birthComposition.motherFamilyName}`,
-              sub: birthComposition.motherIdentifier,
+              name: `${composition.motherFirstNames} ${composition.motherFamilyName}`,
+              sub: composition.motherIdentifier,
             },
           ]
         : []),
@@ -50,17 +53,47 @@ function civilRegPerson(
         ? [
             {
               relationship: "father",
-              name: `${birthComposition.fatherFirstNames} ${birthComposition.fatherFamilyName}`,
-              sub: birthComposition.fatherIdentifier,
+              name: `${composition.fatherFirstNames} ${composition.fatherFamilyName}`,
+              sub: composition.fatherIdentifier,
             },
           ]
         : []),
       ...(isInformantRelationshipUniqueAndDefined
         ? [
             {
-              relationship: birthComposition.contactRelationship, // TODO: How to map into a DCI relationship
-              name: `${birthComposition.informantFirstNames} ${birthComposition.informantFamilyName}`,
-              sub: birthComposition.informantIdentifier,
+              relationship: composition.contactRelationship, // TODO: How to map into a DCI relationship
+              name: `${composition.informantFirstNames} ${composition.informantFamilyName}`,
+              sub: composition.informantIdentifier,
+            },
+          ]
+        : []),
+    ],
+  };
+}
+
+function deathCivilRegPerson(
+  composition: DeathComposition
+): components["schemas"]["civilReg_PersonRecord"] {
+  const isInformantRelationshipUniqueAndDefined =
+    composition.contactRelationship !== "FATHER" &&
+    composition.contactRelationship !== "MOTHER" &&
+    composition.informantFirstNames !== undefined;
+
+  return {
+    sub: composition.compositionId,
+    birthdate: composition.childDoB,
+    ...name({
+      firstNames: composition.deceasedFirstNames,
+      familyName: composition.deceasedFamilyName,
+    }),
+    gender: composition.gender,
+    related_persons: [
+      ...(isInformantRelationshipUniqueAndDefined
+        ? [
+            {
+              relationship: composition.contactRelationship, // TODO: How to map into a DCI relationship
+              name: `${composition.informantFirstNames} ${composition.informantFamilyName}`,
+              sub: composition.informantIdentifier,
             },
           ]
         : []),
@@ -81,8 +114,14 @@ function eventType(event: Event) {
   }
 }
 
+function isBirthComposition(
+  composition: BirthComposition | DeathComposition
+): composition is BirthComposition {
+  return composition.event === Event.BIRTH;
+}
+
 function searchResponseBuilder(
-  composition: BirthComposition,
+  composition: BirthComposition | DeathComposition,
   {
     referenceId,
     timestamp,
@@ -99,13 +138,17 @@ function searchResponseBuilder(
     registry_type: "civil",
     registry_data: {
       record_type: "person",
-      record: civilRegPerson(composition),
+      record: isBirthComposition(composition)
+        ? birthCivilRegPerson(composition)
+        : deathCivilRegPerson(composition),
     },
   };
 }
 
 export function registrySyncSearchBuilder(
-  responses: Array<SearchResponseWithMetadata<BirthComposition>>,
+  responses: Array<
+    SearchResponseWithMetadata<BirthComposition | DeathComposition>
+  >,
   request: operations["post_reg_sync_search"]["requestBody"]["content"]["application/json"]
 ) {
   const totalCount = responses

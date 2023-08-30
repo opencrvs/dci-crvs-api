@@ -21,7 +21,10 @@ export function searchRequestToAdvancedSearchParameters(
   let sortOrder: "asc" | "desc" = "asc";
   let sortColumn: string | undefined;
 
+  // TODO: Support more than one identifier
   if (query.identifiers?.[0]?.identifier_type === "BRN") {
+    parameters.registrationNumber = query.identifiers[0].identifier_value;
+  } else if (query.identifiers?.[0]?.identifier_type === "DRN") {
     parameters.registrationNumber = query.identifiers[0].identifier_value;
   } else {
     throw new ParseError("Unsupported identifier type");

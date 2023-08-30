@@ -1,12 +1,13 @@
 import { afterEach, beforeEach, describe, it } from "node:test";
 import assert from "node:assert";
 import type * as Hapi from "@hapi/hapi";
-import { init } from "../server";
+import { createServer } from "../server";
 
 describe("GET /health", () => {
   let server: Hapi.Server;
 
   beforeEach(async () => {
+    const { init } = await createServer();
     server = await init();
   });
 

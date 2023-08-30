@@ -203,6 +203,44 @@ export interface BirthComposition extends BirthCompositionBody {
   event: Event;
 }
 
+interface DeathCompositionBody extends ICompositionBody {
+  deceasedFirstNames?: string;
+  deceasedFamilyName?: string;
+  deceasedFirstNamesLocal?: string;
+  deceasedFamilyNameLocal?: string;
+  deceasedDoB?: string;
+  gender?: string;
+  deceasedIdentifier?: string;
+  deathDate?: string;
+  motherFirstNames?: string;
+  motherFamilyName?: string;
+  motherFirstNamesLocal?: string;
+  motherFamilyNameLocal?: string;
+  fatherFirstNames?: string;
+  fatherFamilyName?: string;
+  fatherFirstNamesLocal?: string;
+  fatherFamilyNameLocal?: string;
+  spouseFirstNames?: string;
+  spouseFamilyName?: string;
+  spouseFirstNamesLocal?: string;
+  spouseFamilyNameLocal?: string;
+  informantFirstNames?: string;
+  informantFamilyName?: string;
+  informantFirstNamesLocal?: string;
+  informantFamilyNameLocal?: string;
+  informantDoB?: string;
+  informantIdentifier?: string;
+}
+
+export interface DeathComposition extends DeathCompositionBody {
+  deceasedFirstNames: string;
+  deceasedFamilyName: string;
+  event: Event;
+  childFirstNames?: undefined;
+  childFamilyName?: undefined;
+  childFirstNamesLocal?: undefined;
+}
+
 export interface SearchResponse<T> {
   took: number;
   timed_out: boolean;

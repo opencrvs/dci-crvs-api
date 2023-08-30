@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, it } from "node:test";
 import assert from "node:assert";
 import type * as Hapi from "@hapi/hapi";
-import { init } from "../server";
+import { createServer } from "../server";
 import { withRequestInterception } from "../test-utilities";
 import { http } from "msw";
 import {
@@ -15,6 +15,7 @@ describe("POST /registry/sync/search", () => {
   let server: Hapi.Server;
 
   beforeEach(async () => {
+    const { init } = await createServer();
     server = await init();
   });
 
