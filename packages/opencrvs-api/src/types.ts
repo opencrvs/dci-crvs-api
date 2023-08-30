@@ -241,6 +241,38 @@ export interface DeathComposition extends DeathCompositionBody {
   childFirstNamesLocal?: undefined;
 }
 
+export interface IMarriageCompositionBody extends ICompositionBody {
+  brideFirstNames?: string;
+  groomFirstNames?: string;
+  brideFamilyName?: string;
+  groomFamilyName?: string;
+  brideFirstNamesLocal?: string;
+  groomFirstNamesLocal?: string;
+  brideFamilyNameLocal?: string;
+  groomFamilyNameLocal?: string;
+  brideDoB?: string;
+  groomDoB?: string;
+  marriageDate?: string;
+  brideIdentifier?: string;
+  groomIdentifier?: string;
+  witnessOneFirstNames?: string;
+  witnessOneFamilyName?: string;
+  witnessOneFirstNamesLocal?: string;
+  witnessOneFamilyNameLocal?: string;
+  witnessTwoFirstNames?: string;
+  witnessTwoFamilyName?: string;
+  witnessTwoFirstNamesLocal?: string;
+  witnessTwoFamilyNameLocal?: string;
+}
+
+export interface MarriageComposition extends IMarriageCompositionBody {
+  brideFirstNames: string;
+  groomFirstNames: string;
+  brideFamilyName: string;
+  groomFamilyName: string;
+  event: Event;
+}
+
 export interface SearchResponse<T> {
   took: number;
   timed_out: boolean;

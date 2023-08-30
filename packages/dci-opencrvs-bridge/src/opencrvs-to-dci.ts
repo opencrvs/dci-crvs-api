@@ -1,6 +1,7 @@
 import {
   type BirthComposition,
   type DeathComposition,
+  type MarriageComposition,
   Event,
 } from "opencrvs-api";
 import type { operations, components } from "dci-api";
@@ -101,6 +102,15 @@ function deathCivilRegPerson(
   };
 }
 
+function marriageCivilRegPerson(
+  composition: MarriageComposition
+): components["schemas"]["civilReg_PersonRecord"] {
+  return {
+    // TODO: return a correct payload
+    sub: composition.registrationNumber,
+  };
+}
+
 function eventType(event: Event) {
   switch (event) {
     case Event.BIRTH:
@@ -115,13 +125,19 @@ function eventType(event: Event) {
 }
 
 function isBirthComposition(
-  composition: BirthComposition | DeathComposition
+  composition: BirthComposition | DeathComposition | MarriageComposition
 ): composition is BirthComposition {
   return composition.event === Event.BIRTH;
 }
 
+function isMarriageComposition(
+  composition: BirthComposition | DeathComposition | MarriageComposition
+): composition is MarriageComposition {
+  return composition.event === Event.MARRIAGE;
+}
+
 function searchResponseBuilder(
-  composition: BirthComposition | DeathComposition,
+  composition: BirthComposition | DeathComposition | MarriageComposition,
   {
     referenceId,
     timestamp,
@@ -140,6 +156,8 @@ function searchResponseBuilder(
       record_type: "person",
       record: isBirthComposition(composition)
         ? birthCivilRegPerson(composition)
+        : isMarriageComposition(composition)
+        ? marriageCivilRegPerson(composition)
         : deathCivilRegPerson(composition),
     },
   };

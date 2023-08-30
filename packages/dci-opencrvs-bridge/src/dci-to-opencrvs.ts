@@ -26,6 +26,8 @@ export function searchRequestToAdvancedSearchParameters(
     parameters.registrationNumber = query.identifiers[0].identifier_value;
   } else if (query.identifiers?.[0]?.identifier_type === "DRN") {
     parameters.registrationNumber = query.identifiers[0].identifier_value;
+  } else if (query.identifiers?.[0]?.identifier_type === "MRN") {
+    parameters.registrationNumber = query.identifiers[0].identifier_value;
   } else {
     throw new ParseError("Unsupported identifier type");
   }
