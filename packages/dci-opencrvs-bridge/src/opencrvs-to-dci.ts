@@ -33,7 +33,7 @@ function birthCivilRegPerson(
     composition.informantFirstNames !== undefined;
 
   return {
-    sub: composition.compositionId,
+    sub: composition.registrationNumber,
     birthdate: composition.childDoB,
     ...name({
       firstNames: composition.childFirstNames,
@@ -81,7 +81,7 @@ function deathCivilRegPerson(
     composition.informantFirstNames !== undefined;
 
   return {
-    sub: composition.compositionId,
+    sub: composition.registrationNumber,
     birthdate: composition.childDoB,
     ...name({
       firstNames: composition.deceasedFirstNames,

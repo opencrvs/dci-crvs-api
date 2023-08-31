@@ -135,7 +135,7 @@ interface IOperationHistory {
 }
 
 interface ICompositionBody {
-  compositionId?: string;
+  // compositionId?: string; // TODO: I don't think this exists?
   compositionType?: string;
   event?: Event;
   type?: string;
