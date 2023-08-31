@@ -28,6 +28,8 @@ export function searchRequestToAdvancedSearchParameters(
     parameters.registrationNumber = query.identifiers[0].identifier_value;
   } else if (query.identifiers?.[0]?.identifier_type === "MRN") {
     parameters.registrationNumber = query.identifiers[0].identifier_value;
+  } else if (query.identifiers?.[0]?.identifier_type === "OPENCRVS_RECORD_ID") {
+    parameters.recordId = query.identifiers[0].identifier_value;
   } else {
     throw new ParseError("Unsupported identifier type");
   }
