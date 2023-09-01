@@ -1,3 +1,5 @@
+import type { Event } from "./gateway";
+
 const enum GQLEvent {
   birth = "birth",
   death = "death",
@@ -95,12 +97,6 @@ interface Explanation {
   value: number;
   description: string;
   details: Explanation[];
-}
-
-export enum Event {
-  BIRTH = "Birth",
-  DEATH = "Death",
-  MARRIAGE = "Marriage",
 }
 
 interface IAssignment {

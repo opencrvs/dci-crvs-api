@@ -1,10 +1,10 @@
-import type { SearchCriteria } from "opencrvs-api";
+import type { SearchEventsQueryVariables } from "opencrvs-api";
 import type { components } from "dci-api";
 import { ParseError } from "./error";
 
 export function searchRequestToAdvancedSearchParameters(
   request: components["schemas"]["SearchRequest"]["search_request"][number]
-): SearchCriteria {
+): SearchEventsQueryVariables {
   const query = request.search_criteria.query as {
     identifiers?: Array<{
       identifier_type: "BRN" | string;
@@ -17,8 +17,8 @@ export function searchRequestToAdvancedSearchParameters(
         sort_order: "asc" | "desc";
       }>
     | undefined;
-  const parameters: SearchCriteria["parameters"] = {};
-  let sortOrder: "asc" | "desc" = "asc";
+  const parameters: SearchEventsQueryVariables["advancedSearchParameters"] = {};
+  // let sortOrder: "asc" | "desc" = "asc";
   let sortColumn: string | undefined;
 
   // TODO: Support more than one identifier
@@ -43,8 +43,8 @@ export function searchRequestToAdvancedSearchParameters(
   }
 
   if (sort?.[0]?.sort_order !== undefined) {
-    sortOrder = sort?.[0]?.sort_order;
+    // sortOrder = sort?.[0]?.sort_order;
   }
 
-  return { parameters, sort: sortOrder, sortColumn };
+  return { advancedSearchParameters: parameters, sort: sortColumn };
 }

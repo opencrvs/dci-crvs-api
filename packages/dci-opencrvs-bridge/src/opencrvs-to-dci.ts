@@ -113,11 +113,11 @@ function marriageCivilRegPerson(
 
 function eventType(event: Event) {
   switch (event) {
-    case Event.BIRTH:
+    case Event.Birth:
       return "1" satisfies components["schemas"]["dci_VitalEvents"];
-    case Event.DEATH:
+    case Event.Death:
       return "2" satisfies components["schemas"]["dci_VitalEvents"];
-    case Event.MARRIAGE:
+    case Event.Marriage:
       return "4" satisfies components["schemas"]["dci_VitalEvents"];
     default:
       throw new ParseError("Unimplemented event type");
@@ -127,13 +127,13 @@ function eventType(event: Event) {
 function isBirthComposition(
   composition: BirthComposition | DeathComposition | MarriageComposition
 ): composition is BirthComposition {
-  return composition.event === Event.BIRTH;
+  return composition.event === Event.Birth;
 }
 
 function isMarriageComposition(
   composition: BirthComposition | DeathComposition | MarriageComposition
 ): composition is MarriageComposition {
-  return composition.event === Event.MARRIAGE;
+  return composition.event === Event.Marriage;
 }
 
 function searchResponseBuilder(
