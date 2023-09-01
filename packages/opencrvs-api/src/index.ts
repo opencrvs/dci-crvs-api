@@ -2,15 +2,16 @@ import {
   OPENCRVS_AUTH_URL,
   OPENCRVS_CLIENT_ID,
   OPENCRVS_CLIENT_SECRET,
+  OPENCRVS_GATEWAY_URL,
   OPENCRVS_RECORD_SEARCH_URL,
 } from "./constants";
 import { AuthorizationError } from "./error";
-import type {
-  BirthComposition,
-  RequestEvent,
-  SearchCriteria,
-  SearchResponse,
-} from "./types";
+import {
+  type EventSearchResultSet,
+  type SearchEventsQueryVariables,
+} from "./gateway";
+import { print } from "graphql";
+import gql from "graphql-tag";
 
 export const AUTHENTICATE_SYSTEM_CLIENT_URL = new URL(
   "authenticateSystemClient",
@@ -41,15 +42,95 @@ export async function authenticateClient(
   return response.token;
 }
 
-export const RECORD_SEARCH_URL = new URL(
+export const SEARCH_EVENTS = print(gql`
+  query searchEvents(
+    $advancedSearchParameters: AdvancedSearchParametersInput!
+    $sort: String
+    $count: Int
+    $skip: Int
+  ) {
+    searchEvents(
+      advancedSearchParameters: $advancedSearchParameters
+      sort: $sort
+      count: $count
+      skip: $skip
+    ) {
+      totalItems
+      results {
+        id
+        type
+        registration {
+          status
+          contactNumber
+          trackingId
+          registrationNumber
+          registeredLocationId
+          duplicates
+          assignment {
+            userId
+            firstName
+            lastName
+            officeName
+            __typename
+          }
+          createdAt
+          modifiedAt
+          __typename
+        }
+        operationHistories {
+          operationType
+          operatedOn
+          operatorRole
+          operatorName {
+            firstNames
+            familyName
+            use
+            __typename
+          }
+          operatorOfficeName
+          operatorOfficeAlias
+          notificationFacilityName
+          notificationFacilityAlias
+          rejectReason
+          rejectComment
+          __typename
+        }
+        ... on BirthEventSearchSet {
+          dateOfBirth
+          childName {
+            firstNames
+            familyName
+            use
+            __typename
+          }
+          __typename
+        }
+        ... on DeathEventSearchSet {
+          dateOfDeath
+          deceasedName {
+            firstNames
+            familyName
+            use
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+  }
+`);
+
+export const GATEWAY_URL = new URL(
   "advancedRecordSearch",
   OPENCRVS_RECORD_SEARCH_URL
 );
 
 export async function advancedRecordSearch(
   token: string,
-  criteria: SearchCriteria,
-  searchUrl = RECORD_SEARCH_URL
+  variables: SearchEventsQueryVariables,
+  searchUrl = OPENCRVS_GATEWAY_URL
 ) {
   const request = await fetch(searchUrl, {
     method: "POST",
@@ -57,10 +138,14 @@ export async function advancedRecordSearch(
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(criteria),
+    body: JSON.stringify({
+      operationName: "searchEvents",
+      variables,
+      query: SEARCH_EVENTS,
+    }),
   });
   const response = await request.json();
-  return response as RequestEvent<SearchResponse<BirthComposition>>;
+  return response.data.searchEvents as EventSearchResultSet;
 }
 
-export * from "./types";
+export * from "./gateway";
