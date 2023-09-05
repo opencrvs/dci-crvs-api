@@ -14,7 +14,8 @@
     "@hapi/boom": "^10.0.1",
     "@hapi/hapi": "^21.3.2",
     "hapi-pino": "^12.1.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "@types/node": "^20.5.3",
