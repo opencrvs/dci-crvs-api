@@ -13,13 +13,13 @@ async function search(
   const searchRequests = request.search_request;
   const searchResults = await Promise.all(
     searchRequests.map(async (searchRequest) => {
-      const searchResult = await advancedRecordSearch(
+      const response = await advancedRecordSearch(
         token,
         searchRequestToAdvancedSearchParameters(searchRequest)
       );
 
       return {
-        response: searchResult.body,
+        response,
         responseFinishedTimestamp: new Date(),
         originalRequest: searchRequest,
       };

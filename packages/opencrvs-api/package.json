@@ -4,8 +4,19 @@
   "description": "",
   "main": "src/index.ts",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "generate-gateway-types": "graphql-codegen --config codegen.yml && npx prettier --write src/gateway.ts"
+  },
   "dependencies": {
+    "graphql": "^16.8.0",
+    "graphql-tag": "^2.12.6",
     "typescript": "^5.1.6"
+  },
+  "devDependencies": {
+    "@graphql-codegen/add": "^3.1.1",
+    "@graphql-codegen/cli": "^3.3.1",
+    "@graphql-codegen/introspection": "^3.0.1",
+    "@graphql-codegen/typescript": "^3.0.4",
+    "@graphql-codegen/typescript-operations": "^3.0.4"
   }
 }

@@ -1,8 +1,8 @@
-import {
-  type BirthComposition,
-  type DeathComposition,
-  type MarriageComposition,
-  Event,
+import type {
+  DeathEventSearchSet,
+  MarriageEventSearchSet,
+  BirthEventSearchSet,
+  EventSearchResultSet,
 } from "opencrvs-api";
 import type { operations, components } from "dci-api";
 import type { SearchResponseWithMetadata } from "./types";
@@ -23,30 +23,30 @@ function name({
 }
 
 function birthCivilRegPerson(
-  composition: BirthComposition
+  event: BirthEventSearchSet
 ): components["schemas"]["civilReg_PersonRecord"] {
-  const isMotherDefined = composition.motherFirstNames !== undefined;
-  const isFatherDefined = composition.fatherFirstNames !== undefined;
+  const isMotherDefined = event.mothersFirstName !== undefined;
+  const isFatherDefined = event.fathersFirstName !== undefined;
   const isInformantRelationshipUniqueAndDefined =
-    composition.contactRelationship !== "FATHER" &&
-    composition.contactRelationship !== "MOTHER" &&
-    composition.informantFirstNames !== undefined;
+    event.registration?.contactRelationship !== "FATHER" &&
+    event.registration?.contactRelationship !== "MOTHER";
+  // &&  composition.informantFirstNames !== undefined; informant names?
 
   return {
-    sub: composition.registrationNumber,
-    birthdate: composition.childDoB,
+    sub: event.id,
+    birthdate: event.dateOfBirth,
     ...name({
-      firstNames: composition.childFirstNames,
-      familyName: composition.childFamilyName,
+      firstNames: event.childName?.[0]?.firstNames ?? "", // TODO: Improve the GraphQL types to assert that these values exist
+      familyName: event.childName?.[0]?.familyName ?? "", // TODO: Improve the GraphQL types to assert that these values exist
     }),
-    gender: composition.gender,
+    gender: event.childGender ?? "unknown", // TODO: Improve the GraphQL types to assert that these values exist
     related_persons: [
       ...(isMotherDefined
         ? [
             {
               relationship: "mother",
-              name: `${composition.motherFirstNames} ${composition.motherFamilyName}`,
-              sub: composition.motherIdentifier,
+              name: `${event.mothersFirstName} ${event.mothersLastName}`,
+              sub: event.motherIdentifier ?? undefined,
             },
           ]
         : []),
@@ -54,17 +54,18 @@ function birthCivilRegPerson(
         ? [
             {
               relationship: "father",
-              name: `${composition.fatherFirstNames} ${composition.fatherFamilyName}`,
-              sub: composition.fatherIdentifier,
+              name: `${event.fathersFirstName} ${event.fathersLastName}`,
+              sub: event.fatherIdentifier ?? undefined,
             },
           ]
         : []),
       ...(isInformantRelationshipUniqueAndDefined
         ? [
             {
-              relationship: composition.contactRelationship, // TODO: How to map into a DCI relationship
-              name: `${composition.informantFirstNames} ${composition.informantFamilyName}`,
-              sub: composition.informantIdentifier,
+              relationship:
+                event.registration?.contactRelationship ?? undefined, // TODO: How to map into a DCI relationship?
+              name: ``, // TODO: How to get informant name?
+              sub: ``, // TODO: How to get informant id?
             },
           ]
         : []),
@@ -73,28 +74,29 @@ function birthCivilRegPerson(
 }
 
 function deathCivilRegPerson(
-  composition: DeathComposition
+  event: DeathEventSearchSet
 ): components["schemas"]["civilReg_PersonRecord"] {
   const isInformantRelationshipUniqueAndDefined =
-    composition.contactRelationship !== "FATHER" &&
-    composition.contactRelationship !== "MOTHER" &&
-    composition.informantFirstNames !== undefined;
+    event.registration?.contactRelationship !== "FATHER" &&
+    event.registration?.contactRelationship !== "MOTHER";
+  // &&  composition.informantFirstNames !== undefined; informant names?
 
   return {
-    sub: composition.registrationNumber,
-    birthdate: composition.childDoB,
+    sub: event.id,
+    deathdate: event.dateOfDeath,
     ...name({
-      firstNames: composition.deceasedFirstNames,
-      familyName: composition.deceasedFamilyName,
+      firstNames: event.deceasedName?.[0]?.firstNames ?? "", // TODO: Improve the GraphQL types to assert that these values exist
+      familyName: event.deceasedName?.[0]?.familyName ?? "", // TODO: Improve the GraphQL types to assert that these values exist
     }),
-    gender: composition.gender,
+    gender: event.deceasedGender ?? "unknown", // TODO: Improve the GraphQL types to assert that these values exist
     related_persons: [
       ...(isInformantRelationshipUniqueAndDefined
         ? [
             {
-              relationship: composition.contactRelationship, // TODO: How to map into a DCI relationship
-              name: `${composition.informantFirstNames} ${composition.informantFamilyName}`,
-              sub: composition.informantIdentifier,
+              relationship:
+                event.registration?.contactRelationship ?? undefined, // TODO: How to map into a DCI relationship?
+              name: ``, // TODO: How to get informant name?
+              sub: ``, // TODO: How to get informant id?
             },
           ]
         : []),
@@ -103,41 +105,47 @@ function deathCivilRegPerson(
 }
 
 function marriageCivilRegPerson(
-  composition: MarriageComposition
+  event: MarriageEventSearchSet
 ): components["schemas"]["civilReg_PersonRecord"] {
   return {
     // TODO: return a correct payload
-    sub: composition.registrationNumber,
+    sub: event.id,
   };
 }
 
-function eventType(event: Event) {
+function eventType(event: string) {
   switch (event) {
-    case Event.BIRTH:
+    case "Birth":
       return "1" satisfies components["schemas"]["dci_VitalEvents"];
-    case Event.DEATH:
+    case "Death":
       return "2" satisfies components["schemas"]["dci_VitalEvents"];
-    case Event.MARRIAGE:
+    case "Marriage":
       return "4" satisfies components["schemas"]["dci_VitalEvents"];
     default:
       throw new ParseError("Unimplemented event type");
   }
 }
 
-function isBirthComposition(
-  composition: BirthComposition | DeathComposition | MarriageComposition
-): composition is BirthComposition {
-  return composition.event === Event.BIRTH;
+function isBirthEventSearchSet(
+  eventSearchSet:
+    | BirthEventSearchSet
+    | DeathEventSearchSet
+    | MarriageEventSearchSet
+): eventSearchSet is BirthEventSearchSet {
+  return eventSearchSet.__typename === "BirthEventSearchSet";
 }
 
-function isMarriageComposition(
-  composition: BirthComposition | DeathComposition | MarriageComposition
-): composition is MarriageComposition {
-  return composition.event === Event.MARRIAGE;
+function isMarriageEventSearchSet(
+  eventSearchSet:
+    | BirthEventSearchSet
+    | DeathEventSearchSet
+    | MarriageEventSearchSet
+): eventSearchSet is MarriageEventSearchSet {
+  return eventSearchSet.__typename === "MarriageEventSearchSet";
 }
 
-function searchResponseBuilder(
-  composition: BirthComposition | DeathComposition | MarriageComposition,
+export function searchResponseBuilder(
+  event: BirthEventSearchSet | DeathEventSearchSet | MarriageEventSearchSet,
   {
     referenceId,
     timestamp,
@@ -146,31 +154,34 @@ function searchResponseBuilder(
     timestamp: components["schemas"]["DateTime"];
   }
 ): components["schemas"]["SearchResponse"]["search_response"][number] {
+  if (event.type === undefined || event.type === null) {
+    // TODO: The GraphQL event type should always be defined
+    throw new Error("Event type is not defined");
+  }
+
   return {
     reference_id: referenceId,
     timestamp,
     status: "succ",
-    event_type: eventType(composition.event),
+    event_type: eventType(event.type),
     registry_type: "civil",
     registry_data: {
       record_type: "person",
-      record: isBirthComposition(composition)
-        ? birthCivilRegPerson(composition)
-        : isMarriageComposition(composition)
-        ? marriageCivilRegPerson(composition)
-        : deathCivilRegPerson(composition),
+      record: isBirthEventSearchSet(event)
+        ? birthCivilRegPerson(event)
+        : isMarriageEventSearchSet(event)
+        ? marriageCivilRegPerson(event)
+        : deathCivilRegPerson(event),
     },
   };
 }
 
 export function registrySyncSearchBuilder(
-  responses: Array<
-    SearchResponseWithMetadata<BirthComposition | DeathComposition>
-  >,
+  responses: Array<SearchResponseWithMetadata<EventSearchResultSet>>,
   request: operations["post_reg_sync_search"]["requestBody"]["content"]["application/json"]
 ) {
   const totalCount = responses
-    .map((response) => response.response.hits.total.value)
+    .map(({ response }) => response.totalItems ?? 0)
     .reduce((a, b) => a + b, 0);
 
   return {
@@ -189,12 +200,14 @@ export function registrySyncSearchBuilder(
       transaction_id: request.message.transaction_id,
       search_response: responses.flatMap(
         ({ response, originalRequest, responseFinishedTimestamp }) =>
-          response.hits.hits.map(({ _source }) =>
-            searchResponseBuilder(_source, {
+          response.results?.map((search) =>
+            // TODO: Improve the GraphQL types to assert the results do exist, but they can be an empty array
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            searchResponseBuilder(search!, {
               referenceId: originalRequest.reference_id,
               timestamp: responseFinishedTimestamp.toISOString(),
             })
-          )
+          ) ?? []
       ),
     },
   } satisfies operations["post_reg_sync_search"]["responses"]["default"]["content"]["application/json"];
