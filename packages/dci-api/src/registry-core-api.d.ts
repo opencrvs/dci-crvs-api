@@ -25,12 +25,33 @@ export interface paths {
      */
     post: operations["post_reg_subscribe"];
   };
+  "/registry/on-subscribe": {
+    /**
+     * /registry/on-subscribe
+     * @description Subscribe results through callback
+     */
+    post: operations["post_reg_on-subscribe"];
+  };
   "/registry/notify": {
     /**
      * /registry/notify
      * @description Registry to notify a life event to subscrbiers
      */
     post: operations["post_reg_notify"];
+  };
+  "/registry/unsubscribe": {
+    /**
+     * /registry/unsubscribe
+     * @description Unsubscribe existing subscription(s) by subscription_code
+     */
+    post: operations["post_reg_unsubscribe"];
+  };
+  "/registry/on-unsubscribe": {
+    /**
+     * /registry/on-unsubscribe
+     * @description Unsubscribe response as a callback
+     */
+    post: operations["post_reg_on-unsubscribe"];
   };
   "/registry/txn/status": {
     /**
@@ -53,24 +74,10 @@ export interface paths {
      */
     post: operations["post_reg_sync_search"];
   };
-  "/registry/sync/subscriptions": {
-    /**
-     * /registry/sync/subscriptions
-     * @description To retrive list of subscriptions
-     */
-    post: operations["post_reg_sync_subscriptions"];
-  };
-  "/registry/sync/unsubscribe": {
-    /**
-     * /registry/sync/unsubscribe
-     * @description Unsubscribe to a life event with registry
-     */
-    post: operations["post_reg_sync_unsubscribe"];
-  };
   "/registry/sync/txn/status": {
     /**
      * /registry/sync/txn/status
-     * @description Perform async status check of previous civil registry transanctions using transaction_id and/or reference_id(s)
+     * @description Sync status check of registry Async APIs
      */
     post: operations["post_reg_sync_txnstatus"];
   };
@@ -86,14 +93,14 @@ export interface components {
      * 2. This will enumerate foundational and functioanl id's to easily resolvable addressess <br>
      * 3. This property is intended to unambiguously refer to an object, such as a person, beneficiary, user, etc., <br>
      * 4. Few examples: <br>
-     *     - id@identifier-type.id-provider e.g token:12345@mosip, vid:543215@mosip <br>
-     *     - id@civil-registry.issuing-agency e.g id:12345@crvs, brn:12345@crvs, mrn:12345@crvs <br>
+     *     - id@identifier-type.id-provider e.g token:12345@nid, vid:543215@nid <br>
+     *     - id@civil-registry.issuing-agency e.g id:12345@civil-reg, brn:12345@civil-reg, mrn:12345@civil-reg <br>
      *     - id@functional-identifier.issuing-agency e.g id:12345@voter-id, id:12345@driving-license, mobile:12345@farmer-reg <br>
      * Note: id provider should be made configurable and solutions should adapt to the local jurisdiction and policies.
      *
-     * @example vid:54321@mosip
+     * @example vid:54321@nid
      */
-    cdpi_PersonId: string;
+    cdpi_PersonId: Record<string, never>;
     /**
      * @description An identifier type includes unique numbers legally assigned to individuals. <br>
      * Reference: [Types of ID](https://id4d.worldbank.org/guide/types-id-systems)
@@ -155,8 +162,12 @@ export interface components {
       name?: components["schemas"]["dci_Name"];
       /** @description Applicant preferred phone number as in [E.164](https://www.itu.int/rec/T-REC-E.164-201011-I/en) */
       phone_number?: string;
+      /** @description True if the End-User's phone number has been verified; otherwise false. */
+      phone_number_verified?: string;
       /** @description Applicant preferred e-mail address as in [RFC 5322](https://datatracker.ietf.org/doc/html/rfc5322) [addr-spec](https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1) [specification](https://datatracker.ietf.org/doc/html/rfc5322#section-3.4.1) */
       email?: string;
+      /** @description Email address was controlled by the End-User at the time the verification was performed. The means by which an e-mail address is verified is context-specific, and dependent upon the trust framework or contractual agreements within which the parties are operating. */
+      email_verified?: boolean;
       sex?: components["schemas"]["dci_Sex"];
       /** @description Represents Date and time of the applicant's birth as in [ISO 8601](https://www.iso.org/standard/40874.html) */
       birthdate?: string;
@@ -187,7 +198,6 @@ export interface components {
     /**
      * @description Standardized codes/values representing diverse Sex categories.
      * Reference: [ISO/IEC 5218:2022](https://www.iso.org/standard/81682.html)
-     *
      * 1 : Male
      * 2 : Female
      * 3 : Others
@@ -331,17 +341,16 @@ export interface components {
       demo_check_status?: boolean;
       /** @description Date in DDMMYYYY format to capture the Demo Check Date */
       demo_check_date?: string;
-      /** @description Reference document collected for registering the deceased information */
       document?: components["schemas"]["nid_Document"];
     };
-    /** @description Supporting document of the Resident */
+    /** @description Supporting document of the Resident,Reference document collected for registering the deceased information,Document encoded as Base64 string */
     nid_Document: {
       /** @description Name of the document */
       document_name?: string;
       /** @description Bases 64 encoded document */
       document?: string;
     };
-    /** @description eKYC details of the resident */
+    /** @description eKYC details of the resident ,ekyc Details undertaken by the Resident */
     nid_EKycDetails: {
       /** @description Date on which eKYC has been done. A null value indicates that eKYC has not been undertaken */
       ekyc_date?: string;
@@ -412,7 +421,7 @@ export interface components {
       /** @description Local name of the Resident */
       local_name?: string;
     };
-    /** @description Resident Nationality Information */
+    /** @description Resident Nationality Information,Nationality information of the Resident */
     nid_ResidentNationality: {
       /** @description Nationality information of the Resident */
       nationality?: string;
@@ -429,7 +438,7 @@ export interface components {
       /** @description OCI Validity date in DDMMYYYY format */
       oci_valid_upto?: string;
     };
-    /** @description Resident Photo */
+    /** @description Resident Photo,Image encoded as Base64 string */
     nid_ResidentPhoto: {
       /** @description Photo encoded as Base64 string */
       photo?: string;
@@ -451,13 +460,9 @@ export interface components {
       address?: components["schemas"]["nid_ResidentAddress"];
       local_name?: components["schemas"]["nid_ResidentLocalName"];
       local_address?: components["schemas"]["nid_ResidentLocalAddress"];
-      /** @description Image encoded as Base64 string */
       photo?: components["schemas"]["nid_ResidentPhoto"];
-      /** @description Nationality information of the Resident */
       nationality?: components["schemas"]["nid_ResidentNationality"];
-      /** @description ekyc Details undertaken by the Resident */
       kyc_status?: components["schemas"]["nid_EKycDetails"];
-      /** @description Document encoded as Base64 string */
       document?: components["schemas"]["nid_Document"];
     };
     /**
@@ -601,93 +606,6 @@ export interface components {
       };
     };
     /**
-     * @description 1. Civil registration event list used to record and interact with a typical civil registry
-     * 2. This is an indicative list as reference and every country, organisation, system shall customise to local requirements as extensions
-     * 3. Example Civil Registration events: person, birth, death, marriage, divorce, annulment, seperation, adoption, demo_change, unregister, etc.,
-     *
-     * @example [
-     *   "person",
-     *   "birth",
-     *   "death",
-     *   "marriage",
-     *   "divorce",
-     *   "annulment",
-     *   "seperation",
-     *   "adoption",
-     *   "demo_change",
-     *   "unregister"
-     * ]
-     */
-    civilReg_EventType: string;
-    /**
-     * @description 1. A sample person record to identity an individual or civil regisration event in a typical civil registry
-     * 2, This is an indicative list as reference and every country, organisation, system shall customise to local requirements as extensions
-     */
-    civilReg_PersonRecord: components["schemas"]["openid_PersonRecord"] & {
-      /** Format: date-time */
-      issue_date?: string;
-      /** @description Civil registry status */
-      status?: string;
-      registration_type?: components["schemas"]["civilReg_EventType"];
-      /** @description Registration number */
-      registration_number?: string;
-      /** @description Registration date */
-      registration_date?: unknown;
-      /** @description Registration number to related record. e.g birth registration no for death, marriage registration no for divorce/annulment, etc., */
-      link_registration_number?: string;
-      related_persons?: components["schemas"]["civilReg_RelatedPerson"][];
-    };
-    /**
-     * @description 1. A sample record list to identity various records that civil registry can produce
-     * 2, This is an indicative list as reference and every country, organisation, system shall customise to local requirements as extensions
-     * 3. Example Civil Registry records - person_record, birth_cert, death_cert, marriage_cert, etc.,
-     *
-     * @example [
-     *   "person_record",
-     *   "brith_cert",
-     *   "death_cert",
-     *   "marriage_cert",
-     *   "other_record"
-     * ]
-     */
-    civilReg_RecordType: string;
-    /**
-     * @description 1. A sample related person into captured in civil registry
-     * 2, This is an indicative list as reference and every country, organisation, system shall customise to local requirements as extensions
-     */
-    civilReg_RelatedPerson: {
-      /** @description Subject - Identifier for the End-User at the Issuer. */
-      sub?: string;
-      /** @description End-User's full name in displayable form including all name parts, possibly including titles and suffixes, ordered according to the End-User's locale and preferences. */
-      name?: string;
-      /**
-       * @description Indicative relationship values - mother, father, gaurdian, bride, groom, wife, husband, spouse, partner, other
-       *
-       * @example [
-       *   "mother",
-       *   "father",
-       *   "gaurdian",
-       *   "bride",
-       *   "groom",
-       *   "wife",
-       *   "husband",
-       *   "spouse",
-       *   "partner",
-       *   "other"
-       * ]
-       */
-      relationship?: string;
-    };
-    /**
-     * @description 1. List of all events type defined by respective registries, entities, coutnries and organisation as extensions
-     * 2. Events can be used for defining custom selection criteria with in the context of registry domain
-     */
-    coreReg_AllEvents:
-      | components["schemas"]["dci_VitalEvents"]
-      | components["schemas"]["civilReg_EventType"]
-      | components["schemas"]["mosip_EventType"]
-      | components["schemas"]["coreReg_EventType"];
-    /**
      * @description 1. Pre defined query objects injected by each country/org/system to query a registry
      * 2. Implementing systems may create pre-defined query objects based on use cases and inject as custom extensions
      * 3. ExpressionWithConditionList is simple generic search query construct to solve for majority of search conditons. few examples: <br>
@@ -695,101 +613,134 @@ export interface components {
      *   - search or subscribe to birth, death events; e.g any new birth in postal_code 12345 after 1/jan/2023
      *   - search all farmers with land area less than 2 acers in district code 504
      */
-    coreReg_AllQueries:
-      | components["schemas"]["dci_IdentifierTypeValue"]
-      | components["schemas"]["cdpi_PersonId"]
-      | components["schemas"]["ExpressionWithConditionList"];
-    /**
-     * @description 1. Records retured as response to search/subsribe actions to exchange registry data
-     * 2. record_type acts as namespace to define record being retunred for receiving system to unmarshel and use
-     * 3. Objects are defined in respecitive schemas definition with entity/org namespace as prefix
-     * 3. Implementing systems shall reference to the requires objects based on the context of these API usage
-     */
-    coreReg_AllRecords:
-      | components["schemas"]["civilReg_PersonRecord"]
-      | components["schemas"]["dci_PersonRecord"]
-      | components["schemas"]["nid_ResidentRecord"]
-      | components["schemas"]["nid_DeceasedRecord"]
-      | components["schemas"]["mosip_RegistrationRecord"]
-      | components["schemas"]["mosip_MOSIPVerifiableCredential"];
-    /**
-     * @description 1. RecordType are pre defined as list of attributes or an object to return upon successful search/subscribe requests
-     * 2. This is equivalent to column list in a typical sql query i.e select col1, col2, col3 from table where condition
-     * 3. Based on record_type, required object definition are added as extension payloads
-     */
-    coreReg_AllRecordTypes:
-      | components["schemas"]["civilReg_RecordType"]
-      | components["schemas"]["dci_RecordType"]
-      | components["schemas"]["nid_RecordType"]
-      | components["schemas"]["mosip_RecordType"]
-      | components["schemas"]["other_RecordType"];
-    /**
-     * @description Functional registry event types:
-     *   1. update - search or subscribe to update events; e.g update to postal_code 12345 between date_range
-     *   2. link - search or subscribe to linking events; e.g mobile no link with ID, national ID link with civil reg record, etc.,
-     *   3. unlink - search or subscribe to unlinking events; <br>
-     *
-     * Note: update event can also cover link/unlink events on a registry record.
-     *
-     * @enum {string}
-     */
-    coreReg_EventType: "update" | "link" | "unlink";
-    /** @description Fetch list of active subscriptions based on sender id,registry type and event type */
-    FetchSubscriptionsRequest: {
-      transaction_id: components["schemas"]["TransactionId"];
-      fetch_subscriptions_request?: {
-        timestamp: components["schemas"]["DateTime"];
-        registry_type?: components["schemas"]["coreReg_Type"];
-        event_type: components["schemas"]["coreReg_AllEvents"];
-        subscription_code?: components["schemas"]["SubscriptionCode"];
-        locale?: components["schemas"]["LanguageCode"];
-      };
-    };
-    /** @description Subscription list */
-    FetchSubscriptionsResponse: {
-      transaction_id: components["schemas"]["TransactionId"];
-      timestamp?: components["schemas"]["DateTime"];
-      subscriptions: components["schemas"]["SubscriptionInfo"][];
-    };
+    RegistryQueries:
+      | components["schemas"]["IdentifierTypeValue"]
+      | components["schemas"]["ExpTemplate"]
+      | components["schemas"]["ExpPredicateWithConditionList"];
     /** @description Registry to notify a event to subscrbiers */
     NotifyEventRequest: {
       transaction_id: components["schemas"]["TransactionId"];
       notify_event: {
         reference_id: components["schemas"]["ReferenceId"];
         timestamp: components["schemas"]["DateTime"];
-        registry_type?: components["schemas"]["coreReg_Type"];
-        event_type: components["schemas"]["coreReg_AllEvents"];
-        /** @description Search result record as an outcome of search/subscribe action */
-        registry_data: {
-          record_type: components["schemas"]["coreReg_AllRecordTypes"];
-          record: components["schemas"]["coreReg_AllRecords"];
+        /** @description Registry data being notified as an outcome of event subscription with registry */
+        data: {
+          /** @default 1.0.0 */
+          version?: string;
+          reg_type?: components["schemas"]["RegistryType"];
+          reg_event_type: components["schemas"]["RegistryEventType"];
+          reg_record_type: components["schemas"]["RegistryRecordType"];
+          reg_records: unknown;
         };
         locale?: components["schemas"]["LanguageCode"];
       }[];
     };
-    other_RecordType: string[];
+    /** @description Registry supported event types */
+    RegistryEventType: {
+      /**
+       * @description namespace to refer to registry event types; e.g, ns:dci:vital-events:v1
+       * @example ns:dci:vital-events:v1
+       */
+      namespace?: string;
+      /**
+       * @description refUri to reference schema of registry event types.
+       * @example https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.2-code-directory#cd.04-vital_events
+       */
+      refUri?: string;
+      /**
+       * @description Registry event type value.
+       * @example 1
+       */
+      value: string;
+    };
     /**
-     * @description 1. Country specific implementations should extend and allow other registries.
-     * 2. In most scenarios, receiver i.e receipient of search/subsribe request determine which registry is being searched
-     * 3. example: civil, population, national-id, family, household, social, beneficiary, disability, student, farmer, land, utiltiy, other
-     *
-     * @example [
-     *   "civil",
-     *   "population",
-     *   "national-id",
-     *   "family",
-     *   "household",
-     *   "social",
-     *   "beneficiary",
-     *   "disability",
-     *   "student",
-     *   "farmer",
-     *   "land",
-     *   "utility",
-     *   "other"
-     * ]
+     * @description Registy record object based on record_type attribute.
+     * @example {
+     *   "$ref": "components[\"schemas\"][\"dci_PersonRecord\"]"
+     * }
      */
-    coreReg_Type: string;
+    RegistryRecord: Record<string, never>;
+    /**
+     * @description Record type to represent in
+     * 1. Search request to request search result record type to return
+     * 2. Notify event to represent record type being returned based on subscription to registry event type
+     */
+    RegistryRecordType: {
+      /**
+       * @description namespace to refer to registry record types; e.g, ns:dci:record-type:PersonRecord:v1
+       * @example [
+       *   "ns:dci:record-type:PersonRecord:v1",
+       *   "ns:openid:record-type:PersonRecord:v1"
+       * ]
+       */
+      namespace?: string;
+      /**
+       * @description refUri to reference schema of registry record types.
+       * @example [
+       *   "https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.1-data-elements#do.01-person",
+       *   "https://openid.net/specs/openid-connect-core-1_0.html#Claims"
+       * ]
+       */
+      refUri?: string;
+      /**
+       * @description registry record type value. <br>
+       * e.g,: civil, population, national-id, family, household, social, beneficiary, disability, student, farmer, land, utiltiy, other
+       *
+       * @example [
+       *   "person",
+       *   "vc-person",
+       *   "vc-brith-certificate",
+       *   "vc-marriage-certificate",
+       *   "vc-death-certificate",
+       *   "social",
+       *   "disability",
+       *   "student",
+       *   "farmer",
+       *   "land",
+       *   "utility",
+       *   "other"
+       * ]
+       */
+      value: string;
+    };
+    /**
+     * @description 1. Country specific implementations should publish /.well-known files or refUris
+     * 2. In most scenarios, receiver i.e receipient of search/subsribe request determine which registry to search
+     * 3. Example: civil, population, national-id, family, household, social, beneficiary, disability, student, farmer, land, utiltiy, other
+     */
+    RegistryType: {
+      /**
+       * @description namespace to refer to registry types; e.g, ns:dci:registry-type:v1
+       * @example ns:dci:registry-type:v1
+       */
+      namespace?: string;
+      /**
+       * @description refUri to reference schema of registry types.
+       * @example https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.2-code-directory
+       */
+      refUri?: string;
+      /**
+       * @description registry type value. <br>
+       * e.g,: civil, population, national-id, family, household, social, beneficiary, disability, student, farmer, land, utiltiy, other
+       *
+       * @example [
+       *   "civil",
+       *   "population",
+       *   "national-id",
+       *   "family",
+       *   "household",
+       *   "social",
+       *   "beneficiary",
+       *   "disability",
+       *   "student",
+       *   "farmer",
+       *   "land",
+       *   "utility",
+       *   "other"
+       * ]
+       */
+      value: string;
+    };
     /**
      * @description 1. Functional registry specific extension to search.
      * 2. Additional checks using conditioanl expressions is possible.
@@ -797,24 +748,36 @@ export interface components {
      */
     SearchRequest: {
       transaction_id: components["schemas"]["TransactionId"];
+      /** @description 1. Batch requests enabel multiple individual requests with respective consent/authorize codes */
       search_request: {
         reference_id: components["schemas"]["ReferenceId"];
         timestamp: components["schemas"]["DateTime"];
-        registry_type?: components["schemas"]["coreReg_Type"];
-        event_type: components["schemas"]["coreReg_AllEvents"];
         search_criteria: {
-          query: components["schemas"]["coreReg_AllQueries"];
-          record_type: components["schemas"]["coreReg_AllRecordTypes"];
+          /** @default 1.0.0 */
+          version?: string;
+          reg_type?: components["schemas"]["RegistryType"];
+          reg_event_type?: components["schemas"]["RegistryEventType"];
+          query_type: components["schemas"]["QueryType"];
+          query: components["schemas"]["RegistryQueries"];
+          result_record_type: components["schemas"]["RegistryRecordType"];
           sort?: components["schemas"]["SearchSortList"];
           pagination?: components["schemas"]["PaginationRequest"];
+          consent?: components["schemas"]["Consent"];
+          authorize?: components["schemas"]["Authorize"];
         };
-        consent?: components["schemas"]["Consent"];
         locale?: components["schemas"]["LanguageCode"];
       }[];
     };
     /** @description Response to search request. Multiple repsonses for each page can be pushed to the caller as an implementation! */
     SearchResponse: {
       transaction_id: components["schemas"]["TransactionId"];
+      /**
+       * @description 1. correlation_id acknowledged by end txn processing system (i.e receiver) to co-relate all related requests in the context of a business transaction.
+       * 2. correlation_id uniqueness is ensured by txn processing system (i.e receiver)
+       *
+       * @example 9876543210
+       */
+      correlation_id: string;
       search_response: {
         reference_id: components["schemas"]["ReferenceId"];
         timestamp: components["schemas"]["DateTime"];
@@ -822,12 +785,14 @@ export interface components {
         status_reason_code?: components["schemas"]["SearchStatusReasonCode"];
         /** @description Status reason code message. Helps actionanble messaging for systems/end users */
         status_reason_message?: string;
-        registry_type?: components["schemas"]["coreReg_Type"];
-        event_type: components["schemas"]["coreReg_AllEvents"];
         /** @description Search result record as an outcome of search/subscribe action */
-        registry_data?: {
-          record_type: components["schemas"]["coreReg_AllRecordTypes"];
-          record: components["schemas"]["coreReg_AllRecords"];
+        data?: {
+          /** @default 1.0.0 */
+          version?: string;
+          reg_type?: components["schemas"]["RegistryType"];
+          reg_event_type?: components["schemas"]["RegistryEventType"];
+          reg_record_type: components["schemas"]["RegistryRecordType"];
+          reg_records: unknown;
         };
         pagination?: components["schemas"]["Pagination"];
         locale?: components["schemas"]["LanguageCode"];
@@ -852,13 +817,33 @@ export interface components {
       subscribe_request: {
         reference_id: components["schemas"]["ReferenceId"];
         timestamp: components["schemas"]["DateTime"];
-        registry_type?: components["schemas"]["coreReg_Type"];
-        event_type: components["schemas"]["coreReg_AllEvents"];
-        frequency?: components["schemas"]["EventFrequency"];
         subscribe_criteria: {
-          query: components["schemas"]["coreReg_AllQueries"];
-          record_type: components["schemas"]["coreReg_AllRecordTypes"];
+          /** @default 1.0.0 */
+          version?: string;
+          reg_type?: components["schemas"]["RegistryType"];
+          reg_event_type: components["schemas"]["RegistryEventType"];
+          frequency?: components["schemas"]["EventFrequency"];
+          filter_type?: components["schemas"]["QueryType"];
+          filter: components["schemas"]["RegistryQueries"];
+          notify_record_type: components["schemas"]["RegistryRecordType"];
+          authorize?: components["schemas"]["Authorize"];
         };
+        locale?: components["schemas"]["LanguageCode"];
+      }[];
+    };
+    /** @description Response to subscribe request. */
+    SubscribeResponse: {
+      transaction_id: components["schemas"]["TransactionId"];
+      correlation_id: components["schemas"]["SearchResponse"]["correlation_id"];
+      subscribe_response: {
+        reference_id: components["schemas"]["ReferenceId"];
+        timestamp: components["schemas"]["DateTime"];
+        status: components["schemas"]["RequestStatus"];
+        status_reason_code?: components["schemas"]["SubscribeStatusReasonCode"];
+        /** @description Status reason code message. Helps actionanble messaging for systems/end users */
+        status_reason_message?: string;
+        subscriptions?: components["schemas"]["SubscriptionInfo"][];
+        pagination?: components["schemas"]["Pagination"];
         locale?: components["schemas"]["LanguageCode"];
       }[];
     };
@@ -875,20 +860,23 @@ export interface components {
       | "rjct.person_id.invalid"
       | "rjct.event.already_subscribed";
     /**
-     * @description Unique code to ideintiy the subscription request by the entity providing subscription service.
+     * @description Unique code to identify the subscription request by the entity providing subscription service.
      * Helps to check status, unsubscribe etc.,
      */
     SubscriptionCode: string;
+    SubscriptionCodeList: unknown;
     SubscriptionInfo: {
-      subscription_code: components["schemas"]["SubscriptionCode"];
+      /** @default 1.0.0 */
+      version?: string;
+      code?: components["schemas"]["SubscriptionCode"];
+      status?: components["schemas"]["SubscriptionStatus"];
       timestamp: components["schemas"]["DateTime"];
-      registry_type?: components["schemas"]["coreReg_Type"];
-      event_type: components["schemas"]["coreReg_AllEvents"];
+      reg_type?: components["schemas"]["RegistryType"];
+      reg_event_type?: components["schemas"]["RegistryEventType"];
       frequency?: components["schemas"]["EventFrequency"];
-      subscribe_criteria: {
-        query: components["schemas"]["coreReg_AllQueries"];
-        record_type?: components["schemas"]["coreReg_AllRecordTypes"];
-      };
+      filter_type?: components["schemas"]["QueryType"];
+      filter?: components["schemas"]["RegistryQueries"];
+      notify_record_type?: components["schemas"]["RegistryRecordType"];
       locale?: components["schemas"]["LanguageCode"];
     };
     /**
@@ -896,34 +884,52 @@ export interface components {
      * @enum {string}
      */
     SubscriptionStatus: "subscribe" | "unsubscribe";
-    /** @description Request to search identity service requests */
+    /** @description Request to fetch txn status on various service requests */
     TxnStatusRequest: {
       transaction_id: components["schemas"]["TransactionId"];
       txnstatus_request: {
         reference_id: components["schemas"]["ReferenceId"];
+        /**
+         * @description txn type to fetch status
+         * @enum {string}
+         */
+        txn_type: "search" | "subscribe" | "unsubscribe";
         /** @enum {string} */
-        search_type: "transaction_id" | "reference_id_list";
-        search_attribute:
+        attribute_type:
+          | "transaction_id"
+          | "reference_id_list"
+          | "correlation_id"
+          | "subscription_code_list";
+        attribute_value:
           | components["schemas"]["TransactionId"]
-          | components["schemas"]["ReferenceIdList"];
+          | components["schemas"]["ReferenceIdList"]
+          | components["schemas"]["SearchResponse"]["correlation_id"]
+          | components["schemas"]["SubscriptionCodeList"];
         locale?: components["schemas"]["LanguageCode"];
       };
     };
+    /** @description txn status info on various service requests */
     TxnStatusResponse: {
       transaction_id: components["schemas"]["TransactionId"];
+      correlation_id: components["schemas"]["SearchResponse"]["correlation_id"];
       /**
        * @example {
-       *   "txnstatus_response": {
-       *     "reference_id": "test",
-       *     "status": "SUCC"
-       *   }
+       *   "$ref": "components[\"schemas\"][\"SearchResponse\"]"
        * }
        */
-      txnstatus_response:
-        | components["schemas"]["SearchResponse"]
-        | components["schemas"]["NotifyEventRequest"];
+      txnstatus_response: {
+        /**
+         * @description txn type to fetch status
+         * @enum {string}
+         */
+        txn_type: "on-search" | "on-subscribe" | "on-unsubscribe";
+        txn_status:
+          | components["schemas"]["SearchResponse"]
+          | components["schemas"]["SubscribeResponse"]
+          | components["schemas"]["UnSubscribeResponse"];
+      };
     };
-    /** @description Un-Subscribe to a life event with crvs */
+    /** @description Un-Subscribe to registred subscriptions */
     UnSubscribeRequest: {
       transaction_id: components["schemas"]["TransactionId"];
       timesstamp?: components["schemas"]["DateTime"];
@@ -932,14 +938,15 @@ export interface components {
     /** @description Un-Subscribe to a life event with crvs */
     UnSubscribeResponse: {
       transaction_id: components["schemas"]["TransactionId"];
+      correlation_id: components["schemas"]["SearchResponse"]["correlation_id"];
       timesatmp?: components["schemas"]["DateTime"];
       status: components["schemas"]["RequestStatus"];
       status_reason_code?: components["schemas"]["UnSubscribeStatusReasonCode"];
       /** @description Status reason code message. Helps actionanble messaging for systems/end users */
       status_reason_message?: string;
       subscription_status?: {
-        subscription_code: components["schemas"]["SubscriptionCode"];
-        subscription_status: components["schemas"]["SubscriptionStatus"];
+        code: components["schemas"]["SubscriptionCode"];
+        status: components["schemas"]["SubscriptionStatus"];
       }[];
     };
     /**
@@ -971,8 +978,27 @@ export interface components {
     };
     /** @description List of attribute Name/Value */
     AttributeNameValueList: components["schemas"]["AttributeNameValue"][];
-    /** @example +91 9876543210 */
-    AttributeValue: unknown;
+    /** @example +11 1111111111 */
+    AttributeValue: string | number | boolean | Record<string, never>;
+    /** @description Authorize artefact. TODO - review and update! */
+    Authorize: {
+      /**
+       * Format: uri or did
+       * @description authorize-id
+       */
+      id?: string;
+      ts?: components["schemas"]["DateTime"];
+      purpose?: {
+        text?: string;
+        /** @description From a fixed set, documented at refUri */
+        code?: string;
+        /**
+         * Format: uri
+         * @description Uri to provide more info on authorize codes
+         */
+        refUri?: string;
+      };
+    };
     /** @description Consent artefact. TODO - enrich consent object! */
     Consent: {
       /**
@@ -1019,9 +1045,10 @@ export interface components {
       iv: string;
     };
     /**
-     * @description Describes an error object that is returned to standard post call request. <br>
-     * 1. This object shall be sent when any request received by a participant is not parsable or message integrity check fails. <br>
-     * 2. This object may be used across all transport protocols to acknowledge the receipt of a message i.e HTTPS, FTP, Messaging etc., <br>"
+     * @description Commumication layer Asyn errors that are returned as part of message acknowledgement.
+     * 1. Messages that are not parsable or message integrity check fails.
+     * 2. This object may be used across all transport layer protocols (https, sftp, messaging, etc,) to ack the receipt of a message.
+     * 3. Business context and related validation is NOT in scope of this error object.
      */
     Error: {
       /**
@@ -1071,41 +1098,48 @@ export interface components {
      * @example eq
      * @enum {string}
      */
-    ExpOperator: "gt" | "lt" | "eq" | "ge" | "le";
+    ExpOperator: "gt" | "lt" | "eq" | "ge" | "le" | "in";
     /** @description Expression */
-    Expression: {
-      /**
-       * @description expression seq number for correlation
-       * @example 1
-       */
-      seq_num: number;
+    ExpPredicate: {
       /** @description attribute name */
       attribute_name: string;
       operator: components["schemas"]["ExpOperator"];
       attribute_value: components["schemas"]["AttributeValue"];
     };
     /** @description list of attributes with matching conditions */
-    ExpressionList: unknown;
-    /** @description Expression result */
-    ExpressionResult: {
+    ExpPredicateList: components["schemas"]["ExpPredicate"][];
+    ExpPredicateWithCondition: {
       /**
-       * @description expression seq number for correlation
+       * @description Sequence number to help define precedence for evaluating a list of expression Predicates
        * @example 1
        */
-      seq_num: number;
-      /**
-       * @example y
-       * @enum {string}
-       */
-      result: "y" | "n";
-    };
-    ExpressionResultList: unknown;
-    ExpressionWithCondition: {
-      expression1: components["schemas"]["Expression"];
+      seq_num?: number;
+      expression1: components["schemas"]["ExpPredicate"];
       condition?: components["schemas"]["ExpCondition"];
-      expression2?: components["schemas"]["Expression"];
+      expression2?: components["schemas"]["ExpPredicate"];
     };
-    ExpressionWithConditionList: unknown;
+    ExpPredicateWithConditionList: components["schemas"]["ExpPredicateWithCondition"][];
+    /**
+     * @description 1. Query expression's syntax / format is determined based on query-type.
+     * 2. Query expression as a template with placeholder to pass conditional search values
+     */
+    ExpTemplate: {
+      /**
+       * Format: uri
+       * @description Reference to query expression template being used
+       */
+      namespace?: string;
+      /** @enum {string} */
+      type: "graph-ql" | "sql" | "mongoDB" | "cassandra" | "other";
+      /** @description If not defined type, custom value to define other types */
+      other_value?: string;
+      /**
+       * Format: byte
+       * @description Query expression with placeholder to pass conditional search values as base64 bytes
+       */
+      expression: string;
+      expression_values: components["schemas"]["AttributeNameValueList"];
+    };
     /** @description File info. Used in file upload feature using HTTPS */
     FileInfo: {
       /** @description G2P Connect specific actions. Usually verb from the URI should go here to help store and fwd kind of processing requirements. */
@@ -1122,6 +1156,29 @@ export interface components {
        */
       fileFormat?: string;
     };
+    /** @description Identifier type */
+    IdentifierType: {
+      /**
+       * @description namespace to refer to identifier type; e.g, ns:dci:id-types:v1
+       * @example ns:dci:id-types:v1
+       */
+      namespace?: string;
+      /**
+       * @description refUri to reference identifier type schema
+       * @example https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.2-code-directory#cd.01-identifier_type
+       */
+      refUri?: string;
+      /**
+       * @description Identifier type
+       * @example UIN
+       */
+      value: string;
+    };
+    IdentifierTypeValue: {
+      identifier_type?: components["schemas"]["IdentifierType"];
+      /** @example 12314567890 */
+      identifier_value?: components["schemas"]["AttributeValue"];
+    };
     /**
      * @description indicates language code. G2P Connect supports country codes as per ISO 639.3 standard
      * @example en
@@ -1137,7 +1194,7 @@ export interface components {
     "MsgCallbackHeader_V1.0.0": {
       /**
        * @description Messaing protocol specification version being used
-       * @example 0.1.0
+       * @default 1.0.0
        */
       version?: string;
       /**
@@ -1178,24 +1235,16 @@ export interface components {
        */
       receiver_id?: string;
       /**
-       * @description 1. If message is encrypted, Ecnryption alog used for receiver to decrypt the message payload
-       * 2. example: aes, rsa, aes_rsa, ecc, other
-       *
-       * @example [
-       *   "aes",
-       *   "rsa",
-       *   "aes+rsa",
-       *   "ecc",
-       *   "other"
-       * ]
+       * @description Is message encrypted?
+       * @default false
        */
-      encryption_algo?: string;
+      is_msg_encrypted?: boolean;
     };
     /** @description Message header */
     "MsgHeader_V1.0.0": {
       /**
        * @description Messaing protocol specification version being used
-       * @example 0.1.0
+       * @default 1.0.0
        */
       version?: string;
       /**
@@ -1236,18 +1285,10 @@ export interface components {
        */
       total_count: number;
       /**
-       * @description 1. If message is encrypted, Ecnryption alog used for receiver to decrypt the message payload
-       * 2. example: aes, rsa, aes_rsa, ecc, other
-       *
-       * @example [
-       *   "aes",
-       *   "rsa",
-       *   "aes+rsa",
-       *   "ecc",
-       *   "other"
-       * ]
+       * @description Is message encrypted?
+       * @default false
        */
-      encryption_algo?: string;
+      is_msg_encrypted?: boolean;
     };
     /**
      * @description Message header related common status reason codes
@@ -1300,11 +1341,19 @@ export interface components {
       page_number?: number;
     };
     /**
+     * @description 1. Query format allow multiple ways to search registry
+     * 2. Templatized query expressions with placeholder for conditional values
+     *
+     * @example idtype-value
+     * @enum {string}
+     */
+    QueryType: "idtype-value" | "expression" | "predicate";
+    /**
      * @description Unique reference_id set by txn initiating system for each request in a batch
      * @example 12345678901234567890
      */
     ReferenceId: string;
-    ReferenceIdList: unknown;
+    ReferenceIdList: components["schemas"]["ReferenceId"][];
     /**
      * @description Request (e.g disburse, link, unlink, resolve, issue, search, verify, etc.,) status: <br> 1. rcvd: Received; Request received <br> 2. pdng: Pending; Request initiated <br> 3. succ: Success; Request successful <br> 4. rjct: Rejected; Request rejected
      * @enum {string}
@@ -1317,10 +1366,13 @@ export interface components {
       /** @enum {string} */
       sort_order?: "asc" | "desc";
     };
-    SearchSortList: unknown;
+    SearchSortList: components["schemas"]["SearchSort"][];
     /**
-     * @description Unique transaction_id set by txn initiating system (i.e sender) to co-relate requests across processing systems/service end points
-     * @example 12345678901234567000
+     * @description 1. transaction_id set by txn initiating system (i.e sender) to co-relate all related requests in the context of a business transaction.
+     * 2. transaction_id should be samme across processing systems/service end points.
+     * 2. transaction_id uniqueness is ensured by txn initiating system (i.e sender)
+     *
+     * @example 123456789
      */
     TransactionId: string;
   };
@@ -1329,12 +1381,7 @@ export interface components {
     HttpErrorResponse: {
       content: {
         "application/json": {
-          error?: {
-            /** @description error code */
-            code?: string;
-            /** @description error message */
-            message?: string;
-          };
+          errors?: unknown;
         };
       };
     };
@@ -1343,26 +1390,16 @@ export interface components {
       content: {
         "application/json": {
           message?: {
-            ack_status?: components["schemas"]["Ack"];
-            timestamp?: components["schemas"]["DateTime"];
+            ack_status: components["schemas"]["Ack"];
+            timestamp: components["schemas"]["DateTime"];
             error?: components["schemas"]["Error"];
+            correlation_id: components["schemas"]["SearchResponse"]["correlation_id"];
           };
         };
       };
     };
   };
-  parameters: {
-    /** @description Default value: en */
-    "accept-language"?: string;
-    /** @description request timestamp in HTTP Date format - Tue, 06 Mar 2020 21:00:00 GMT */
-    timestamp: string;
-    /** @description Unique transaction id set by sender as part of the initiating request to co-relate requests across interface end point, sessions, etc., For e.g transaction_id be used to find status using GET call or correlate the transaction as part of the callback call. */
-    transaction_id: string;
-    /** @description Optional. Defualt is false, If summary_only set to true then only the message header with stats / status to be returend as part of implementation */
-    summary_only: boolean;
-    /** @description <br> 1. Beneficiary id is a normative represenation represented as id@id-provider <br> 2. This will enumerate foundational and functioanl id's to easily resolvable addressess <br> 3. Few examples: <br> - id@id-provider e.g 12345@mosip, 12345@PhilID <br> - id@civil-registry.issuing-agency e.g 12345@crvs.rwanda, 12345@ejanma.karnataka - id@functional-identifier.issuing-agency e.g 12345@voter.Rwanda, 12345@DL.karnataka, 12345@fruits.karnataka <br> Note: id-provider should be made configurable and DPGs operating should adapt to the local jurisdiction and policies. e.g fruits.karnataka represents farmer registry in karnataka state govt.<br> */
-    beneficiary_id: string;
-  };
+  parameters: never;
   requestBodies: never;
   headers: never;
   pathItems: never;
@@ -1387,7 +1424,8 @@ export interface operations {
             action?: "search";
           };
           /** @description The search data using which registry search to be performed */
-          message: components["schemas"]["SearchRequest"]; // | components["schemas"]["EncryptedMessage"];
+          message: components["schemas"]["SearchRequest"];
+          // | components["schemas"]["EncryptedMessage"];
         };
         "multipart/form-data": components["schemas"]["FileInfo"] & {
           /** @enum {unknown} */
@@ -1446,11 +1484,41 @@ export interface operations {
           };
           /** @description Subscription request which contaion query with frequency and other info on which notification to be sent by registry to subscriber */
           message: components["schemas"]["SubscribeRequest"];
-          //  | components["schemas"]["EncryptedMessage"];
+          // | components["schemas"]["EncryptedMessage"];
         };
         "multipart/form-data": components["schemas"]["FileInfo"] & {
           /** @enum {unknown} */
           action?: "subscribe";
+        };
+      };
+    };
+    responses: {
+      401: components["responses"]["HttpErrorResponse"];
+      403: components["responses"]["HttpErrorResponse"];
+      500: components["responses"]["HttpErrorResponse"];
+      default: components["responses"]["Response"];
+    };
+  };
+  /**
+   * /registry/on-subscribe
+   * @description Subscribe results through callback
+   */
+  "post_reg_on-subscribe": {
+    requestBody: {
+      content: {
+        "application/json": {
+          signature?: components["schemas"]["MsgSignature"];
+          header: components["schemas"]["MsgHeader_V1.0.0"] & {
+            /** @enum {unknown} */
+            action?: "on-subscribe";
+          };
+          /** @description Subscription information */
+          message: components["schemas"]["SubscribeResponse"];
+          // | components["schemas"]["EncryptedMessage"];
+        };
+        "multipart/form-data": components["schemas"]["FileInfo"] & {
+          /** @enum {unknown} */
+          action?: "on-subscribe";
         };
       };
     };
@@ -1475,7 +1543,7 @@ export interface operations {
             action?: "notify";
           };
           message?: components["schemas"]["NotifyEventRequest"];
-          //  | components["schemas"]["EncryptedMessage"];
+          // | components["schemas"]["EncryptedMessage"];
         };
         "multipart/form-data": components["schemas"]["FileInfo"] & {
           /** @enum {unknown} */
@@ -1491,6 +1559,65 @@ export interface operations {
     };
   };
   /**
+   * /registry/unsubscribe
+   * @description Unsubscribe existing subscription(s) by subscription_code
+   */
+  post_reg_unsubscribe: {
+    requestBody: {
+      content: {
+        "application/json": {
+          signature?: components["schemas"]["MsgSignature"];
+          header: components["schemas"]["MsgHeader_V1.0.0"] & {
+            /** @enum {unknown} */
+            action?: "unsubscribe";
+          };
+          /** @description The unsubscribe request that contain subscription ids which to be removed from subscription list */
+          message: components["schemas"]["UnSubscribeRequest"];
+          // | components["schemas"]["EncryptedMessage"];
+        };
+        "multipart/form-data": components["schemas"]["FileInfo"] & {
+          /** @enum {unknown} */
+          action?: "unsubscribe";
+        };
+      };
+    };
+    responses: {
+      401: components["responses"]["HttpErrorResponse"];
+      403: components["responses"]["HttpErrorResponse"];
+      500: components["responses"]["HttpErrorResponse"];
+      default: components["responses"]["Response"];
+    };
+  };
+  /**
+   * /registry/on-unsubscribe
+   * @description Unsubscribe response as a callback
+   */
+  "post_reg_on-unsubscribe": {
+    requestBody: {
+      content: {
+        "application/json": {
+          signature?: components["schemas"]["MsgSignature"];
+          header: components["schemas"]["MsgHeader_V1.0.0"] & {
+            /** @enum {unknown} */
+            action?: "on-unsubscribe";
+          };
+          message: components["schemas"]["UnSubscribeResponse"];
+          // | components["schemas"]["EncryptedMessage"];
+        };
+        "multipart/form-data": components["schemas"]["FileInfo"] & {
+          /** @enum {unknown} */
+          action?: "on-unsubscribe";
+        };
+      };
+    };
+    responses: {
+      401: components["responses"]["HttpErrorResponse"];
+      403: components["responses"]["HttpErrorResponse"];
+      500: components["responses"]["HttpErrorResponse"];
+      default: components["responses"]["Response"];
+    };
+  };
+  /**
    * /registry/txn/status
    * @description Perform async status check of previous civil registry transanctions using transaction_id and/or reference_id(s)
    */
@@ -1501,14 +1628,14 @@ export interface operations {
           signature?: components["schemas"]["MsgSignature"];
           header: components["schemas"]["MsgHeader_V1.0.0"] & {
             /** @enum {unknown} */
-            action?: "subscribe" | "notify" | "on-search";
+            action?: "txn-status";
           };
           message: components["schemas"]["TxnStatusRequest"];
-          //  | components["schemas"]["EncryptedMessage"];
+          // | components["schemas"]["EncryptedMessage"];
         };
         "multipart/form-data": components["schemas"]["FileInfo"] & {
           /** @enum {unknown} */
-          action?: "subscribe" | "notify" | "on-search";
+          action?: "txn-status";
         };
       };
     };
@@ -1530,14 +1657,14 @@ export interface operations {
           signature?: components["schemas"]["MsgSignature"];
           header: components["schemas"]["MsgCallbackHeader_V1.0.0"] & {
             /** @enum {unknown} */
-            action?: "subscribe" | "notify" | "on-search";
+            action?: "txn-on-status";
           };
           message?: components["schemas"]["TxnStatusResponse"];
-          //  | components["schemas"]["EncryptedMessage"];
+          // | components["schemas"]["EncryptedMessage"];
         };
         "multipart/form-data": components["schemas"]["FileInfo"] & {
           /** @enum {unknown} */
-          action?: "subscribe" | "notify" | "on-search";
+          action?: "txn-on-status";
         };
       };
     };
@@ -1563,7 +1690,7 @@ export interface operations {
           };
           /** @description The search data using which registry search to be performed */
           message: components["schemas"]["SearchRequest"];
-          //  | components["schemas"]["EncryptedMessage"];
+          // | components["schemas"]["EncryptedMessage"];
         };
       };
     };
@@ -1581,83 +1708,7 @@ export interface operations {
               action?: "on-search";
             };
             message?: components["schemas"]["SearchResponse"];
-            //  | components["schemas"]["EncryptedMessage"];
-          };
-        };
-      };
-    };
-  };
-  /**
-   * /registry/sync/subscriptions
-   * @description To retrive list of subscriptions
-   */
-  post_reg_sync_subscriptions: {
-    requestBody: {
-      content: {
-        "application/json": {
-          signature?: components["schemas"]["MsgSignature"];
-          header: components["schemas"]["MsgHeader_V1.0.0"] & {
-            /** @enum {unknown} */
-            action?: "fetch_subscriptions";
-          };
-          /** @description To perform search based on registry type or event type */
-          message: components["schemas"]["FetchSubscriptionsRequest"];
-          //  | components["schemas"]["EncryptedMessage"];
-        };
-      };
-    };
-    responses: {
-      401: components["responses"]["HttpErrorResponse"];
-      403: components["responses"]["HttpErrorResponse"];
-      500: components["responses"]["HttpErrorResponse"];
-      /** @description Subscription list response */
-      default: {
-        content: {
-          "application/json": {
-            signature?: components["schemas"]["MsgSignature"];
-            header: components["schemas"]["MsgCallbackHeader_V1.0.0"];
-            message?: components["schemas"]["FetchSubscriptionsResponse"];
-            //  | components["schemas"]["EncryptedMessage"];
-          };
-        };
-      };
-    };
-  };
-  /**
-   * /registry/sync/unsubscribe
-   * @description Unsubscribe to a life event with registry
-   */
-  post_reg_sync_unsubscribe: {
-    requestBody: {
-      content: {
-        "application/json": {
-          signature?: components["schemas"]["MsgSignature"];
-          header: components["schemas"]["MsgHeader_V1.0.0"] & {
-            /** @enum {unknown} */
-            action?: "unsubscribe";
-          };
-          /** @description The unsubscribe request that contain subscription ids which to be removed from subscription list */
-          message: components["schemas"]["UnSubscribeRequest"];
-          //  | components["schemas"]["EncryptedMessage"];
-        };
-        "multipart/form-data": components["schemas"]["FileInfo"] & {
-          /** @enum {unknown} */
-          action?: "unsubscribe";
-        };
-      };
-    };
-    responses: {
-      401: components["responses"]["HttpErrorResponse"];
-      403: components["responses"]["HttpErrorResponse"];
-      500: components["responses"]["HttpErrorResponse"];
-      /** @description Unsubscribe response */
-      default: {
-        content: {
-          "application/json": {
-            signature?: components["schemas"]["MsgSignature"];
-            header: components["schemas"]["MsgCallbackHeader_V1.0.0"];
-            message: components["schemas"]["UnSubscribeResponse"];
-            //  | components["schemas"]["EncryptedMessage"];
+            // | components["schemas"]["EncryptedMessage"];
           };
         };
       };
@@ -1665,7 +1716,7 @@ export interface operations {
   };
   /**
    * /registry/sync/txn/status
-   * @description Perform async status check of previous civil registry transanctions using transaction_id and/or reference_id(s)
+   * @description Sync status check of registry Async APIs
    */
   post_reg_sync_txnstatus: {
     requestBody: {
@@ -1674,10 +1725,10 @@ export interface operations {
           signature?: components["schemas"]["MsgSignature"];
           header: components["schemas"]["MsgHeader_V1.0.0"] & {
             /** @enum {unknown} */
-            action?: "search" | "subscribe";
+            action?: "txn-status";
           };
           message: components["schemas"]["TxnStatusRequest"];
-          //  | components["schemas"]["EncryptedMessage"];
+          // | components["schemas"]["EncryptedMessage"];
         };
       };
     };
@@ -1692,10 +1743,10 @@ export interface operations {
             signature?: components["schemas"]["MsgSignature"];
             header: components["schemas"]["MsgCallbackHeader_V1.0.0"] & {
               /** @enum {unknown} */
-              action?: "on-search" | "notify";
+              action?: "txn-on-status";
             };
             message?: components["schemas"]["TxnStatusResponse"];
-            //  | components["schemas"]["EncryptedMessage"];
+            // | components["schemas"]["EncryptedMessage"];
           };
         };
       };
