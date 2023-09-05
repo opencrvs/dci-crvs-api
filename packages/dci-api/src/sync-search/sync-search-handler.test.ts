@@ -6,10 +6,11 @@ import { withRequestInterception } from "../test-utilities";
 import { http } from "msw";
 import {
   AUTHENTICATE_SYSTEM_CLIENT_URL,
-  RECORD_SEARCH_URL,
+  OPENCRVS_GATEWAY_URL,
 } from "opencrvs-api";
 import testPayload from "./test-payload.json";
-import testResponse from "./test-opencrvs-api-response.json";
+import testFetchRegistrationResponse from "./test-fetchregistration-response.json";
+import testSearchEventsResponse from "./test-searchevents-response.json";
 
 describe("POST /registry/sync/search", () => {
   let server: Hapi.Server;
@@ -30,8 +31,11 @@ describe("POST /registry/sync/search", () => {
         http.post(AUTHENTICATE_SYSTEM_CLIENT_URL.toString(), () => {
           return new Response(JSON.stringify({ token: "test-token" }));
         }),
-        http.post(RECORD_SEARCH_URL.toString(), () => {
-          return new Response(JSON.stringify(testResponse));
+        http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
+          return new Response(JSON.stringify(testSearchEventsResponse));
+        }),
+        http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
+          return new Response(JSON.stringify(testFetchRegistrationResponse));
         }),
       ],
       async () => {
