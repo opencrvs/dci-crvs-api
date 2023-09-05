@@ -14,9 +14,11 @@
     "@hapi/boom": "^10.0.1",
     "@hapi/hapi": "^21.3.2",
     "hapi-pino": "^12.1.0",
+    "lodash": "^4.17.21",
     "typescript": "^5.1.6"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.197",
     "@types/node": "^20.5.3",
     "msw": "0.0.0-fetch.rc-16",
     "nodemon": "^3.0.1",

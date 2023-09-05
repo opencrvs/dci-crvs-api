@@ -3,15 +3,15 @@ import {
   OPENCRVS_CLIENT_ID,
   OPENCRVS_CLIENT_SECRET,
   OPENCRVS_GATEWAY_URL,
-  OPENCRVS_RECORD_SEARCH_URL,
 } from "./constants";
 import { AuthorizationError } from "./error";
 import {
-  type EventSearchResultSet,
+  type SearchEventsQuery,
   type SearchEventsQueryVariables,
 } from "./gateway";
 import { print } from "graphql";
 import gql from "graphql-tag";
+import type { Registration } from "./types";
 
 export const AUTHENTICATE_SYSTEM_CLIENT_URL = new URL(
   "authenticateSystemClient",
@@ -42,7 +42,7 @@ export async function authenticateClient(
   return response.token;
 }
 
-export const SEARCH_EVENTS = print(gql`
+export const SEARCH_EVENTS = gql`
   query searchEvents(
     $advancedSearchParameters: AdvancedSearchParametersInput!
     $sort: String
@@ -58,74 +58,10 @@ export const SEARCH_EVENTS = print(gql`
       totalItems
       results {
         id
-        type
-        registration {
-          status
-          contactNumber
-          trackingId
-          registrationNumber
-          registeredLocationId
-          duplicates
-          assignment {
-            userId
-            firstName
-            lastName
-            officeName
-            __typename
-          }
-          createdAt
-          modifiedAt
-          __typename
-        }
-        operationHistories {
-          operationType
-          operatedOn
-          operatorRole
-          operatorName {
-            firstNames
-            familyName
-            use
-            __typename
-          }
-          operatorOfficeName
-          operatorOfficeAlias
-          notificationFacilityName
-          notificationFacilityAlias
-          rejectReason
-          rejectComment
-          __typename
-        }
-        ... on BirthEventSearchSet {
-          dateOfBirth
-          childName {
-            firstNames
-            familyName
-            use
-            __typename
-          }
-          __typename
-        }
-        ... on DeathEventSearchSet {
-          dateOfDeath
-          deceasedName {
-            firstNames
-            familyName
-            use
-            __typename
-          }
-          __typename
-        }
-        __typename
       }
-      __typename
     }
   }
-`);
-
-export const GATEWAY_URL = new URL(
-  "advancedRecordSearch",
-  OPENCRVS_RECORD_SEARCH_URL
-);
+`;
 
 export async function advancedRecordSearch(
   token: string,
@@ -141,11 +77,102 @@ export async function advancedRecordSearch(
     body: JSON.stringify({
       operationName: "searchEvents",
       variables,
-      query: SEARCH_EVENTS,
+      query: print(SEARCH_EVENTS),
     }),
   });
   const response = await request.json();
-  return response.data.searchEvents as EventSearchResultSet;
+  console.log(JSON.stringify(response, null, 4));
+  return response.data.searchEvents as SearchEventsQuery["searchEvents"];
 }
 
-export * from "./gateway";
+export const FETCH_REGISTRATION = gql`
+  query fetchRegistration($id: ID!) {
+    fetchRegistration(id: $id) {
+      id
+      registration {
+        id
+        type
+        trackingId
+        status {
+          type
+        }
+        duplicates {
+          compositionId
+          trackingId
+        }
+        assignment {
+          userId
+          firstName
+          lastName
+          officeName
+          avatarURL
+        }
+      }
+      ... on BirthRegistration {
+        __typename
+        child {
+          id
+          name {
+            use
+            firstNames
+            familyName
+          }
+        }
+      }
+      ... on DeathRegistration {
+        __typename
+        deceased {
+          id
+          name {
+            use
+            firstNames
+            familyName
+          }
+        }
+      }
+      ... on MarriageRegistration {
+        __typename
+        bride {
+          id
+          name {
+            use
+            firstNames
+            familyName
+          }
+        }
+        groom {
+          id
+          name {
+            use
+            firstNames
+            familyName
+          }
+        }
+      }
+    }
+  }
+`;
+
+export async function fetchRegistration(
+  token: string,
+  id: string,
+  gatewayUrl = OPENCRVS_GATEWAY_URL
+) {
+  const request = await fetch(gatewayUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      operationName: "fetchRegistration",
+      variables: { id },
+      query: print(FETCH_REGISTRATION),
+    }),
+  });
+  const response = await request.json();
+  return response.data.fetchRegistration as Registration;
+}
+
+export * from "./types";
+export { OPENCRVS_GATEWAY_URL } from "./constants";

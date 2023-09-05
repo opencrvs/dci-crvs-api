@@ -4,7 +4,11 @@
   "description": "Supplies tools and types for converting DCI search queries into OpenCRVS search queries, and converting the search results into DCI search results.",
   "main": "src/index.ts",
   "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
   "devDependencies": {
+    "@types/lodash": "^4.14.197",
     "typescript": "^5.2.2"
   }
 }
