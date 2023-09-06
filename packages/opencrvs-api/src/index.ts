@@ -2,21 +2,21 @@ import {
   OPENCRVS_AUTH_URL,
   OPENCRVS_CLIENT_ID,
   OPENCRVS_CLIENT_SECRET,
-  OPENCRVS_GATEWAY_URL,
-  OPENCRVS_RECORD_SEARCH_URL,
-} from "./constants";
-import { AuthorizationError } from "./error";
+  OPENCRVS_GATEWAY_URL
+} from './constants'
+import { AuthorizationError } from './error'
 import {
-  type EventSearchResultSet,
-  type SearchEventsQueryVariables,
-} from "./gateway";
-import { print } from "graphql";
-import gql from "graphql-tag";
+  type SearchEventsQuery,
+  type SearchEventsQueryVariables
+} from './gateway'
+import { print } from 'graphql'
+import gql from 'graphql-tag'
+import type { Registration } from './types'
 
 export const AUTHENTICATE_SYSTEM_CLIENT_URL = new URL(
-  "authenticateSystemClient",
+  'authenticateSystemClient',
   OPENCRVS_AUTH_URL
-);
+)
 
 export async function authenticateClient(
   authenticateUrl = AUTHENTICATE_SYSTEM_CLIENT_URL,
@@ -24,25 +24,25 @@ export async function authenticateClient(
   clientSecret = OPENCRVS_CLIENT_SECRET
 ) {
   const request = await fetch(authenticateUrl, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       client_id: clientId,
-      client_secret: clientSecret,
-    }),
-  });
+      client_secret: clientSecret
+    })
+  })
 
   if (!request.ok) {
-    throw new AuthorizationError(request.statusText);
+    throw new AuthorizationError(request.statusText)
   }
 
-  const response = (await request.json()) as { token: string };
-  return response.token;
+  const response = (await request.json()) as { token: string }
+  return response.token
 }
 
-export const SEARCH_EVENTS = print(gql`
+export const SEARCH_EVENTS = gql`
   query searchEvents(
     $advancedSearchParameters: AdvancedSearchParametersInput!
     $sort: String
@@ -58,74 +58,10 @@ export const SEARCH_EVENTS = print(gql`
       totalItems
       results {
         id
-        type
-        registration {
-          status
-          contactNumber
-          trackingId
-          registrationNumber
-          registeredLocationId
-          duplicates
-          assignment {
-            userId
-            firstName
-            lastName
-            officeName
-            __typename
-          }
-          createdAt
-          modifiedAt
-          __typename
-        }
-        operationHistories {
-          operationType
-          operatedOn
-          operatorRole
-          operatorName {
-            firstNames
-            familyName
-            use
-            __typename
-          }
-          operatorOfficeName
-          operatorOfficeAlias
-          notificationFacilityName
-          notificationFacilityAlias
-          rejectReason
-          rejectComment
-          __typename
-        }
-        ... on BirthEventSearchSet {
-          dateOfBirth
-          childName {
-            firstNames
-            familyName
-            use
-            __typename
-          }
-          __typename
-        }
-        ... on DeathEventSearchSet {
-          dateOfDeath
-          deceasedName {
-            firstNames
-            familyName
-            use
-            __typename
-          }
-          __typename
-        }
-        __typename
       }
-      __typename
     }
   }
-`);
-
-export const GATEWAY_URL = new URL(
-  "advancedRecordSearch",
-  OPENCRVS_RECORD_SEARCH_URL
-);
+`
 
 export async function advancedRecordSearch(
   token: string,
@@ -133,19 +69,125 @@ export async function advancedRecordSearch(
   searchUrl = OPENCRVS_GATEWAY_URL
 ) {
   const request = await fetch(searchUrl, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
     },
     body: JSON.stringify({
-      operationName: "searchEvents",
+      operationName: 'searchEvents',
       variables,
-      query: SEARCH_EVENTS,
-    }),
-  });
-  const response = await request.json();
-  return response.data.searchEvents as EventSearchResultSet;
+      query: print(SEARCH_EVENTS)
+    })
+  })
+  const response = await request.json()
+  return response.data.searchEvents as SearchEventsQuery['searchEvents']
 }
 
-export * from "./gateway";
+export const FETCH_REGISTRATION = gql`
+  query fetchRegistration($id: ID!) {
+    fetchRegistration(id: $id) {
+      id
+      registration {
+        id
+        type
+        trackingId
+        status {
+          type
+        }
+        duplicates {
+          compositionId
+          trackingId
+        }
+        assignment {
+          userId
+          firstName
+          lastName
+          officeName
+          avatarURL
+        }
+      }
+      ... on BirthRegistration {
+        __typename
+        child {
+          id
+          name {
+            use
+            firstNames
+            familyName
+          }
+        }
+      }
+      ... on DeathRegistration {
+        __typename
+        deceased {
+          id
+          name {
+            use
+            firstNames
+            familyName
+          }
+        }
+        eventLocation {
+          __typename
+          id
+          type
+          address {
+            type
+            line
+            district
+            state
+            city
+            postalCode
+            country
+          }
+        }
+      }
+      ... on MarriageRegistration {
+        __typename
+        bride {
+          id
+          name {
+            use
+            firstNames
+            familyName
+          }
+          dateOfMarriage
+        }
+        groom {
+          id
+          name {
+            use
+            firstNames
+            familyName
+          }
+          dateOfMarriage
+        }
+      }
+    }
+  }
+`
+
+export async function fetchRegistration(
+  token: string,
+  id: string,
+  gatewayUrl = OPENCRVS_GATEWAY_URL
+) {
+  const request = await fetch(gatewayUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      operationName: 'fetchRegistration',
+      variables: { id },
+      query: print(FETCH_REGISTRATION)
+    })
+  })
+  const response = await request.json()
+  return response.data.fetchRegistration as Registration
+}
+
+export * from './types'
+export { OPENCRVS_GATEWAY_URL } from './constants'

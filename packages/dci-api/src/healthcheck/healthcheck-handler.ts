@@ -1,3 +1,3 @@
 export const healthcheckHandler = () => {
-  return { success: true };
-};
+  return { success: true }
+}
