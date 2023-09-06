@@ -2,21 +2,21 @@ import {
   OPENCRVS_AUTH_URL,
   OPENCRVS_CLIENT_ID,
   OPENCRVS_CLIENT_SECRET,
-  OPENCRVS_GATEWAY_URL,
-} from "./constants";
-import { AuthorizationError } from "./error";
+  OPENCRVS_GATEWAY_URL
+} from './constants'
+import { AuthorizationError } from './error'
 import {
   type SearchEventsQuery,
-  type SearchEventsQueryVariables,
-} from "./gateway";
-import { print } from "graphql";
-import gql from "graphql-tag";
-import type { Registration } from "./types";
+  type SearchEventsQueryVariables
+} from './gateway'
+import { print } from 'graphql'
+import gql from 'graphql-tag'
+import type { Registration } from './types'
 
 export const AUTHENTICATE_SYSTEM_CLIENT_URL = new URL(
-  "authenticateSystemClient",
+  'authenticateSystemClient',
   OPENCRVS_AUTH_URL
-);
+)
 
 export async function authenticateClient(
   authenticateUrl = AUTHENTICATE_SYSTEM_CLIENT_URL,
@@ -24,22 +24,22 @@ export async function authenticateClient(
   clientSecret = OPENCRVS_CLIENT_SECRET
 ) {
   const request = await fetch(authenticateUrl, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       client_id: clientId,
-      client_secret: clientSecret,
-    }),
-  });
+      client_secret: clientSecret
+    })
+  })
 
   if (!request.ok) {
-    throw new AuthorizationError(request.statusText);
+    throw new AuthorizationError(request.statusText)
   }
 
-  const response = (await request.json()) as { token: string };
-  return response.token;
+  const response = (await request.json()) as { token: string }
+  return response.token
 }
 
 export const SEARCH_EVENTS = gql`
@@ -61,7 +61,7 @@ export const SEARCH_EVENTS = gql`
       }
     }
   }
-`;
+`
 
 export async function advancedRecordSearch(
   token: string,
@@ -69,20 +69,20 @@ export async function advancedRecordSearch(
   searchUrl = OPENCRVS_GATEWAY_URL
 ) {
   const request = await fetch(searchUrl, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
     },
     body: JSON.stringify({
-      operationName: "searchEvents",
+      operationName: 'searchEvents',
       variables,
-      query: print(SEARCH_EVENTS),
-    }),
-  });
-  const response = await request.json();
-  console.log(JSON.stringify(response, null, 4));
-  return response.data.searchEvents as SearchEventsQuery["searchEvents"];
+      query: print(SEARCH_EVENTS)
+    })
+  })
+  const response = await request.json()
+  console.log(JSON.stringify(response, null, 4))
+  return response.data.searchEvents as SearchEventsQuery['searchEvents']
 }
 
 export const FETCH_REGISTRATION = gql`
@@ -151,7 +151,7 @@ export const FETCH_REGISTRATION = gql`
       }
     }
   }
-`;
+`
 
 export async function fetchRegistration(
   token: string,
@@ -159,20 +159,20 @@ export async function fetchRegistration(
   gatewayUrl = OPENCRVS_GATEWAY_URL
 ) {
   const request = await fetch(gatewayUrl, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
     },
     body: JSON.stringify({
-      operationName: "fetchRegistration",
+      operationName: 'fetchRegistration',
       variables: { id },
-      query: print(FETCH_REGISTRATION),
-    }),
-  });
-  const response = await request.json();
-  return response.data.fetchRegistration as Registration;
+      query: print(FETCH_REGISTRATION)
+    })
+  })
+  const response = await request.json()
+  return response.data.fetchRegistration as Registration
 }
 
-export * from "./types";
-export { OPENCRVS_GATEWAY_URL } from "./constants";
+export * from './types'
+export { OPENCRVS_GATEWAY_URL } from './constants'

@@ -1,53 +1,53 @@
-import { afterEach, beforeEach, describe, it } from "node:test";
-import assert from "node:assert";
-import type * as Hapi from "@hapi/hapi";
-import { createServer } from "../server";
-import { withRequestInterception } from "../test-utilities";
-import { http } from "msw";
+import { afterEach, beforeEach, describe, it } from 'node:test'
+import assert from 'node:assert'
+import type * as Hapi from '@hapi/hapi'
+import { createServer } from '../server'
+import { withRequestInterception } from '../test-utilities'
+import { http } from 'msw'
 import {
   AUTHENTICATE_SYSTEM_CLIENT_URL,
-  OPENCRVS_GATEWAY_URL,
-} from "opencrvs-api";
-import testPayload from "./test-payload.json";
-import testFetchRegistrationResponse from "./test-fetchregistration-response.json";
-import testSearchEventsResponse from "./test-searchevents-response.json";
+  OPENCRVS_GATEWAY_URL
+} from 'opencrvs-api'
+import testPayload from './test-payload.json'
+import testFetchRegistrationResponse from './test-fetchregistration-response.json'
+import testSearchEventsResponse from './test-searchevents-response.json'
 
-describe("POST /registry/sync/search", () => {
-  let server: Hapi.Server;
+describe('POST /registry/sync/search', () => {
+  let server: Hapi.Server
 
   beforeEach(async () => {
-    const { init } = await createServer();
-    server = await init();
-  });
+    const { init } = await createServer()
+    server = await init()
+  })
 
   afterEach(async () => {
-    await server.stop();
-  });
+    await server.stop()
+  })
 
   it(
-    "responds with success",
+    'responds with success',
     withRequestInterception(
       [
         http.post(AUTHENTICATE_SYSTEM_CLIENT_URL.toString(), () => {
-          return new Response(JSON.stringify({ token: "test-token" }));
+          return new Response(JSON.stringify({ token: 'test-token' }))
         }),
         http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
-          return new Response(JSON.stringify(testSearchEventsResponse));
+          return new Response(JSON.stringify(testSearchEventsResponse))
         }),
         http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
-          return new Response(JSON.stringify(testFetchRegistrationResponse));
-        }),
+          return new Response(JSON.stringify(testFetchRegistrationResponse))
+        })
       ],
       async () => {
         const res = await server.inject({
-          method: "POST",
-          url: "/registry/sync/search",
-          payload: testPayload,
-        });
+          method: 'POST',
+          url: '/registry/sync/search',
+          payload: testPayload
+        })
 
-        assert.strictEqual(res.statusCode, 200);
-        assert.strictEqual(JSON.parse(res.payload).header.version, "1.0.0");
+        assert.strictEqual(res.statusCode, 200)
+        assert.strictEqual(JSON.parse(res.payload).header.version, '1.0.0')
       }
     )
-  );
-});
+  )
+})
