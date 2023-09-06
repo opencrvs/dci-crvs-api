@@ -51,8 +51,6 @@ function birthPersonRecord(registration: BirthRegistration) {
     : undefined
   /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
-  console.log(JSON.stringify(registration, null, 4))
-
   return {
     birthdate: registration.child.birthDate,
     ...name({
@@ -66,7 +64,6 @@ function birthPersonRecord(registration: BirthRegistration) {
 }
 
 function deathPersonRecord(registration: DeathRegistration) {
-  console.log('death')
   /* eslint-disable @typescript-eslint/no-non-null-assertion */
   const motherIdentifier = !isNil(registration.mother?.identifier?.[0]?.id)
     ? {
