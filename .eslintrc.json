@@ -3,7 +3,9 @@
     "es2021": true,
     "node": true
   },
+  "plugins": ["prettier"],
   "extends": [
+    "plugin:prettier/recommended",
     "standard-with-typescript",
     "prettier"
   ],
