@@ -2347,7 +2347,7 @@ export type FetchRegistrationQuery = {
   __typename?: 'Query'
   fetchRegistration?:
     | {
-        __typename?: 'BirthRegistration'
+        __typename: 'BirthRegistration'
         id: string
         child?: {
           __typename?: 'Person'
@@ -2384,7 +2384,7 @@ export type FetchRegistrationQuery = {
         } | null
       }
     | {
-        __typename?: 'DeathRegistration'
+        __typename: 'DeathRegistration'
         id: string
         deceased?: {
           __typename?: 'Person'
@@ -2395,6 +2395,21 @@ export type FetchRegistrationQuery = {
             firstNames?: string | null
             familyName?: string | null
           } | null> | null
+        } | null
+        eventLocation?: {
+          __typename: 'Location'
+          id: string
+          type?: string | null
+          address?: {
+            __typename?: 'Address'
+            type?: string | null
+            line?: Array<string | null> | null
+            district?: string | null
+            state?: string | null
+            city?: string | null
+            postalCode?: string | null
+            country?: string | null
+          } | null
         } | null
         registration?: {
           __typename?: 'Registration'
@@ -2421,11 +2436,12 @@ export type FetchRegistrationQuery = {
         } | null
       }
     | {
-        __typename?: 'MarriageRegistration'
+        __typename: 'MarriageRegistration'
         id: string
         bride?: {
           __typename?: 'Person'
           id?: string | null
+          dateOfMarriage?: any | null
           name?: Array<{
             __typename?: 'HumanName'
             use?: string | null
@@ -2436,6 +2452,7 @@ export type FetchRegistrationQuery = {
         groom?: {
           __typename?: 'Person'
           id?: string | null
+          dateOfMarriage?: any | null
           name?: Array<{
             __typename?: 'HumanName'
             use?: string | null

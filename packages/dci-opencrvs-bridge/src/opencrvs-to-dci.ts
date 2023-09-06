@@ -98,7 +98,8 @@ function marriagePersonRecord(
 ): components['schemas']['dci_PersonRecord'] {
   return {
     // TODO: return a correct payload
-    identifier: registration.id
+    identifier: registration.id,
+    marriagedate: registration.bride?.dateOfMarriage
   }
 }
 

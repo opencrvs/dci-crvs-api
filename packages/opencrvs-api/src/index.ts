@@ -81,7 +81,6 @@ export async function advancedRecordSearch(
     })
   })
   const response = await request.json()
-  console.log(JSON.stringify(response, null, 4))
   return response.data.searchEvents as SearchEventsQuery['searchEvents']
 }
 
@@ -129,6 +128,20 @@ export const FETCH_REGISTRATION = gql`
             familyName
           }
         }
+        eventLocation {
+          __typename
+          id
+          type
+          address {
+            type
+            line
+            district
+            state
+            city
+            postalCode
+            country
+          }
+        }
       }
       ... on MarriageRegistration {
         __typename
@@ -139,6 +152,7 @@ export const FETCH_REGISTRATION = gql`
             firstNames
             familyName
           }
+          dateOfMarriage
         }
         groom {
           id
@@ -147,6 +161,7 @@ export const FETCH_REGISTRATION = gql`
             firstNames
             familyName
           }
+          dateOfMarriage
         }
       }
     }
