@@ -3,7 +3,9 @@
     "es2021": true,
     "node": true
   },
+  "plugins": ["prettier"],
   "extends": [
+    "plugin:prettier/recommended",
     "standard-with-typescript",
     "prettier"
   ],
@@ -13,9 +15,19 @@
   },
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-floating-promises": "off"
+    "@typescript-eslint/no-floating-promises": "off",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "lodash",
+            "message": "Please use lodash/fp instead."
+          }
+        ],
+        "patterns": ["lodash/*", "!lodash/fp"]
+      }
+    ]
   },
-  "ignorePatterns": [
-    "*.d.ts"
-  ]
+  "ignorePatterns": ["*.d.ts"]
 }

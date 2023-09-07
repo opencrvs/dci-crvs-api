@@ -1,0 +1,57 @@
+{
+  "data": {
+    "fetchRegistration": {
+      "id": "0967bab8-d5af-4bf4-a3e2-463aeed1173e",
+      "registration": {
+        "id": "97ffdfb8-52f2-4ff0-acd7-cd25bc29d638",
+        "type": "BIRTH",
+        "trackingId": "BIYCGRT",
+        "status": [
+          {
+            "type": "REGISTERED"
+          },
+          {
+            "type": "REGISTERED"
+          },
+          {
+            "type": "REGISTERED"
+          },
+          {
+            "type": "REGISTERED"
+          },
+          {
+            "type": "REGISTERED"
+          },
+          {
+            "type": "REGISTERED"
+          },
+          {
+            "type": "REGISTERED"
+          },
+          {
+            "type": "REGISTERED"
+          },
+          {
+            "type": "REGISTERED"
+          },
+          {
+            "type": "REGISTERED"
+          }
+        ],
+        "duplicates": null,
+        "assignment": null
+      },
+      "__typename": "BirthRegistration",
+      "child": {
+        "id": "26e17f5c-e45d-4d23-b464-d6e4043d1b76",
+        "name": [
+          {
+            "use": "en",
+            "firstNames": "Test",
+            "familyName": "Last"
+          }
+        ]
+      }
+    }
+  }
+}

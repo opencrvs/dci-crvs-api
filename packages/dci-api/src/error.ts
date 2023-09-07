@@ -1,4 +1,4 @@
-import type * as Hapi from "@hapi/hapi";
+import type * as Hapi from '@hapi/hapi'
 
 export function error(
   req: Hapi.Request<Hapi.ReqRefDefaults>,
@@ -7,7 +7,7 @@ export function error(
 ) {
   return res
     .response({
-      error: { code, message: req.response.message },
+      error: { code, message: req.response.message }
     })
-    .code(code);
+    .code(code)
 }
