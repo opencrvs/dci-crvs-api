@@ -8,8 +8,10 @@ import {
   registrySyncSearchBuilder,
   searchRequestToAdvancedSearchParameters
 } from 'dci-opencrvs-bridge'
-import type { operations, components } from '../registry-core-api'
 import { compact } from 'lodash/fp'
+import { type SyncSearchRequest, requestSchema } from '../validations'
+import { badRequest } from '@hapi/boom'
+import { fromZodError } from 'zod-validation-error'
 
 async function fetchRegistrations(token: string, ids: string[]) {
   return await Promise.all(
@@ -17,10 +19,7 @@ async function fetchRegistrations(token: string, ids: string[]) {
   )
 }
 
-async function search(
-  token: string,
-  request: components['schemas']['SearchRequest']
-) {
+async function search(token: string, request: SyncSearchRequest['message']) {
   const searchRequests = request.search_request
   const searchResults = await Promise.all(
     searchRequests.map(async (searchRequest) => {
@@ -47,10 +46,13 @@ async function search(
 
 export async function syncSearchHandler(
   request: Hapi.Request,
-  h: Hapi.ResponseToolkit
+  _h: Hapi.ResponseToolkit
 ) {
-  const payload =
-    request.payload as operations['post_reg_sync_search']['requestBody']['content']['application/json']
+  const result = requestSchema.safeParse(request.payload)
+  if (!result.success) {
+    throw badRequest(fromZodError(result.error).message)
+  }
+  const payload = result.data
   const token = await authenticateClient()
   const results = await search(token, payload.message)
   return registrySyncSearchBuilder(results, payload)

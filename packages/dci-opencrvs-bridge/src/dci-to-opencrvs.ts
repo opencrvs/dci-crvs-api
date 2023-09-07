@@ -1,9 +1,9 @@
 import type { SearchEventsQueryVariables } from 'opencrvs-api'
-import type { components } from 'dci-api'
+import type { SyncSearchRequest } from 'dci-api'
 import { ParseError } from './error'
 
 export function searchRequestToAdvancedSearchParameters(
-  request: components['schemas']['SearchRequest']['search_request'][number]
+  request: SyncSearchRequest['message']['search_request'][number]
 ): SearchEventsQueryVariables {
   const query = request.search_criteria.query as {
     identifiers?: Array<{

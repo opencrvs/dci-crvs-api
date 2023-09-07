@@ -1,23 +1,20 @@
-import { z } from 'zod'
+import { type TypeOf, z } from 'zod'
 
-const dateTimeSchema = z.date()
+const dateTime = z.date()
 
-// TODO
-const recordTypeSchema = z.enum(['Person'])
-
-const paginationRequestSchema = z.object({
+const paginationRequest = z.object({
   page_size: z.number(),
   page_number: z.number().optional()
 })
 
-const searchSortSchema = z.object({
+const searchSort = z.object({
   attribute_name: z.string().optional(),
   sort_order: z.enum(['asc', 'desc'])
 })
 
-const consentSchema = z.object({
+const consent = z.object({
   id: z.string().optional(),
-  ts: dateTimeSchema.optional(),
+  ts: dateTime.optional(),
   purpose: z
     .object({
       text: z.string().optional(),
@@ -27,9 +24,9 @@ const consentSchema = z.object({
     .optional()
 })
 
-const authorizeSchema = z.object({
+const authorize = z.object({
   id: z.string().optional(),
-  ts: dateTimeSchema.optional(),
+  ts: dateTime.optional(),
   purpose: z
     .object({
       text: z.string().optional(),
@@ -39,14 +36,14 @@ const authorizeSchema = z.object({
     .optional()
 })
 
-const languageCodeSchema = z.string()
+const languageCode = z.string()
 
-const versionSchema = z.string().optional().default('1.0.0')
+const version = z.string().optional().default('1.0.0')
 
-const headerSchema = z.object({
-  version: versionSchema,
+const header = z.object({
+  version,
   message_id: z.string(),
-  message_ts: dateTimeSchema,
+  message_ts: dateTime,
   action: z.string(),
   sender_id: z.string(),
   sender_uri: z.string().optional(),
@@ -55,72 +52,74 @@ const headerSchema = z.object({
   is_msg_encrypted: z.boolean().optional()
 })
 
-const referenceSchema = z.object({
+const reference = z.object({
   namespace: z.string().optional(),
   refUri: z.string().optional(),
   value: z.string()
 })
 
-const attributeValueSchema = z.string().or(z.number()).or(z.boolean())
+const attributeValue = z.string().or(z.number()).or(z.boolean())
 
-const identifierTypeValueSchema = z.object({
-  identifier_type: referenceSchema,
-  identifier_value: attributeValueSchema
+const identifierTypeValue = z.object({
+  identifier_type: reference,
+  identifier_value: attributeValue
 })
 
-const identifierTypeQuerySchema = z.object({
+const identifierTypeQuery = z.object({
   query_type: z.literal('idtype-value'),
-  query: identifierTypeValueSchema
+  query: identifierTypeValue
 })
 
-const expressionConditionSchema = z.enum(['and', 'or', 'not'])
+const expressionCondition = z.enum(['and', 'or', 'not'])
 
-const expressionOperatorSchema = z.enum(['gt', 'lt', 'eq', 'ge', 'le', 'in'])
+const expressionOperator = z.enum(['gt', 'lt', 'eq', 'ge', 'le', 'in'])
 
-const expressionPredicateSchema = z.object({
+const expressionPredicate = z.object({
   attribute_name: z.string(),
-  operator: expressionOperatorSchema,
-  attribute_value: attributeValueSchema
+  operator: expressionOperator,
+  attribute_value: attributeValue
 })
 
-const predicateQuerySchema = z.object({
+const predicateQuery = z.object({
   query_type: z.literal('predicate'),
   query: z.array(
     z.object({
       seq_num: z.number().optional(),
-      expression1: expressionPredicateSchema,
-      condition: expressionConditionSchema.optional(),
-      expression2: expressionPredicateSchema.optional()
+      expression1: expressionPredicate,
+      condition: expressionCondition.optional(),
+      expression2: expressionPredicate.optional()
     })
   )
 })
 
-const searchRequestSchema = z.object({
+const searchRequest = z.object({
   transaction_id: z.string(),
   search_request: z.array(
     z.object({
       reference_id: z.string(),
-      timestamp: dateTimeSchema,
+      timestamp: dateTime,
       search_criteria: z
         .object({
-          version: versionSchema,
-          reg_type: referenceSchema.optional(),
-          reg_event_type: referenceSchema.optional(),
-          record_type: recordTypeSchema,
-          sort: z.array(searchSortSchema).optional(),
-          pagination: paginationRequestSchema.optional(),
-          consent: consentSchema.optional(),
-          authorize: authorizeSchema.optional()
+          version,
+          reg_type: reference.optional(),
+          reg_event_type: reference.optional(),
+          result_record_type: reference,
+          sort: z.array(searchSort).optional(),
+          pagination: paginationRequest.optional(),
+          consent: consent.optional(),
+          authorize: authorize.optional()
         })
-        .and(predicateQuerySchema.or(identifierTypeQuerySchema)),
-      locale: languageCodeSchema.optional()
+        .and(predicateQuery.or(identifierTypeQuery)),
+      locale: languageCode.optional()
     })
   )
 })
 
 export const requestSchema = z.object({
   signature: z.string().optional(),
-  header: headerSchema,
+  header,
   action: z.enum(['search']).optional(),
-  message: searchRequestSchema
+  message: searchRequest
 })
+
+export type SyncSearchRequest = TypeOf<typeof requestSchema>
