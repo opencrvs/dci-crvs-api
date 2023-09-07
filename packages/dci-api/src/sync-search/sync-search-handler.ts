@@ -10,8 +10,8 @@ import {
 } from 'dci-opencrvs-bridge'
 import { compact } from 'lodash/fp'
 import { type SyncSearchRequest, requestSchema } from '../validations'
-import { badRequest } from '@hapi/boom'
 import { fromZodError } from 'zod-validation-error'
+import { ValidationError } from '../error'
 
 async function fetchRegistrations(token: string, ids: string[]) {
   return await Promise.all(
@@ -50,7 +50,7 @@ export async function syncSearchHandler(
 ) {
   const result = requestSchema.safeParse(request.payload)
   if (!result.success) {
-    throw badRequest(fromZodError(result.error).message)
+    throw new ValidationError(fromZodError(result.error).message)
   }
   const payload = result.data
   const token = await authenticateClient()
