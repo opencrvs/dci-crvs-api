@@ -6,10 +6,8 @@ export function searchRequestToAdvancedSearchParameters(
   request: SyncSearchRequest['message']['search_request'][number]
 ): SearchEventsQueryVariables {
   const query = request.search_criteria.query as {
-    identifiers?: Array<{
-      identifier_type: 'BRN' | string
-      identifier_value: string
-    }>
+    identifier_type: { value: string }
+    identifier_value: string
   }
   const sort = request.search_criteria.sort as
     | Array<{
@@ -22,14 +20,14 @@ export function searchRequestToAdvancedSearchParameters(
   // let sortColumn: string | undefined;
 
   // TODO: Support more than one identifier
-  if (query.identifiers?.[0]?.identifier_type === 'BRN') {
-    parameters.registrationNumber = query.identifiers[0].identifier_value
-  } else if (query.identifiers?.[0]?.identifier_type === 'DRN') {
-    parameters.registrationNumber = query.identifiers[0].identifier_value
-  } else if (query.identifiers?.[0]?.identifier_type === 'MRN') {
-    parameters.registrationNumber = query.identifiers[0].identifier_value
-  } else if (query.identifiers?.[0]?.identifier_type === 'OPENCRVS_RECORD_ID') {
-    parameters.recordId = query.identifiers[0].identifier_value
+  if (query.identifier_type.value === 'BRN') {
+    parameters.registrationNumber = query.identifier_value
+  } else if (query.identifier_type.value === 'DRN') {
+    parameters.registrationNumber = query.identifier_value
+  } else if (query.identifier_type.value === 'MRN') {
+    parameters.registrationNumber = query.identifier_value
+  } else if (query.identifier_type.value === 'OPENCRVS_RECORD_ID') {
+    parameters.recordId = query.identifier_value
   } else {
     throw new ParseError('Unsupported identifier type')
   }
