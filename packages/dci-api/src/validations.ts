@@ -1,6 +1,6 @@
 import { type TypeOf, z } from 'zod'
 
-const dateTime = z.date()
+const dateTime = z.string().datetime({ offset: true })
 
 const paginationRequest = z.object({
   page_size: z.number(),
