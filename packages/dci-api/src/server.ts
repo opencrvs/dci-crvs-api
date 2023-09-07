@@ -4,7 +4,7 @@ import { routes } from './routes'
 import { ParseError } from 'dci-opencrvs-bridge'
 import { AuthorizationError } from 'opencrvs-api/src/error'
 import pino from 'hapi-pino'
-import { error } from './error'
+import { ValidationError, error } from './error'
 
 export async function createServer() {
   const server = new Hapi.Server({
@@ -33,7 +33,10 @@ export async function createServer() {
   })
 
   server.ext('onPreResponse', (request, reply) => {
-    if (request.response instanceof ParseError) {
+    if (
+      request.response instanceof ParseError ||
+      request.response instanceof ValidationError
+    ) {
       return error(request, reply, 400)
     }
 

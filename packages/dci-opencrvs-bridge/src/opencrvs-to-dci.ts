@@ -4,7 +4,7 @@ import type {
   DeathRegistration,
   MarriageRegistration
 } from 'opencrvs-api'
-import type { operations, components } from 'dci-api'
+import type { operations, components, SyncSearchRequest } from 'dci-api'
 import type { SearchResponseWithMetadata } from './types'
 import { ParseError } from './error'
 import { isNil } from 'lodash/fp'
@@ -164,7 +164,7 @@ export function searchResponseBuilder(
 
 export function registrySyncSearchBuilder(
   responses: SearchResponseWithMetadata[],
-  request: operations['post_reg_sync_search']['requestBody']['content']['application/json']
+  request: SyncSearchRequest
 ) {
   const totalCount = responses
     .map(({ registrations }) => registrations.length ?? 0)
