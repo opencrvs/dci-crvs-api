@@ -21,15 +21,16 @@
         "registry_type": "civil",
         "event_type": "1",
         "search_criteria": {
+          "query_type": "idtype-value",
           "query": {
-            "identifiers": [
-              {
-                "identifier_type": "BRN",
-                "identifier_value": "2023BIYCGRT"
-              }
-            ]
+            "identifier_type": {
+              "value": "BRN"
+            },
+            "identifier_value": "2023BIYCGRT"
           },
-          "record_type": "person",
+          "result_record_type": {
+            "value": "person"
+          },
           "sort": [
             {
               "attribute_name": "dateOfDeclaration",
