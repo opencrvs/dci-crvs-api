@@ -1,6 +1,19 @@
-import type { SearchEventsQueryVariables } from 'opencrvs-api'
-import type { SyncSearchRequest } from 'dci-api'
+import { Event, type SearchEventsQueryVariables } from 'opencrvs-api'
+import type { SyncSearchRequest, EventType } from 'dci-api'
 import { ParseError } from './error'
+
+function eventType(event: EventType) {
+  switch (event) {
+    case '1':
+      return Event.Birth
+    case '2':
+      return Event.Death
+    case '4':
+      return Event.Marriage
+    default:
+      throw new ParseError('Unsupported reg_event_type value')
+  }
+}
 
 export function searchRequestToAdvancedSearchParameters(
   request: SyncSearchRequest['message']['search_request'][number]
@@ -19,7 +32,6 @@ export function searchRequestToAdvancedSearchParameters(
   // let sortOrder: "asc" | "desc" = "asc";
   // let sortColumn: string | undefined;
 
-  // TODO: Support more than one identifier
   if (query.identifier_type.value === 'BRN') {
     parameters.registrationNumber = query.identifier_value
   } else if (query.identifier_type.value === 'DRN') {
@@ -28,9 +40,16 @@ export function searchRequestToAdvancedSearchParameters(
     parameters.registrationNumber = query.identifier_value
   } else if (query.identifier_type.value === 'OPENCRVS_RECORD_ID') {
     parameters.recordId = query.identifier_value
+  } else if (query.identifier_type.value === 'NID') {
+    parameters.nationalId = query.identifier_value
   } else {
     throw new ParseError('Unsupported identifier type')
   }
+
+  parameters.event =
+    request.search_criteria.reg_event_type !== undefined
+      ? eventType(request.search_criteria.reg_event_type.value)
+      : undefined
 
   if ((sort?.length ?? 0) > 1) {
     throw new ParseError('Sorting by more than one attribute is not supported')

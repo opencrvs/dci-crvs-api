@@ -1,4 +1,4 @@
-import { type TypeOf, z } from 'zod'
+import { type TypeOf, z, type ZodType } from 'zod'
 
 const dateTime = z.string().datetime({ offset: true })
 
@@ -52,16 +52,19 @@ const header = z.object({
   is_msg_encrypted: z.boolean().optional()
 })
 
-const reference = z.object({
-  namespace: z.string().optional(),
-  refUri: z.string().optional(),
-  value: z.string()
-})
+const eventTypes = z.enum(['1', '2', '3', '4', '5', '6'])
+
+const reference = (value: ZodType = z.string()) =>
+  z.object({
+    namespace: z.string().optional(),
+    refUri: z.string().optional(),
+    value
+  })
 
 const attributeValue = z.string().or(z.number()).or(z.boolean())
 
 const identifierTypeValue = z.object({
-  identifier_type: reference,
+  identifier_type: reference(),
   identifier_value: attributeValue
 })
 
@@ -101,9 +104,9 @@ const searchRequest = z.object({
       search_criteria: z
         .object({
           version,
-          reg_type: reference.optional(),
-          reg_event_type: reference.optional(),
-          result_record_type: reference,
+          reg_type: reference().optional(),
+          reg_event_type: reference(eventTypes).optional(),
+          result_record_type: reference(),
           sort: z.array(searchSort).optional(),
           pagination: paginationRequest.optional(),
           consent: consent.optional(),
@@ -123,3 +126,4 @@ export const requestSchema = z.object({
 })
 
 export type SyncSearchRequest = TypeOf<typeof requestSchema>
+export type EventType = TypeOf<typeof eventTypes>

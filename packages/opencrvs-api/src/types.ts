@@ -53,3 +53,4 @@ export type {
   IdentityType,
   SearchEventsQueryVariables
 } from './gateway'
+export { Event } from './gateway'

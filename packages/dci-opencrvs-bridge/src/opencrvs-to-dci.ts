@@ -2,12 +2,13 @@ import type {
   Registration,
   BirthRegistration,
   DeathRegistration,
-  MarriageRegistration
+  MarriageRegistration,
+  IdentityType
 } from 'opencrvs-api'
 import type { operations, components, SyncSearchRequest } from 'dci-api'
 import type { SearchResponseWithMetadata } from './types'
 import { ParseError } from './error'
-import { isNil } from 'lodash/fp'
+import { compact, isNil } from 'lodash/fp'
 
 const name = ({
   firstNames,
@@ -31,6 +32,19 @@ const sex = (value: string) => {
       return '3'
     default:
       return '4'
+  }
+}
+
+const identifier = ({ id: value, type }: IdentityType) => {
+  switch (type) {
+    case 'DEATH_REGISTRATION_NUMBER':
+      return { type: 'DRN', value }
+    case 'BIRTH_REGISTRATION_NUMBER':
+      return { type: 'BRN', value }
+    case 'MARRIAGE_REGISTRATION_NUMBER':
+      return { type: 'MRN', value }
+    case 'NATIONAL_ID':
+      return { type: 'NID', value }
   }
 }
 
@@ -81,6 +95,11 @@ function deathPersonRecord(registration: DeathRegistration) {
   /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
   return {
+    identifier: compact(
+      registration.deceased.identifier?.map((identity) =>
+        identity !== null ? identifier(identity) : null
+      )
+    ) as any, // TODO: Change this to a proper identity type
     birthdate: registration.deceased?.birthDate ?? undefined,
     deathdate: registration.deceased?.deceased?.deathDate ?? undefined,
     ...name({
@@ -187,11 +206,12 @@ export function registrySyncSearchBuilder(
       correlation_id: '<<TODO>>', // TODO: Couldn't find this from Gitbook
       search_response: responses.flatMap(
         ({ registrations, originalRequest, responseFinishedTimestamp }) =>
-          // TODO: Improve the GraphQL types to assert the results do exist, but they can be an empty array
-          searchResponseBuilder(registrations, {
-            referenceId: originalRequest.reference_id,
-            timestamp: responseFinishedTimestamp.toISOString()
-          })
+          registrations.length > 0
+            ? searchResponseBuilder(registrations, {
+                referenceId: originalRequest.reference_id,
+                timestamp: responseFinishedTimestamp.toISOString()
+              })
+            : []
       )
     }
   } satisfies operations['post_reg_sync_search']['responses']['default']['content']['application/json']
