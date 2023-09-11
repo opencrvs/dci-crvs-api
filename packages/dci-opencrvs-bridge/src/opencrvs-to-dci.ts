@@ -45,6 +45,8 @@ const identifier = ({ id: value, type }: IdentityType) => {
       return { type: 'MRN', value }
     case 'NATIONAL_ID':
       return { type: 'NID', value }
+    default:
+      throw new ParseError('Unimplemented identifier type')
   }
 }
 
