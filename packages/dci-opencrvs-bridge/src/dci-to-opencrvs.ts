@@ -1,17 +1,6 @@
-import { Event, type SearchEventsQueryVariables } from 'opencrvs-api'
-import type { SyncSearchRequest, EventType } from 'dci-api'
+import { type SearchEventsQueryVariables } from 'opencrvs-api'
+import type { SyncSearchRequest } from 'dci-api'
 import { ParseError } from './error'
-
-function eventType(event: EventType) {
-  switch (event) {
-    case '1':
-      return Event.Birth
-    case '2':
-      return Event.Death
-    case '4':
-      return Event.Marriage
-  }
-}
 
 export function searchRequestToAdvancedSearchParameters(
   request: SyncSearchRequest['message']['search_request'][number]
@@ -46,7 +35,7 @@ export function searchRequestToAdvancedSearchParameters(
 
   parameters.event =
     request.search_criteria.reg_event_type !== undefined
-      ? eventType(request.search_criteria.reg_event_type.value)
+      ? request.search_criteria.reg_event_type.value
       : undefined
 
   if ((sort?.length ?? 0) > 1) {

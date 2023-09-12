@@ -1,4 +1,5 @@
 import { type TypeOf, z, type ZodType } from 'zod'
+import { Event } from 'opencrvs-api'
 
 const dateTime = z.string().datetime({ offset: true })
 
@@ -56,7 +57,16 @@ const header = z.object({
  * https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.2-code-directory#cd.04-vital_events
  * OpenCRVS only supports [1 = Live Birth] [2 = Death] [4 = Marriage]
  */
-const eventTypes = z.enum(['1', '2', '4'])
+const eventTypes = z.enum(['1', '2', '4']).transform((number) => {
+  switch (number) {
+    case '1':
+      return Event.Birth
+    case '2':
+      return Event.Death
+    case '4':
+      return Event.Marriage
+  }
+})
 
 const reference = (value: ZodType = z.string()) =>
   z.object({
