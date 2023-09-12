@@ -111,6 +111,7 @@ export const FETCH_REGISTRATION = gql`
         __typename
         child {
           id
+          birthDate
           name {
             use
             firstNames
