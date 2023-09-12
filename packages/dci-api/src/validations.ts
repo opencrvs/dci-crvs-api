@@ -52,7 +52,11 @@ const header = z.object({
   is_msg_encrypted: z.boolean().optional()
 })
 
-const eventTypes = z.enum(['1', '2', '3', '4', '5', '6'])
+/**
+ * https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.2-code-directory#cd.04-vital_events
+ * OpenCRVS only supports [1 = Live Birth] [2 = Death] [4 = Marriage]
+ */
+const eventTypes = z.enum(['1', '2', '4'])
 
 const reference = (value: ZodType = z.string()) =>
   z.object({

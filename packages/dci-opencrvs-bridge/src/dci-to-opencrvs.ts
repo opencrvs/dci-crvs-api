@@ -10,8 +10,6 @@ function eventType(event: EventType) {
       return Event.Death
     case '4':
       return Event.Marriage
-    default:
-      throw new ParseError('Unsupported reg_event_type value')
   }
 }
 
