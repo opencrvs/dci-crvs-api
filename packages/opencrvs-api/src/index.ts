@@ -117,6 +117,7 @@ export const FETCH_REGISTRATION = gql`
             firstNames
             familyName
           }
+          gender
         }
       }
       ... on DeathRegistration {
