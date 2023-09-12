@@ -153,12 +153,23 @@ export function searchResponseBuilder(
   registrations: Registration[],
   {
     referenceId,
-    timestamp
+    timestamp,
+    pageSize,
+    pageNumber = 1
   }: {
     referenceId: string
     timestamp: components['schemas']['DateTime']
+    pageSize?: number
+    pageNumber?: number
   }
 ): components['schemas']['SearchResponse']['search_response'][number] {
+  pageSize ??= registrations.length // Return all records in one page if page size isn't defined
+
+  const paginatedRegistrations = registrations.slice(
+    (pageNumber - 1) * pageSize,
+    pageNumber * pageSize
+  )
+
   return {
     reference_id: referenceId,
     timestamp,
@@ -172,13 +183,18 @@ export function searchResponseBuilder(
         namespace: 'ns:dci:vital-events:v1',
         value: eventType('Birth') // TODO: Shouldn't this be per reg_record?
       },
-      reg_records: registrations.map((registration) =>
+      reg_records: paginatedRegistrations.map((registration) =>
         isBirthEventSearchSet(registration)
           ? birthPersonRecord(registration)
           : isMarriageEventSearchSet(registration)
           ? marriagePersonRecord(registration)
           : deathPersonRecord(registration)
       )
+    },
+    pagination: {
+      page_number: pageNumber,
+      page_size: pageSize,
+      total_count: registrations.length
     }
   }
 }
@@ -211,7 +227,10 @@ export function registrySyncSearchBuilder(
           registrations.length > 0
             ? searchResponseBuilder(registrations, {
                 referenceId: originalRequest.reference_id,
-                timestamp: responseFinishedTimestamp.toISOString()
+                timestamp: responseFinishedTimestamp.toISOString(),
+                pageSize: originalRequest.search_criteria.pagination?.page_size,
+                pageNumber:
+                  originalRequest.search_criteria.pagination?.page_number
               })
             : []
       )

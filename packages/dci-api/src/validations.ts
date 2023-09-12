@@ -3,8 +3,8 @@ import { type TypeOf, z, type ZodType } from 'zod'
 const dateTime = z.string().datetime({ offset: true })
 
 const paginationRequest = z.object({
-  page_size: z.number(),
-  page_number: z.number().optional()
+  page_size: z.number().positive().int(),
+  page_number: z.number().positive().int().optional()
 })
 
 const searchSort = z.object({
