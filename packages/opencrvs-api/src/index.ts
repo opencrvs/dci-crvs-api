@@ -196,4 +196,5 @@ export async function fetchRegistration(
 }
 
 export * from './types'
+export * from './error'
 export { OPENCRVS_GATEWAY_URL } from './constants'
