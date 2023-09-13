@@ -33,10 +33,7 @@ export function searchRequestToAdvancedSearchParameters(
     throw new ParseError('Unsupported identifier type')
   }
 
-  parameters.event =
-    request.search_criteria.reg_event_type !== undefined
-      ? request.search_criteria.reg_event_type.value
-      : undefined
+  parameters.event = request.search_criteria.reg_event_type?.value
 
   if ((sort?.length ?? 0) > 1) {
     throw new ParseError('Sorting by more than one attribute is not supported')
