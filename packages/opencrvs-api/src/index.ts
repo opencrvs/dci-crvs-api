@@ -1,10 +1,4 @@
-import {
-  OPENCRVS_AUTH_URL,
-  OPENCRVS_CLIENT_ID,
-  OPENCRVS_CLIENT_SECRET,
-  OPENCRVS_GATEWAY_URL
-} from './constants'
-import { AuthorizationError } from './error'
+import { OPENCRVS_AUTH_URL, OPENCRVS_GATEWAY_URL } from './constants'
 import {
   type SearchEventsQuery,
   type SearchEventsQueryVariables
@@ -17,30 +11,6 @@ export const AUTHENTICATE_SYSTEM_CLIENT_URL = new URL(
   'authenticateSystemClient',
   OPENCRVS_AUTH_URL
 )
-
-export async function authenticateClient(
-  authenticateUrl = AUTHENTICATE_SYSTEM_CLIENT_URL,
-  clientId = OPENCRVS_CLIENT_ID,
-  clientSecret = OPENCRVS_CLIENT_SECRET
-) {
-  const request = await fetch(authenticateUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      client_id: clientId,
-      client_secret: clientSecret
-    })
-  })
-
-  if (!request.ok) {
-    throw new AuthorizationError(request.statusText)
-  }
-
-  const response = (await request.json()) as { token: string }
-  return response.token
-}
 
 export const SEARCH_EVENTS = gql`
   query searchEvents(
@@ -197,5 +167,4 @@ export async function fetchRegistration(
 }
 
 export * from './types'
-export * from './error'
 export { OPENCRVS_GATEWAY_URL } from './constants'

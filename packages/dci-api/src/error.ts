@@ -7,6 +7,13 @@ export class ValidationError extends Error {
   }
 }
 
+export class AuthorizationError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'AuthorizationError'
+  }
+}
+
 export function error(
   req: Hapi.Request<Hapi.ReqRefDefaults>,
   res: Hapi.ResponseToolkit<Hapi.ReqRefDefaults>,
