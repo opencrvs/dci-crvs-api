@@ -111,11 +111,13 @@ export const FETCH_REGISTRATION = gql`
         __typename
         child {
           id
+          birthDate
           name {
             use
             firstNames
             familyName
           }
+          gender
         }
       }
       ... on DeathRegistration {
@@ -126,6 +128,11 @@ export const FETCH_REGISTRATION = gql`
             use
             firstNames
             familyName
+          }
+          gender
+          identifier {
+            id
+            type
           }
         }
         eventLocation {
@@ -190,4 +197,5 @@ export async function fetchRegistration(
 }
 
 export * from './types'
+export * from './error'
 export { OPENCRVS_GATEWAY_URL } from './constants'

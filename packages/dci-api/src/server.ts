@@ -2,7 +2,7 @@ import * as Hapi from '@hapi/hapi'
 import { HOST, PORT, DEFAULT_TIMEOUT_MS, NODE_ENV } from './constants'
 import { routes } from './routes'
 import { ParseError } from 'dci-opencrvs-bridge'
-import { AuthorizationError } from 'opencrvs-api/src/error'
+import { AuthorizationError } from 'opencrvs-api'
 import pino from 'hapi-pino'
 import { ValidationError, error } from './error'
 

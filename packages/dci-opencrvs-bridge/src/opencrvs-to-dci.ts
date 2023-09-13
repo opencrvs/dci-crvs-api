@@ -2,12 +2,13 @@ import type {
   Registration,
   BirthRegistration,
   DeathRegistration,
-  MarriageRegistration
+  MarriageRegistration,
+  IdentityType
 } from 'opencrvs-api'
 import type { operations, components, SyncSearchRequest } from 'dci-api'
 import type { SearchResponseWithMetadata } from './types'
 import { ParseError } from './error'
-import { isNil } from 'lodash/fp'
+import { compact, isNil } from 'lodash/fp'
 
 const name = ({
   firstNames,
@@ -31,6 +32,21 @@ const sex = (value: string) => {
       return '3'
     default:
       return '4'
+  }
+}
+
+const identifier = ({ id: value, type }: IdentityType) => {
+  switch (type) {
+    case 'DEATH_REGISTRATION_NUMBER':
+      return { type: 'DRN', value }
+    case 'BIRTH_REGISTRATION_NUMBER':
+      return { type: 'BRN', value }
+    case 'MARRIAGE_REGISTRATION_NUMBER':
+      return { type: 'MRN', value }
+    case 'NATIONAL_ID':
+      return { type: 'NID', value }
+    default:
+      throw new ParseError('Unimplemented identifier type')
   }
 }
 
@@ -81,6 +97,11 @@ function deathPersonRecord(registration: DeathRegistration) {
   /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
   return {
+    identifier: compact(
+      registration.deceased.identifier?.map((identity) =>
+        identity !== null ? identifier(identity) : null
+      )
+    ) as any, // TODO: Change this to a proper identity type
     birthdate: registration.deceased?.birthDate ?? undefined,
     deathdate: registration.deceased?.deceased?.deathDate ?? undefined,
     ...name({
@@ -132,12 +153,23 @@ export function searchResponseBuilder(
   registrations: Registration[],
   {
     referenceId,
-    timestamp
+    timestamp,
+    pageSize,
+    pageNumber = 1
   }: {
     referenceId: string
     timestamp: components['schemas']['DateTime']
+    pageSize?: number
+    pageNumber?: number
   }
 ): components['schemas']['SearchResponse']['search_response'][number] {
+  pageSize ??= registrations.length // Return all records in one page if page size isn't defined
+
+  const paginatedRegistrations = registrations.slice(
+    (pageNumber - 1) * pageSize,
+    pageNumber * pageSize
+  )
+
   return {
     reference_id: referenceId,
     timestamp,
@@ -151,13 +183,18 @@ export function searchResponseBuilder(
         namespace: 'ns:dci:vital-events:v1',
         value: eventType('Birth') // TODO: Shouldn't this be per reg_record?
       },
-      reg_records: registrations.map((registration) =>
+      reg_records: paginatedRegistrations.map((registration) =>
         isBirthEventSearchSet(registration)
           ? birthPersonRecord(registration)
           : isMarriageEventSearchSet(registration)
           ? marriagePersonRecord(registration)
           : deathPersonRecord(registration)
       )
+    },
+    pagination: {
+      page_number: pageNumber,
+      page_size: pageSize,
+      total_count: registrations.length
     }
   }
 }
@@ -187,11 +224,15 @@ export function registrySyncSearchBuilder(
       correlation_id: '<<TODO>>', // TODO: Couldn't find this from Gitbook
       search_response: responses.flatMap(
         ({ registrations, originalRequest, responseFinishedTimestamp }) =>
-          // TODO: Improve the GraphQL types to assert the results do exist, but they can be an empty array
-          searchResponseBuilder(registrations, {
-            referenceId: originalRequest.reference_id,
-            timestamp: responseFinishedTimestamp.toISOString()
-          })
+          registrations.length > 0
+            ? searchResponseBuilder(registrations, {
+                referenceId: originalRequest.reference_id,
+                timestamp: responseFinishedTimestamp.toISOString(),
+                pageSize: originalRequest.search_criteria.pagination?.page_size,
+                pageNumber:
+                  originalRequest.search_criteria.pagination?.page_number
+              })
+            : []
       )
     }
   } satisfies operations['post_reg_sync_search']['responses']['default']['content']['application/json']

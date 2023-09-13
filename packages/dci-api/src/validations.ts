@@ -1,10 +1,11 @@
-import { type TypeOf, z } from 'zod'
+import { type TypeOf, z, type ZodType } from 'zod'
+import { Event } from 'opencrvs-api'
 
 const dateTime = z.string().datetime({ offset: true })
 
 const paginationRequest = z.object({
-  page_size: z.number(),
-  page_number: z.number().optional()
+  page_size: z.number().positive().int(),
+  page_number: z.number().positive().int().optional()
 })
 
 const searchSort = z.object({
@@ -52,16 +53,32 @@ const header = z.object({
   is_msg_encrypted: z.boolean().optional()
 })
 
-const reference = z.object({
-  namespace: z.string().optional(),
-  refUri: z.string().optional(),
-  value: z.string()
+/**
+ * https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.2-code-directory#cd.04-vital_events
+ * OpenCRVS only supports [1 = Live Birth] [2 = Death] [4 = Marriage]
+ */
+const eventTypes = z.enum(['1', '2', '4']).transform((number) => {
+  switch (number) {
+    case '1':
+      return Event.Birth
+    case '2':
+      return Event.Death
+    case '4':
+      return Event.Marriage
+  }
 })
+
+const reference = (value: ZodType = z.string()) =>
+  z.object({
+    namespace: z.string().optional(),
+    refUri: z.string().optional(),
+    value
+  })
 
 const attributeValue = z.string().or(z.number()).or(z.boolean())
 
 const identifierTypeValue = z.object({
-  identifier_type: reference,
+  identifier_type: reference(),
   identifier_value: attributeValue
 })
 
@@ -101,9 +118,9 @@ const searchRequest = z.object({
       search_criteria: z
         .object({
           version,
-          reg_type: reference.optional(),
-          reg_event_type: reference.optional(),
-          result_record_type: reference,
+          reg_type: reference().optional(),
+          reg_event_type: reference(eventTypes).optional(),
+          result_record_type: reference(),
           sort: z.array(searchSort).optional(),
           pagination: paginationRequest.optional(),
           consent: consent.optional(),
@@ -123,3 +140,4 @@ export const requestSchema = z.object({
 })
 
 export type SyncSearchRequest = TypeOf<typeof requestSchema>
+export type EventType = TypeOf<typeof eventTypes>
