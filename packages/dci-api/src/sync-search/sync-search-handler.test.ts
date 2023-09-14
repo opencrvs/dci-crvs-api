@@ -42,7 +42,10 @@ describe('POST /registry/sync/search', () => {
         const res = await server.inject({
           method: 'POST',
           url: '/registry/sync/search',
-          payload: testPayload
+          payload: testPayload,
+          headers: {
+            'x-access-token': 'test-token'
+          }
         })
 
         assert.strictEqual(res.statusCode, 200)
