@@ -9,7 +9,7 @@ import {
   searchRequestToAdvancedSearchParameters
 } from 'dci-opencrvs-bridge'
 import { compact } from 'lodash/fp'
-import { type SyncSearchRequest, requestSchema } from '../validations'
+import { type SyncSearchRequest, syncSearchRequestSchema } from '../validations'
 import { fromZodError } from 'zod-validation-error'
 import { ValidationError } from '../error'
 
@@ -48,7 +48,7 @@ export async function syncSearchHandler(
   request: Hapi.Request,
   _h: Hapi.ResponseToolkit
 ) {
-  const result = requestSchema.safeParse(request.payload)
+  const result = syncSearchRequestSchema.safeParse(request.payload)
   if (!result.success) {
     throw new ValidationError(fromZodError(result.error).message)
   }
