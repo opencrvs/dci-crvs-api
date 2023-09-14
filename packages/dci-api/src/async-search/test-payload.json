@@ -1,0 +1,58 @@
+{
+  "signature": "Signature:  namespace=\"dci\", kidId=\"{sender_id}|{unique_key_id}|{algorithm}\", algorithm=\"ed25519\", created=\"1606970629\", expires=\"1607030629\", headers=\"(created) (expires) digest\", signature=\"Base64(signing content)",
+  "header": {
+    "version": "1.0.0",
+    "message_id": "123456789020211216223812",
+    "message_ts": "2022-12-04T18:01:07+00:00",
+    "action": "search",
+    "sender_id": "10089",
+    "sender_uri": "https://integrating-server.com/callback/on-search",
+    "receiver_id": "crvs",
+    "total_count": 10,
+    "encryption_algorithm": "DH-2048"
+  },
+  "message": {
+    "transaction_id": "123456789020211216223812",
+    "search_request": [
+      {
+        "version": "1.0.0",
+        "reference_id": "123456789020211216223812",
+        "timestamp": "2022-12-04T17:20:07-04:00",
+        "registry_type": "civil",
+        "event_type": "1",
+        "search_criteria": {
+          "query_type": "idtype-value",
+          "query": {
+            "identifier_type": {
+              "value": "BRN"
+            },
+            "identifier_value": "2023BIYCGRT"
+          },
+          "result_record_type": {
+            "value": "person"
+          },
+          "sort": [
+            {
+              "attribute_name": "dateOfDeclaration",
+              "sort_order": "asc"
+            }
+          ],
+          "pagination": {
+            "page_size": 5,
+            "page_number": 1
+          }
+        },
+        "consent": {
+          "id": "string",
+          "ts": "",
+          "purpose": {
+            "text": "string",
+            "code": "string",
+            "refUri": "http://example.com"
+          }
+        },
+        "locale": "eng"
+      }
+    ]
+  }
+}

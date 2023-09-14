@@ -19,7 +19,10 @@ async function fetchRegistrations(token: string, ids: string[]) {
   )
 }
 
-async function search(token: string, request: SyncSearchRequest['message']) {
+export async function search(
+  token: string,
+  request: SyncSearchRequest['message']
+) {
   const searchRequests = request.search_request
   const searchResults = await Promise.all(
     searchRequests.map(async (searchRequest) => {
