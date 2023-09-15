@@ -9,6 +9,7 @@ import type { operations, components, SyncSearchRequest } from 'dci-api'
 import type { SearchResponseWithMetadata } from './types'
 import { ParseError } from './error'
 import { compact, isNil } from 'lodash/fp'
+import { randomUUID } from 'node:crypto'
 
 const name = ({
   firstNames,
@@ -248,7 +249,7 @@ export function registrySyncSearchBuilder(
     },
     message: {
       transaction_id: request.message.transaction_id,
-      correlation_id: '<<TODO>>', // TODO: Couldn't find this from Gitbook
+      correlation_id: randomUUID(),
       search_response: responses.flatMap(
         ({ registrations, originalRequest, responseFinishedTimestamp }) =>
           registrations.length > 0
