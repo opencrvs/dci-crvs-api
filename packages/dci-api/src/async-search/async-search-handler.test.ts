@@ -1,11 +1,20 @@
-import { afterEach, beforeEach, describe, it, mock } from 'node:test'
+import { afterEach, beforeEach, describe, it } from 'node:test'
 import assert from 'node:assert'
 import type * as Hapi from '@hapi/hapi'
 import { createServer } from '../server'
 import { withRequestInterception } from '../test-utilities'
 import { http } from 'msw'
-import { AUTHENTICATE_SYSTEM_CLIENT_URL } from 'opencrvs-api'
+import {
+  AUTHENTICATE_SYSTEM_CLIENT_URL,
+  OPENCRVS_GATEWAY_URL
+} from 'opencrvs-api'
 import testPayload from './test-payload.json'
+import testFetchRegistrationResponse from '../sync-search/test-fetchregistration-response.json'
+import testSearchEventsResponse from '../sync-search/test-searchevents-response.json'
+
+async function flushPromises() {
+  return await new Promise((resolve) => setTimeout(resolve, 0))
+}
 
 describe('POST /registry/search', () => {
   let server: Hapi.Server
@@ -25,37 +34,30 @@ describe('POST /registry/search', () => {
       [
         http.post(AUTHENTICATE_SYSTEM_CLIENT_URL.toString(), () => {
           return new Response(JSON.stringify({ token: 'test-token' }))
+        }),
+        http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
+          return new Response(JSON.stringify(testSearchEventsResponse))
+        }),
+        http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
+          return new Response(JSON.stringify(testFetchRegistrationResponse))
+        }),
+        http.post('https://integrating-server.com/callback/on-search', () => {
+          return new Response(null, { status: 200 })
         })
-        /*
-         * the callback provided to the setTimeout
-         * doesn't get called after mocking it so these fetch
-         * requests aren't getting called either
-         *
-         * http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
-         *   return new Response(JSON.stringify(testSearchEventsResponse))
-         * }),
-         * http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
-         *   return new Response(JSON.stringify(testFetchRegistrationResponse))
-         * }),
-         * http.post('https://integrating-server.com/callback/on-search', () => {
-         *   return new Response(null, { status: 200 })
-         * })
-         */
       ],
       async () => {
-        mock.timers.enable(['setTimeout'])
         const res = await server.inject({
           method: 'POST',
           url: '/registry/search',
           payload: testPayload
         })
 
-        mock.timers.tick(1)
-
         const body = JSON.parse(res.payload)
         assert.strictEqual(res.statusCode, 202)
         assert.strictEqual(body.message.ack_status, 'ACK')
-        mock.timers.reset()
+
+        // wait for the async request to finish
+        await flushPromises()
       }
     )
   )

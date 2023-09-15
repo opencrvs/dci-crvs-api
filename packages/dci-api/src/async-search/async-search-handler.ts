@@ -10,29 +10,22 @@ import { search } from '../sync-search/sync-search-handler'
 import { authenticateClient } from 'opencrvs-api'
 import { registrySyncSearchBuilder } from 'dci-opencrvs-bridge'
 
-function asyncSearch(token: string, request: AsyncSearchRequest) {
-  setTimeout(() => {
-    search(token, request.message)
-      .then((results) => {
-        return registrySyncSearchBuilder(
-          results,
-          request
-        ) satisfies operations['post_reg_on-search']['requestBody']['content']['application/json']
-      })
-      .then(async (response) => {
-        return await fetch(request.header.sender_uri, {
-          method: 'POST',
-          body: JSON.stringify(response)
-        })
-      })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(
-            `Failed to notify ${request.header.sender_uri} on-search result`
-          )
-        }
-      })
-  }, 2000)
+async function asyncSearch(token: string, request: AsyncSearchRequest) {
+  const results = await search(token, request.message)
+  const response = await fetch(request.header.sender_uri, {
+    method: 'POST',
+    body: JSON.stringify(
+      registrySyncSearchBuilder(
+        results,
+        request
+      ) satisfies operations['post_reg_on-search']['requestBody']['content']['application/json']
+    )
+  })
+  if (!response.ok) {
+    throw new Error(
+      `Failed to notify ${request.header.sender_uri} on-search result`
+    )
+  }
 }
 
 export async function asyncSearchHandler(
@@ -45,6 +38,8 @@ export async function asyncSearchHandler(
   }
   const payload = result.data
   const token = await authenticateClient()
+  // We are not awaiting for this promise to resolve
+  // for it to be an *async* request
   asyncSearch(token, payload)
   return h
     .response({
