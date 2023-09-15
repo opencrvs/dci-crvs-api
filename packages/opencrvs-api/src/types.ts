@@ -2,7 +2,7 @@ import {
   type Person,
   type BirthRegistration as BirthRegistrationWithOptionals,
   type DeathRegistration as DeathRegistrationWithOptionals,
-  type MarriageRegistration,
+  type MarriageRegistration as MarriageRegistrationWithOptionals,
   type Scalars,
   type Address,
   type HumanName as HumanNameWithOptionals
@@ -43,14 +43,20 @@ export interface DeathRegistration extends DeathRegistrationWithOptionals {
   deceased: Deceased
 }
 
+interface MarriedPerson extends Person {
+  name: [HumanName, ...HumanName[]]
+}
+
+export interface MarriageRegistration
+  extends MarriageRegistrationWithOptionals {
+  groom: MarriedPerson
+  bride: MarriedPerson
+}
+
 export type Registration =
   | BirthRegistration
   | DeathRegistration
   | MarriageRegistration
 
-export type {
-  MarriageRegistration,
-  IdentityType,
-  SearchEventsQueryVariables
-} from './gateway'
+export type { IdentityType, SearchEventsQueryVariables } from './gateway'
 export { Event } from './gateway'

@@ -68,6 +68,11 @@ function birthPersonRecord(registration: BirthRegistration) {
   /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
   return {
+    identifier: compact(
+      registration.child.identifier?.map((identity) =>
+        identity !== null ? identifier(identity) : null
+      )
+    ) as any, // TODO: Change this to a proper identity type after the typing gets updated to support multiple identifiers?
     birthdate: registration.child.birthDate,
     ...name({
       firstNames: registration.child.name[0].firstNames,
@@ -110,7 +115,8 @@ function deathPersonRecord(registration: DeathRegistration) {
     }),
     sex: sex(registration.deceased.gender),
     parent1_identifier: motherIdentifier,
-    parent2_identifier: fatherIdentifier
+    parent2_identifier: fatherIdentifier,
+    deathplace: undefined // TODO: Add deathplace after we've figured addresses with MOSIP?
   } satisfies components['schemas']['dci_PersonRecord']
 }
 
@@ -118,10 +124,30 @@ function marriagePersonRecord(
   registration: MarriageRegistration
 ): components['schemas']['dci_PersonRecord'] {
   return {
-    // TODO: return a correct payload
-    identifier: registration.id,
-    marriagedate: registration.bride?.dateOfMarriage
-  }
+    identifier: compact(
+      registration.bride?.identifier?.map((identity) =>
+        identity !== null ? identifier(identity) : null
+      )
+    ) as any, // TODO: Change this to a proper identity type
+    ...name({
+      firstNames: registration.bride.name[0].firstNames,
+      familyName: registration.bride.name[0].familyName
+    }),
+    marriagedate: registration.bride?.dateOfMarriage,
+    related_persons: [
+      {
+        identifier: compact(
+          registration.groom?.identifier?.map((identity) =>
+            identity !== null ? identifier(identity) : null
+          )
+        ) as any, // TODO: Change this to a proper identity type
+        ...name({
+          firstNames: registration.groom.name[0].firstNames,
+          familyName: registration.groom.name[0].familyName
+        })
+      }
+    ]
+  } as any // TODO: How do we inform about the related persons? GitBook and typing don't match
 }
 
 function eventType(event: string) {
@@ -195,7 +221,8 @@ export function searchResponseBuilder(
       page_number: pageNumber,
       page_size: pageSize,
       total_count: registrations.length
-    }
+    },
+    locale: 'en' // TODO: How do we figure this out?
   }
 }
 

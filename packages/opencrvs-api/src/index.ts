@@ -46,7 +46,10 @@ export async function advancedRecordSearch(
     },
     body: JSON.stringify({
       operationName: 'searchEvents',
-      variables,
+      variables: {
+        registrationStatuses: ['REGISTERED'],
+        ...variables
+      },
       query: print(SEARCH_EVENTS)
     })
   })
@@ -130,6 +133,10 @@ export const FETCH_REGISTRATION = gql`
             familyName
           }
           dateOfMarriage
+          identifier {
+            id
+            type
+          }
         }
         groom {
           id
@@ -139,6 +146,10 @@ export const FETCH_REGISTRATION = gql`
             familyName
           }
           dateOfMarriage
+          identifier {
+            id
+            type
+          }
         }
       }
     }
