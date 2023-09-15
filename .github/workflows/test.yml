@@ -11,13 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Read nvmrc
-        run: |
-           echo "nvmrc=$(cat .nvmrc)"
-           echo "nvmrc=$(cat .nvmrc)" >> "GITHUB_OUTPUT"
+        run: echo "nvmrc=$(cat .nvmrc)" >> "GITHUB_OUTPUT"
         id: nvm
       - uses: actions/setup-node@v3
         with:
-          node-version: "${{ steps.nvm.outputs.nvmrc }}"
+          node-version: ${{ steps.nvm.outputs.nvmrc }}
           cache: "npm"
       - name: Install dependencies
         run: npm ci
