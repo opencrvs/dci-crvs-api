@@ -119,7 +119,7 @@ const searchRequest = z.object({
         .object({
           version,
           reg_type: reference().optional(),
-          reg_event_type: reference(eventTypes).optional(),
+          reg_event_type: reference(eventTypes),
           result_record_type: reference(),
           sort: z.array(searchSort).optional(),
           pagination: paginationRequest.optional(),
@@ -127,7 +127,7 @@ const searchRequest = z.object({
           authorize: authorize.optional()
         })
         .and(predicateQuery.or(identifierTypeQuery)),
-      locale: languageCode.optional()
+      locale: languageCode.optional().default('eng')
     })
   )
 })

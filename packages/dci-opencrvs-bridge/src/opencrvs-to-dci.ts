@@ -1,9 +1,10 @@
-import type {
-  Registration,
-  BirthRegistration,
-  DeathRegistration,
-  MarriageRegistration,
-  IdentityType
+import {
+  type Registration,
+  type BirthRegistration,
+  type DeathRegistration,
+  type MarriageRegistration,
+  type IdentityType,
+  Event
 } from 'opencrvs-api'
 import type { operations, components, SyncSearchRequest } from 'dci-api'
 import type { SearchResponseWithMetadata } from './types'
@@ -26,13 +27,13 @@ const name = ({
 const sex = (value: string) => {
   switch (value) {
     case 'male':
-      return '1'
+      return 'male'
     case 'female':
-      return '2'
+      return 'female'
     case 'other':
-      return '3'
+      return 'other'
     default:
-      return '4'
+      return 'unknown'
   }
 }
 
@@ -151,16 +152,14 @@ function marriagePersonRecord(
   } as any // TODO: How do we inform about the related persons? GitBook and typing don't match
 }
 
-function eventType(event: string) {
+function eventType(event: Event) {
   switch (event) {
-    case 'Birth':
-      return '1' satisfies components['schemas']['dci_VitalEvents']
-    case 'Death':
-      return '2' satisfies components['schemas']['dci_VitalEvents']
-    case 'Marriage':
-      return '4' satisfies components['schemas']['dci_VitalEvents']
-    default:
-      throw new ParseError('Unimplemented event type')
+    case Event.Birth:
+      return 'live_birth'
+    case Event.Death:
+      return 'death'
+    case Event.Marriage:
+      return 'marriage'
   }
 }
 
@@ -182,12 +181,16 @@ export function searchResponseBuilder(
     referenceId,
     timestamp,
     pageSize,
-    pageNumber = 1
+    pageNumber = 1,
+    locale,
+    event
   }: {
     referenceId: string
     timestamp: components['schemas']['DateTime']
     pageSize?: number
     pageNumber?: number
+    locale: string
+    event: Event
   }
 ): components['schemas']['SearchResponse']['search_response'][number] {
   pageSize ??= registrations.length // Return all records in one page if page size isn't defined
@@ -208,7 +211,7 @@ export function searchResponseBuilder(
       },
       reg_event_type: {
         namespace: 'ns:dci:vital-events:v1',
-        value: eventType('Birth') // TODO: Shouldn't this be per reg_record?
+        value: eventType(event)
       },
       reg_records: paginatedRegistrations.map((registration) =>
         isBirthEventSearchSet(registration)
@@ -223,7 +226,8 @@ export function searchResponseBuilder(
       page_size: pageSize,
       total_count: registrations.length
     },
-    locale: 'en' // TODO: How do we figure this out?
+    // TODO: Handle locale, return a localized response? Currently this is just being passed directly from the request
+    locale
   }
 }
 
@@ -258,7 +262,9 @@ export function registrySyncSearchBuilder(
                 timestamp: responseFinishedTimestamp.toISOString(),
                 pageSize: originalRequest.search_criteria.pagination?.page_size,
                 pageNumber:
-                  originalRequest.search_criteria.pagination?.page_number
+                  originalRequest.search_criteria.pagination?.page_number,
+                locale: originalRequest.locale,
+                event: originalRequest.search_criteria.reg_event_type.value
               })
             : []
       )
