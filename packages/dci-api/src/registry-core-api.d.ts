@@ -205,7 +205,7 @@ export interface components {
      *
      * @enum {string}
      */
-    dci_Sex: '1' | '2' | '3' | '4'
+    dci_Sex: 'male' | 'female' | 'other' | 'unknown'
     /**
      * @description Standardized codes/values represent vital events in an individual's life.
      * Reference: [Vital Events Statistics](https://mospi.gov.in/sites/default/files/publication_reports/vital_statistics_2010_0.pdf)<br>
@@ -218,7 +218,13 @@ export interface components {
      *
      * @enum {string}
      */
-    dci_VitalEvents: '1' | '2' | '3' | '4' | '5' | '6'
+    dci_VitalEvents:
+      | 'live_birth'
+      | 'death'
+      | 'fetal_death'
+      | 'marriage'
+      | 'divorce'
+      | 'adoption'
     /** @description Refer [Plus Codes](https://github.com/google/open-location-code/wiki/Plus-codes-API) for more details */
     GooglePlusCode: {
       /** @example */
