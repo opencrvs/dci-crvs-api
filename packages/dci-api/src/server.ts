@@ -20,7 +20,7 @@ export async function createServer() {
   await server.register({
     plugin: pino,
     options: {
-      redact: ['req.headers["x-access-token"]'],
+      redact: ['req.headers.authorization'],
       ...(NODE_ENV === 'production'
         ? {}
         : {

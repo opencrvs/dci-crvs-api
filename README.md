@@ -27,5 +27,5 @@ In local development you are able to get a local registrar's token with [OpenCRV
 1. Clone the repository
 2. Run `npm install` to install dependencies
 3. [See OpenCRVS documentation](https://documentation.opencrvs.org/technology/interoperability/create-a-client) for more details how to create a **record search** client.
-4. [Authenticate your client](https://documentation.opencrvs.org/technology/interoperability/authenticate-a-client) to get a JWT token to query the API with. This is supplied with `x-access-token` -header.
+4. [Authenticate your client](https://documentation.opencrvs.org/technology/interoperability/authenticate-a-client) to get a JWT token to query the API with. This is supplied with `Authorization: Bearer <<token>>` -header.
 5. Run `npm start` to start the server
