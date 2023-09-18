@@ -38,7 +38,7 @@ describe('POST /registry/sync/search', () => {
           url: '/registry/sync/search',
           payload: testPayload,
           headers: {
-            'x-access-token': 'test-token'
+            Authorization: 'Bearer test-token'
           }
         })
 
