@@ -1,4 +1,4 @@
-import { OPENCRVS_AUTH_URL, OPENCRVS_GATEWAY_URL } from './constants'
+import { OPENCRVS_GATEWAY_URL } from './constants'
 import {
   type SearchEventsQuery,
   type SearchEventsQueryVariables
@@ -6,11 +6,6 @@ import {
 import { print } from 'graphql'
 import gql from 'graphql-tag'
 import type { Registration } from './types'
-
-export const AUTHENTICATE_SYSTEM_CLIENT_URL = new URL(
-  'authenticateSystemClient',
-  OPENCRVS_AUTH_URL
-)
 
 export const SEARCH_EVENTS = gql`
   query searchEvents(
