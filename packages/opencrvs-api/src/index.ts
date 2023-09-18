@@ -12,11 +12,40 @@ import {
 import { print } from 'graphql'
 import gql from 'graphql-tag'
 import type { Registration } from './types'
+import { internal } from '@hapi/boom'
+import jwt from 'jsonwebtoken'
 
 export const AUTHENTICATE_SYSTEM_CLIENT_URL = new URL(
   'authenticateSystemClient',
   OPENCRVS_AUTH_URL
 )
+
+async function getPublicKey(): Promise<string> {
+  try {
+    const response = await fetch(`${OPENCRVS_AUTH_URL}/.well-known`)
+    if (!response.ok) {
+      throw internal()
+    }
+    return await response.text()
+  } catch (error) {
+    throw internal()
+  }
+}
+
+export async function validateToken(token: string | undefined) {
+  if (token === undefined) {
+    throw new AuthorizationError('Access token not found')
+  }
+  const publicKey = await getPublicKey()
+  try {
+    jwt.verify(token, publicKey, {
+      issuer: 'opencrvs:auth-service',
+      audience: ['opencrvs:gateway-user', 'opencrvs:search-user']
+    })
+  } catch (e) {
+    throw new AuthorizationError('Failed to verify jwt')
+  }
+}
 
 export async function authenticateClient(
   authenticateUrl = AUTHENTICATE_SYSTEM_CLIENT_URL,

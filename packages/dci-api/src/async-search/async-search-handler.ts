@@ -7,7 +7,7 @@ import {
 import { fromZodError } from 'zod-validation-error'
 import { ValidationError } from '../error'
 import { search } from '../sync-search/sync-search-handler'
-import { authenticateClient } from 'opencrvs-api'
+import { authenticateClient, validateToken } from 'opencrvs-api'
 import { registrySyncSearchBuilder } from 'dci-opencrvs-bridge'
 
 async function asyncSearch(token: string, request: AsyncSearchRequest) {
@@ -32,6 +32,7 @@ export async function asyncSearchHandler(
   request: Hapi.Request,
   h: Hapi.ResponseToolkit
 ) {
+  await validateToken(request.headers['x-access-token'])
   const result = asyncSearchRequestSchema.safeParse(request.payload)
   if (!result.success) {
     throw new ValidationError(fromZodError(result.error).message)
