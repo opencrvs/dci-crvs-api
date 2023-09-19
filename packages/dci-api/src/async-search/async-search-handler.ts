@@ -13,15 +13,21 @@ import {
   AuthorizationError
 } from 'dci-opencrvs-bridge'
 import { parseToken } from '../auth'
+import { randomUUID } from 'node:crypto'
 
-async function asyncSearch(token: string, request: AsyncSearchRequest) {
+async function asyncSearch(
+  token: string,
+  request: AsyncSearchRequest,
+  correlationId: ReturnType<typeof randomUUID>
+) {
   const results = await search(token, request.message)
   const response = await fetch(request.header.sender_uri, {
     method: 'POST',
     body: JSON.stringify(
       registrySyncSearchBuilder(
         results,
-        request
+        request,
+        correlationId
       ) satisfies operations['post_reg_on-search']['requestBody']['content']['application/json']
     )
   })
@@ -47,15 +53,16 @@ export async function asyncSearchHandler(
     throw new ValidationError(fromZodError(result.error).message)
   }
   const payload = result.data
+  const correlationId = randomUUID()
   // We are not awaiting for this promise to resolve
   // for it to be an *async* request
-  asyncSearch(token, payload)
+  asyncSearch(token, payload, correlationId)
   return h
     .response({
       message: {
         ack_status: 'ACK',
         timestamp: new Date().toISOString(),
-        correlation_id: '<<TODO>>'
+        correlation_id: correlationId
       }
     } satisfies operations['post_reg_search']['responses']['default']['content']['application/json'])
     .code(202)
