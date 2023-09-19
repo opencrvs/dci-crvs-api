@@ -8,6 +8,7 @@ import { compact } from 'lodash/fp'
 import { type SyncSearchRequest, syncSearchRequestSchema } from '../validations'
 import { fromZodError } from 'zod-validation-error'
 import { AuthorizationError, ValidationError } from '../error'
+import { parseToken } from '../auth'
 
 async function fetchRegistrations(token: string, ids: string[]) {
   return await Promise.all(
@@ -44,17 +45,18 @@ export async function search(
 }
 
 export async function syncSearchHandler(
-  request: Hapi.Request<{ Headers: { 'x-access-token'?: string } }>,
+  request: Hapi.Request<{ Headers: { authorization?: string } }>,
   _h: Hapi.ResponseToolkit
 ) {
   const result = syncSearchRequestSchema.safeParse(request.payload)
   if (!result.success) {
     throw new ValidationError(fromZodError(result.error).message)
   }
-  const token = request.headers['x-access-token']
-  if (token === undefined) {
-    throw new AuthorizationError('x-access-token is missing from headers')
+  const header = request.headers.authorization
+  if (header === undefined) {
+    throw new AuthorizationError('Authorization header is missing')
   }
+  const token = parseToken(header)
   const payload = result.data
   const results = await search(token, payload.message)
   return registrySyncSearchBuilder(results, payload)
