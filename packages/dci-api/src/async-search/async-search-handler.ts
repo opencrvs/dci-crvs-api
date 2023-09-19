@@ -9,6 +9,7 @@ import { AuthorizationError, ValidationError } from '../error'
 import { search } from '../sync-search/sync-search-handler'
 import { validateToken } from 'opencrvs-api'
 import { registrySyncSearchBuilder } from 'dci-opencrvs-bridge'
+import { parseToken } from '../auth'
 
 async function asyncSearch(token: string, request: AsyncSearchRequest) {
   const results = await search(token, request.message)
@@ -29,13 +30,14 @@ async function asyncSearch(token: string, request: AsyncSearchRequest) {
 }
 
 export async function asyncSearchHandler(
-  request: Hapi.Request,
+  request: Hapi.Request<{ Headers: { authorization?: string } }>,
   h: Hapi.ResponseToolkit
 ) {
-  const token = request.headers['x-access-token'] as string | undefined
-  if (token === undefined) {
-    throw new AuthorizationError('Access token not found')
+  const header = request.headers.authorization
+  if (header === undefined) {
+    throw new AuthorizationError('Authorization header is missing')
   }
+  const token = parseToken(header)
   await validateToken(token)
   const result = asyncSearchRequestSchema.safeParse(request.payload)
   if (!result.success) {

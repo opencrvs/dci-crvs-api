@@ -55,7 +55,7 @@ describe('POST /registry/search', () => {
           url: '/registry/search',
           payload: testPayload,
           headers: {
-            'x-access-token': token
+            Authorization: `Bearer ${token}`
           }
         })
 
