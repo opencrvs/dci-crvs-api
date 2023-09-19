@@ -5,9 +5,9 @@ import {
   asyncSearchRequestSchema
 } from '../validations'
 import { fromZodError } from 'zod-validation-error'
-import { ValidationError } from '../error'
+import { AuthorizationError, ValidationError } from '../error'
 import { search } from '../sync-search/sync-search-handler'
-import { authenticateClient, validateToken } from 'opencrvs-api'
+import { validateToken } from 'opencrvs-api'
 import { registrySyncSearchBuilder } from 'dci-opencrvs-bridge'
 
 async function asyncSearch(token: string, request: AsyncSearchRequest) {
@@ -32,13 +32,16 @@ export async function asyncSearchHandler(
   request: Hapi.Request,
   h: Hapi.ResponseToolkit
 ) {
-  await validateToken(request.headers['x-access-token'])
+  const token = request.headers['x-access-token'] as string | undefined
+  if (token === undefined) {
+    throw new AuthorizationError('Access token not found')
+  }
+  await validateToken(token)
   const result = asyncSearchRequestSchema.safeParse(request.payload)
   if (!result.success) {
     throw new ValidationError(fromZodError(result.error).message)
   }
   const payload = result.data
-  const token = await authenticateClient()
   // We are not awaiting for this promise to resolve
   // for it to be an *async* request
   asyncSearch(token, payload)

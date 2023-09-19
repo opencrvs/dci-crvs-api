@@ -12,7 +12,7 @@ import jwt from 'jsonwebtoken'
 
 async function getPublicKey(): Promise<string> {
   try {
-    const response = await fetch(`${OPENCRVS_AUTH_URL}/.well-known`)
+    const response = await fetch(new URL('.well-known', OPENCRVS_AUTH_URL))
     if (!response.ok) {
       throw internal()
     }
@@ -22,10 +22,7 @@ async function getPublicKey(): Promise<string> {
   }
 }
 
-export async function validateToken(token: string | undefined) {
-  if (token === undefined) {
-    throw new AuthorizationError('Access token not found')
-  }
+export async function validateToken(token: string) {
   const publicKey = await getPublicKey()
   try {
     jwt.verify(token, publicKey, {
@@ -203,4 +200,4 @@ export async function fetchRegistration(
 }
 
 export * from './types'
-export { OPENCRVS_GATEWAY_URL } from './constants'
+export { OPENCRVS_AUTH_URL, OPENCRVS_GATEWAY_URL } from './constants'

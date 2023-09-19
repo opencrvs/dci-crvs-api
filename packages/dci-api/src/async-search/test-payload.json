@@ -21,6 +21,10 @@
         "registry_type": "civil",
         "event_type": "1",
         "search_criteria": {
+          "reg_event_type": {
+            "namespace": "?",
+            "value": "1"
+          },
           "query_type": "idtype-value",
           "query": {
             "identifier_type": {
