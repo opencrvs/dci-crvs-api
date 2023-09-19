@@ -1,9 +1,5 @@
 import type * as Hapi from '@hapi/hapi'
-import {
-  authenticateClient,
-  advancedRecordSearch,
-  fetchRegistration
-} from 'opencrvs-api'
+import { advancedRecordSearch, fetchRegistration } from 'opencrvs-api'
 import {
   registrySyncSearchBuilder,
   searchRequestToAdvancedSearchParameters
@@ -11,7 +7,7 @@ import {
 import { compact } from 'lodash/fp'
 import { type SyncSearchRequest, syncSearchRequestSchema } from '../validations'
 import { fromZodError } from 'zod-validation-error'
-import { ValidationError } from '../error'
+import { AuthorizationError, ValidationError } from '../error'
 
 async function fetchRegistrations(token: string, ids: string[]) {
   return await Promise.all(
@@ -48,15 +44,18 @@ export async function search(
 }
 
 export async function syncSearchHandler(
-  request: Hapi.Request,
+  request: Hapi.Request<{ Headers: { 'x-access-token'?: string } }>,
   _h: Hapi.ResponseToolkit
 ) {
   const result = syncSearchRequestSchema.safeParse(request.payload)
   if (!result.success) {
     throw new ValidationError(fromZodError(result.error).message)
   }
+  const token = request.headers['x-access-token']
+  if (token === undefined) {
+    throw new AuthorizationError('x-access-token is missing from headers')
+  }
   const payload = result.data
-  const token = await authenticateClient()
   const results = await search(token, payload.message)
   return registrySyncSearchBuilder(results, payload)
 }
