@@ -4,3 +4,10 @@ export class ParseError extends Error {
     this.name = 'ParseError'
   }
 }
+
+export class AuthorizationError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'AuthorizationError'
+  }
+}

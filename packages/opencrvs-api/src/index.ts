@@ -1,5 +1,5 @@
 import { OPENCRVS_AUTH_URL, OPENCRVS_GATEWAY_URL } from './constants'
-import { AuthorizationError } from './error'
+import { AuthorizationError } from 'dci-opencrvs-bridge'
 import {
   type SearchEventsQuery,
   type SearchEventsQueryVariables
@@ -8,7 +8,7 @@ import { print } from 'graphql'
 import gql from 'graphql-tag'
 import type { Registration } from './types'
 import { internal } from '@hapi/boom'
-import jwt from 'jsonwebtoken'
+import jwt, { TokenExpiredError } from 'jsonwebtoken'
 
 async function getPublicKey(): Promise<string> {
   try {
@@ -30,6 +30,10 @@ export async function validateToken(token: string) {
       audience: ['opencrvs:gateway-user', 'opencrvs:search-user']
     })
   } catch (e) {
+    console.log(e)
+    if (e instanceof TokenExpiredError) {
+      throw new AuthorizationError('Token expired')
+    }
     throw new AuthorizationError('Failed to verify jwt')
   }
 }

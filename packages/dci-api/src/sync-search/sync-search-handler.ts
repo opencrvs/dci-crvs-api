@@ -2,12 +2,13 @@ import type * as Hapi from '@hapi/hapi'
 import { advancedRecordSearch, fetchRegistration } from 'opencrvs-api'
 import {
   registrySyncSearchBuilder,
+  AuthorizationError,
   searchRequestToAdvancedSearchParameters
 } from 'dci-opencrvs-bridge'
 import { compact } from 'lodash/fp'
 import { type SyncSearchRequest, syncSearchRequestSchema } from '../validations'
 import { fromZodError } from 'zod-validation-error'
-import { AuthorizationError, ValidationError } from '../error'
+import { ValidationError } from '../error'
 import { parseToken } from '../auth'
 
 async function fetchRegistrations(token: string, ids: string[]) {
@@ -31,6 +32,7 @@ export async function search(
       const responseIds = compact(
         response?.results?.map((result) => result?.id)
       )
+      console.log('------------------------------', responseIds)
       const registrations = await fetchRegistrations(token, responseIds)
 
       return {

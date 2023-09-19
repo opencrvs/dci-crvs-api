@@ -5,10 +5,13 @@ import {
   asyncSearchRequestSchema
 } from '../validations'
 import { fromZodError } from 'zod-validation-error'
-import { AuthorizationError, ValidationError } from '../error'
+import { ValidationError } from '../error'
 import { search } from '../sync-search/sync-search-handler'
 import { validateToken } from 'opencrvs-api'
-import { registrySyncSearchBuilder } from 'dci-opencrvs-bridge'
+import {
+  registrySyncSearchBuilder,
+  AuthorizationError
+} from 'dci-opencrvs-bridge'
 import { parseToken } from '../auth'
 
 async function asyncSearch(token: string, request: AsyncSearchRequest) {
