@@ -32,7 +32,6 @@ export async function search(
       const responseIds = compact(
         response?.results?.map((result) => result?.id)
       )
-      console.log('------------------------------', responseIds)
       const registrations = await fetchRegistrations(token, responseIds)
 
       return {
