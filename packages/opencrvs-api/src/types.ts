@@ -21,11 +21,11 @@ type HumanName = RequireKeys<
 interface Child extends Person {
   __typename?: 'Person'
   address: Address[]
-  age: Scalars['Float']
-  ageOfIndividualInYears: Scalars['Int']
-  birthDate: Scalars['String']
-  gender: Scalars['String']
-  id: Scalars['ID']
+  age: Scalars['Float']['output']
+  ageOfIndividualInYears: Scalars['Int']['output']
+  birthDate: Scalars['String']['output']
+  gender: Scalars['String']['output']
+  id: Scalars['ID']['output']
   name: [HumanName, ...HumanName[]]
 }
 
@@ -35,7 +35,7 @@ export interface BirthRegistration extends BirthRegistrationWithOptionals {
 
 interface Deceased extends Person {
   deceased: NonNullable<Person['deceased']>
-  gender: Scalars['String']
+  gender: Scalars['String']['output']
   name: [HumanName, ...HumanName[]]
 }
 
