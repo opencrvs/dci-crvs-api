@@ -41,15 +41,15 @@ export async function validateToken(token: string) {
 export const SEARCH_EVENTS = gql`
   query searchEvents(
     $advancedSearchParameters: AdvancedSearchParametersInput!
-    $sort: String
     $count: Int
     $skip: Int
+    $sortBy: [SortBy!]
   ) {
     searchEvents(
       advancedSearchParameters: $advancedSearchParameters
-      sort: $sort
       count: $count
       skip: $skip
+      sortBy: $sortBy
     ) {
       totalItems
       results {

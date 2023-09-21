@@ -11,377 +11,393 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>
 }
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T
+> = { [_ in K]?: never }
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never
+    }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string
-  String: string
-  Boolean: boolean
-  Int: number
-  Float: number
-  Date: any
-  Map: any
+  ID: { input: string; output: string }
+  String: { input: string; output: string }
+  Boolean: { input: boolean; output: boolean }
+  Int: { input: number; output: number }
+  Float: { input: number; output: number }
+  Date: { input: any; output: any }
+  Map: { input: any; output: any }
 }
 
 export type AdditionalIdWithCompositionId = {
   __typename?: 'AdditionalIdWithCompositionId'
-  compositionId: Scalars['String']
-  trackingId: Scalars['String']
+  compositionId: Scalars['String']['output']
+  trackingId: Scalars['String']['output']
 }
 
 export type Address = {
   __typename?: 'Address'
-  city?: Maybe<Scalars['String']>
-  country?: Maybe<Scalars['String']>
-  district?: Maybe<Scalars['String']>
-  districtName?: Maybe<Scalars['String']>
-  from?: Maybe<Scalars['Date']>
-  line?: Maybe<Array<Maybe<Scalars['String']>>>
-  lineName?: Maybe<Array<Maybe<Scalars['String']>>>
-  postalCode?: Maybe<Scalars['String']>
-  state?: Maybe<Scalars['String']>
-  stateName?: Maybe<Scalars['String']>
-  text?: Maybe<Scalars['String']>
-  to?: Maybe<Scalars['Date']>
-  type?: Maybe<Scalars['String']>
-  use?: Maybe<Scalars['String']>
+  city?: Maybe<Scalars['String']['output']>
+  country?: Maybe<Scalars['String']['output']>
+  district?: Maybe<Scalars['String']['output']>
+  districtName?: Maybe<Scalars['String']['output']>
+  from?: Maybe<Scalars['Date']['output']>
+  line?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  lineName?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  postalCode?: Maybe<Scalars['String']['output']>
+  state?: Maybe<Scalars['String']['output']>
+  stateName?: Maybe<Scalars['String']['output']>
+  text?: Maybe<Scalars['String']['output']>
+  to?: Maybe<Scalars['Date']['output']>
+  type?: Maybe<Scalars['String']['output']>
+  use?: Maybe<Scalars['String']['output']>
 }
 
 export type AddressInput = {
-  city?: InputMaybe<Scalars['String']>
-  country?: InputMaybe<Scalars['String']>
-  district?: InputMaybe<Scalars['String']>
-  from?: InputMaybe<Scalars['Date']>
-  line?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  postalCode?: InputMaybe<Scalars['String']>
-  state?: InputMaybe<Scalars['String']>
-  text?: InputMaybe<Scalars['String']>
-  to?: InputMaybe<Scalars['Date']>
-  type?: InputMaybe<Scalars['String']>
-  use?: InputMaybe<Scalars['String']>
+  city?: InputMaybe<Scalars['String']['input']>
+  country?: InputMaybe<Scalars['String']['input']>
+  district?: InputMaybe<Scalars['String']['input']>
+  from?: InputMaybe<Scalars['Date']['input']>
+  line?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
+  postalCode?: InputMaybe<Scalars['String']['input']>
+  state?: InputMaybe<Scalars['String']['input']>
+  text?: InputMaybe<Scalars['String']['input']>
+  to?: InputMaybe<Scalars['Date']['input']>
+  type?: InputMaybe<Scalars['String']['input']>
+  use?: InputMaybe<Scalars['String']['input']>
 }
 
 export type AdvancedSeachParameters = {
   __typename?: 'AdvancedSeachParameters'
-  childDoB?: Maybe<Scalars['String']>
-  childDoBEnd?: Maybe<Scalars['String']>
-  childDoBStart?: Maybe<Scalars['String']>
-  childFirstNames?: Maybe<Scalars['String']>
-  childGender?: Maybe<Scalars['String']>
-  childLastName?: Maybe<Scalars['String']>
-  compositionType?: Maybe<Array<Maybe<Scalars['String']>>>
-  contactNumber?: Maybe<Scalars['String']>
-  dateOfEvent?: Maybe<Scalars['String']>
-  dateOfEventEnd?: Maybe<Scalars['String']>
-  dateOfEventStart?: Maybe<Scalars['String']>
-  dateOfRegistration?: Maybe<Scalars['String']>
-  dateOfRegistrationEnd?: Maybe<Scalars['String']>
-  dateOfRegistrationStart?: Maybe<Scalars['String']>
-  deceasedDoB?: Maybe<Scalars['String']>
-  deceasedDoBEnd?: Maybe<Scalars['String']>
-  deceasedDoBStart?: Maybe<Scalars['String']>
-  deceasedFamilyName?: Maybe<Scalars['String']>
-  deceasedFirstNames?: Maybe<Scalars['String']>
-  deceasedGender?: Maybe<Scalars['String']>
-  deceasedIdentifier?: Maybe<Scalars['String']>
-  declarationJurisdictionId?: Maybe<Scalars['String']>
-  declarationLocationId?: Maybe<Scalars['String']>
+  childDoB?: Maybe<Scalars['String']['output']>
+  childDoBEnd?: Maybe<Scalars['String']['output']>
+  childDoBStart?: Maybe<Scalars['String']['output']>
+  childFirstNames?: Maybe<Scalars['String']['output']>
+  childGender?: Maybe<Scalars['String']['output']>
+  childIdentifier?: Maybe<Scalars['String']['output']>
+  childLastName?: Maybe<Scalars['String']['output']>
+  compositionType?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  contactNumber?: Maybe<Scalars['String']['output']>
+  dateOfEvent?: Maybe<Scalars['String']['output']>
+  dateOfEventEnd?: Maybe<Scalars['String']['output']>
+  dateOfEventStart?: Maybe<Scalars['String']['output']>
+  dateOfRegistration?: Maybe<Scalars['String']['output']>
+  dateOfRegistrationEnd?: Maybe<Scalars['String']['output']>
+  dateOfRegistrationStart?: Maybe<Scalars['String']['output']>
+  deceasedDoB?: Maybe<Scalars['String']['output']>
+  deceasedDoBEnd?: Maybe<Scalars['String']['output']>
+  deceasedDoBStart?: Maybe<Scalars['String']['output']>
+  deceasedFamilyName?: Maybe<Scalars['String']['output']>
+  deceasedFirstNames?: Maybe<Scalars['String']['output']>
+  deceasedGender?: Maybe<Scalars['String']['output']>
+  deceasedIdentifier?: Maybe<Scalars['String']['output']>
+  declarationJurisdictionId?: Maybe<Scalars['String']['output']>
+  declarationLocationId?: Maybe<Scalars['String']['output']>
   event?: Maybe<Event>
-  eventCountry?: Maybe<Scalars['String']>
-  eventLocationId?: Maybe<Scalars['String']>
-  eventLocationLevel1?: Maybe<Scalars['String']>
-  eventLocationLevel2?: Maybe<Scalars['String']>
-  eventLocationLevel3?: Maybe<Scalars['String']>
-  eventLocationLevel4?: Maybe<Scalars['String']>
-  eventLocationLevel5?: Maybe<Scalars['String']>
-  fatherDoB?: Maybe<Scalars['String']>
-  fatherDoBEnd?: Maybe<Scalars['String']>
-  fatherDoBStart?: Maybe<Scalars['String']>
-  fatherFamilyName?: Maybe<Scalars['String']>
-  fatherFirstNames?: Maybe<Scalars['String']>
-  fatherIdentifier?: Maybe<Scalars['String']>
-  informantDoB?: Maybe<Scalars['String']>
-  informantDoBEnd?: Maybe<Scalars['String']>
-  informantDoBStart?: Maybe<Scalars['String']>
-  informantFamilyName?: Maybe<Scalars['String']>
-  informantFirstNames?: Maybe<Scalars['String']>
-  informantIdentifier?: Maybe<Scalars['String']>
-  motherDoB?: Maybe<Scalars['String']>
-  motherDoBEnd?: Maybe<Scalars['String']>
-  motherDoBStart?: Maybe<Scalars['String']>
-  motherFamilyName?: Maybe<Scalars['String']>
-  motherFirstNames?: Maybe<Scalars['String']>
-  motherIdentifier?: Maybe<Scalars['String']>
-  name?: Maybe<Scalars['String']>
-  nationalId?: Maybe<Scalars['String']>
-  registrationNumber?: Maybe<Scalars['String']>
-  registrationStatuses?: Maybe<Array<Maybe<Scalars['String']>>>
-  trackingId?: Maybe<Scalars['String']>
+  eventCountry?: Maybe<Scalars['String']['output']>
+  eventLocationId?: Maybe<Scalars['String']['output']>
+  eventLocationLevel1?: Maybe<Scalars['String']['output']>
+  eventLocationLevel2?: Maybe<Scalars['String']['output']>
+  eventLocationLevel3?: Maybe<Scalars['String']['output']>
+  eventLocationLevel4?: Maybe<Scalars['String']['output']>
+  eventLocationLevel5?: Maybe<Scalars['String']['output']>
+  fatherDoB?: Maybe<Scalars['String']['output']>
+  fatherDoBEnd?: Maybe<Scalars['String']['output']>
+  fatherDoBStart?: Maybe<Scalars['String']['output']>
+  fatherFamilyName?: Maybe<Scalars['String']['output']>
+  fatherFirstNames?: Maybe<Scalars['String']['output']>
+  fatherIdentifier?: Maybe<Scalars['String']['output']>
+  informantDoB?: Maybe<Scalars['String']['output']>
+  informantDoBEnd?: Maybe<Scalars['String']['output']>
+  informantDoBStart?: Maybe<Scalars['String']['output']>
+  informantFamilyName?: Maybe<Scalars['String']['output']>
+  informantFirstNames?: Maybe<Scalars['String']['output']>
+  informantIdentifier?: Maybe<Scalars['String']['output']>
+  motherDoB?: Maybe<Scalars['String']['output']>
+  motherDoBEnd?: Maybe<Scalars['String']['output']>
+  motherDoBStart?: Maybe<Scalars['String']['output']>
+  motherFamilyName?: Maybe<Scalars['String']['output']>
+  motherFirstNames?: Maybe<Scalars['String']['output']>
+  motherIdentifier?: Maybe<Scalars['String']['output']>
+  name?: Maybe<Scalars['String']['output']>
+  nationalId?: Maybe<Scalars['String']['output']>
+  registrationNumber?: Maybe<Scalars['String']['output']>
+  registrationStatuses?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  trackingId?: Maybe<Scalars['String']['output']>
 }
 
 export type AdvancedSearchParametersInput = {
-  brideDoB?: InputMaybe<Scalars['String']>
-  brideDoBEnd?: InputMaybe<Scalars['String']>
-  brideDoBStart?: InputMaybe<Scalars['String']>
-  brideFamilyName?: InputMaybe<Scalars['String']>
-  brideFirstNames?: InputMaybe<Scalars['String']>
-  brideIdentifier?: InputMaybe<Scalars['String']>
-  childDoB?: InputMaybe<Scalars['String']>
-  childDoBEnd?: InputMaybe<Scalars['String']>
-  childDoBStart?: InputMaybe<Scalars['String']>
-  childFirstNames?: InputMaybe<Scalars['String']>
-  childGender?: InputMaybe<Scalars['String']>
-  childLastName?: InputMaybe<Scalars['String']>
-  compositionType?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  contactNumber?: InputMaybe<Scalars['String']>
-  dateOfEvent?: InputMaybe<Scalars['String']>
-  dateOfEventEnd?: InputMaybe<Scalars['String']>
-  dateOfEventStart?: InputMaybe<Scalars['String']>
-  dateOfMarriage?: InputMaybe<Scalars['String']>
-  dateOfRegistration?: InputMaybe<Scalars['String']>
-  dateOfRegistrationEnd?: InputMaybe<Scalars['String']>
-  dateOfRegistrationStart?: InputMaybe<Scalars['String']>
-  deceasedDoB?: InputMaybe<Scalars['String']>
-  deceasedDoBEnd?: InputMaybe<Scalars['String']>
-  deceasedDoBStart?: InputMaybe<Scalars['String']>
-  deceasedFamilyName?: InputMaybe<Scalars['String']>
-  deceasedFirstNames?: InputMaybe<Scalars['String']>
-  deceasedGender?: InputMaybe<Scalars['String']>
-  deceasedIdentifier?: InputMaybe<Scalars['String']>
-  declarationJurisdictionId?: InputMaybe<Scalars['String']>
-  declarationLocationId?: InputMaybe<Scalars['String']>
+  brideDoB?: InputMaybe<Scalars['String']['input']>
+  brideDoBEnd?: InputMaybe<Scalars['String']['input']>
+  brideDoBStart?: InputMaybe<Scalars['String']['input']>
+  brideFamilyName?: InputMaybe<Scalars['String']['input']>
+  brideFirstNames?: InputMaybe<Scalars['String']['input']>
+  brideIdentifier?: InputMaybe<Scalars['String']['input']>
+  childDoB?: InputMaybe<Scalars['String']['input']>
+  childDoBEnd?: InputMaybe<Scalars['String']['input']>
+  childDoBStart?: InputMaybe<Scalars['String']['input']>
+  childFirstNames?: InputMaybe<Scalars['String']['input']>
+  childGender?: InputMaybe<Scalars['String']['input']>
+  childIdentifier?: InputMaybe<Scalars['String']['input']>
+  childLastName?: InputMaybe<Scalars['String']['input']>
+  compositionType?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
+  contactNumber?: InputMaybe<Scalars['String']['input']>
+  dateOfEvent?: InputMaybe<Scalars['String']['input']>
+  dateOfEventEnd?: InputMaybe<Scalars['String']['input']>
+  dateOfEventStart?: InputMaybe<Scalars['String']['input']>
+  dateOfMarriage?: InputMaybe<Scalars['String']['input']>
+  dateOfRegistration?: InputMaybe<Scalars['String']['input']>
+  dateOfRegistrationEnd?: InputMaybe<Scalars['String']['input']>
+  dateOfRegistrationStart?: InputMaybe<Scalars['String']['input']>
+  deceasedDoB?: InputMaybe<Scalars['String']['input']>
+  deceasedDoBEnd?: InputMaybe<Scalars['String']['input']>
+  deceasedDoBStart?: InputMaybe<Scalars['String']['input']>
+  deceasedFamilyName?: InputMaybe<Scalars['String']['input']>
+  deceasedFirstNames?: InputMaybe<Scalars['String']['input']>
+  deceasedGender?: InputMaybe<Scalars['String']['input']>
+  deceasedIdentifier?: InputMaybe<Scalars['String']['input']>
+  declarationJurisdictionId?: InputMaybe<Scalars['String']['input']>
+  declarationLocationId?: InputMaybe<Scalars['String']['input']>
   event?: InputMaybe<Event>
-  eventCountry?: InputMaybe<Scalars['String']>
-  eventLocationId?: InputMaybe<Scalars['String']>
-  eventLocationLevel1?: InputMaybe<Scalars['String']>
-  eventLocationLevel2?: InputMaybe<Scalars['String']>
-  eventLocationLevel3?: InputMaybe<Scalars['String']>
-  eventLocationLevel4?: InputMaybe<Scalars['String']>
-  eventLocationLevel5?: InputMaybe<Scalars['String']>
-  fatherDoB?: InputMaybe<Scalars['String']>
-  fatherDoBEnd?: InputMaybe<Scalars['String']>
-  fatherDoBStart?: InputMaybe<Scalars['String']>
-  fatherFamilyName?: InputMaybe<Scalars['String']>
-  fatherFirstNames?: InputMaybe<Scalars['String']>
-  fatherIdentifier?: InputMaybe<Scalars['String']>
-  groomDoB?: InputMaybe<Scalars['String']>
-  groomDoBEnd?: InputMaybe<Scalars['String']>
-  groomDoBStart?: InputMaybe<Scalars['String']>
-  groomFamilyName?: InputMaybe<Scalars['String']>
-  groomFirstNames?: InputMaybe<Scalars['String']>
-  groomIdentifier?: InputMaybe<Scalars['String']>
-  informantDoB?: InputMaybe<Scalars['String']>
-  informantDoBEnd?: InputMaybe<Scalars['String']>
-  informantDoBStart?: InputMaybe<Scalars['String']>
-  informantFamilyName?: InputMaybe<Scalars['String']>
-  informantFirstNames?: InputMaybe<Scalars['String']>
-  informantIdentifier?: InputMaybe<Scalars['String']>
-  motherDoB?: InputMaybe<Scalars['String']>
-  motherDoBEnd?: InputMaybe<Scalars['String']>
-  motherDoBStart?: InputMaybe<Scalars['String']>
-  motherFamilyName?: InputMaybe<Scalars['String']>
-  motherFirstNames?: InputMaybe<Scalars['String']>
-  motherIdentifier?: InputMaybe<Scalars['String']>
-  name?: InputMaybe<Scalars['String']>
-  nationalId?: InputMaybe<Scalars['String']>
-  recordId?: InputMaybe<Scalars['ID']>
-  registrationNumber?: InputMaybe<Scalars['String']>
-  registrationStatuses?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  trackingId?: InputMaybe<Scalars['String']>
+  eventCountry?: InputMaybe<Scalars['String']['input']>
+  eventLocationId?: InputMaybe<Scalars['String']['input']>
+  eventLocationLevel1?: InputMaybe<Scalars['String']['input']>
+  eventLocationLevel2?: InputMaybe<Scalars['String']['input']>
+  eventLocationLevel3?: InputMaybe<Scalars['String']['input']>
+  eventLocationLevel4?: InputMaybe<Scalars['String']['input']>
+  eventLocationLevel5?: InputMaybe<Scalars['String']['input']>
+  fatherDoB?: InputMaybe<Scalars['String']['input']>
+  fatherDoBEnd?: InputMaybe<Scalars['String']['input']>
+  fatherDoBStart?: InputMaybe<Scalars['String']['input']>
+  fatherFamilyName?: InputMaybe<Scalars['String']['input']>
+  fatherFirstNames?: InputMaybe<Scalars['String']['input']>
+  fatherIdentifier?: InputMaybe<Scalars['String']['input']>
+  groomDoB?: InputMaybe<Scalars['String']['input']>
+  groomDoBEnd?: InputMaybe<Scalars['String']['input']>
+  groomDoBStart?: InputMaybe<Scalars['String']['input']>
+  groomFamilyName?: InputMaybe<Scalars['String']['input']>
+  groomFirstNames?: InputMaybe<Scalars['String']['input']>
+  groomIdentifier?: InputMaybe<Scalars['String']['input']>
+  informantDoB?: InputMaybe<Scalars['String']['input']>
+  informantDoBEnd?: InputMaybe<Scalars['String']['input']>
+  informantDoBStart?: InputMaybe<Scalars['String']['input']>
+  informantFamilyName?: InputMaybe<Scalars['String']['input']>
+  informantFirstNames?: InputMaybe<Scalars['String']['input']>
+  informantIdentifier?: InputMaybe<Scalars['String']['input']>
+  motherDoB?: InputMaybe<Scalars['String']['input']>
+  motherDoBEnd?: InputMaybe<Scalars['String']['input']>
+  motherDoBStart?: InputMaybe<Scalars['String']['input']>
+  motherFamilyName?: InputMaybe<Scalars['String']['input']>
+  motherFirstNames?: InputMaybe<Scalars['String']['input']>
+  motherIdentifier?: InputMaybe<Scalars['String']['input']>
+  name?: InputMaybe<Scalars['String']['input']>
+  nationalId?: InputMaybe<Scalars['String']['input']>
+  recordId?: InputMaybe<Scalars['ID']['input']>
+  registrationNumber?: InputMaybe<Scalars['String']['input']>
+  registrationStatuses?: InputMaybe<
+    Array<InputMaybe<Scalars['String']['input']>>
+  >
+  trackingId?: InputMaybe<Scalars['String']['input']>
 }
 
 export type ApplicationConfiguration = {
   __typename?: 'ApplicationConfiguration'
-  APPLICATION_NAME?: Maybe<Scalars['String']>
+  APPLICATION_NAME?: Maybe<Scalars['String']['output']>
   BIRTH?: Maybe<Birth>
   COUNTRY_LOGO?: Maybe<CountryLogo>
   CURRENCY?: Maybe<Currency>
-  DATE_OF_BIRTH_UNKNOWN?: Maybe<Scalars['Boolean']>
+  DATE_OF_BIRTH_UNKNOWN?: Maybe<Scalars['Boolean']['output']>
   DEATH?: Maybe<Death>
-  EXTERNAL_VALIDATION_WORKQUEUE?: Maybe<Scalars['Boolean']>
-  FIELD_AGENT_AUDIT_LOCATIONS?: Maybe<Scalars['String']>
-  INFORMANT_NOTIFICATION_DELIVERY_METHOD?: Maybe<Scalars['String']>
-  INFORMANT_SIGNATURE?: Maybe<Scalars['Boolean']>
-  INFORMANT_SIGNATURE_REQUIRED?: Maybe<Scalars['Boolean']>
+  EXTERNAL_VALIDATION_WORKQUEUE?: Maybe<Scalars['Boolean']['output']>
+  FIELD_AGENT_AUDIT_LOCATIONS?: Maybe<Scalars['String']['output']>
+  INFORMANT_NOTIFICATION_DELIVERY_METHOD?: Maybe<Scalars['String']['output']>
+  INFORMANT_SIGNATURE?: Maybe<Scalars['Boolean']['output']>
+  INFORMANT_SIGNATURE_REQUIRED?: Maybe<Scalars['Boolean']['output']>
   LOGIN_BACKGROUND?: Maybe<LoginBackground>
   MARRIAGE?: Maybe<Marriage>
-  MARRIAGE_REGISTRATION?: Maybe<Scalars['Boolean']>
-  NID_NUMBER_PATTERN?: Maybe<Scalars['String']>
-  PHONE_NUMBER_PATTERN?: Maybe<Scalars['String']>
-  USER_NOTIFICATION_DELIVERY_METHOD?: Maybe<Scalars['String']>
+  MARRIAGE_REGISTRATION?: Maybe<Scalars['Boolean']['output']>
+  NID_NUMBER_PATTERN?: Maybe<Scalars['String']['output']>
+  PHONE_NUMBER_PATTERN?: Maybe<Scalars['String']['output']>
+  USER_NOTIFICATION_DELIVERY_METHOD?: Maybe<Scalars['String']['output']>
 }
 
 export type ApplicationConfigurationInput = {
-  APPLICATION_NAME?: InputMaybe<Scalars['String']>
+  APPLICATION_NAME?: InputMaybe<Scalars['String']['input']>
   BIRTH?: InputMaybe<BirthInput>
   COUNTRY_LOGO?: InputMaybe<CountryLogoInput>
   CURRENCY?: InputMaybe<CurrencyInput>
-  DATE_OF_BIRTH_UNKNOWN?: InputMaybe<Scalars['Boolean']>
+  DATE_OF_BIRTH_UNKNOWN?: InputMaybe<Scalars['Boolean']['input']>
   DEATH?: InputMaybe<DeathInput>
-  EXTERNAL_VALIDATION_WORKQUEUE?: InputMaybe<Scalars['Boolean']>
-  FIELD_AGENT_AUDIT_LOCATIONS?: InputMaybe<Scalars['String']>
-  INFORMANT_NOTIFICATION_DELIVERY_METHOD?: InputMaybe<Scalars['String']>
-  INFORMANT_SIGNATURE?: InputMaybe<Scalars['Boolean']>
-  INFORMANT_SIGNATURE_REQUIRED?: InputMaybe<Scalars['Boolean']>
+  EXTERNAL_VALIDATION_WORKQUEUE?: InputMaybe<Scalars['Boolean']['input']>
+  FIELD_AGENT_AUDIT_LOCATIONS?: InputMaybe<Scalars['String']['input']>
+  INFORMANT_NOTIFICATION_DELIVERY_METHOD?: InputMaybe<
+    Scalars['String']['input']
+  >
+  INFORMANT_SIGNATURE?: InputMaybe<Scalars['Boolean']['input']>
+  INFORMANT_SIGNATURE_REQUIRED?: InputMaybe<Scalars['Boolean']['input']>
   LOGIN_BACKGROUND?: InputMaybe<LoginBackgroundInput>
   MARRIAGE?: InputMaybe<MarriageInput>
-  NID_NUMBER_PATTERN?: InputMaybe<Scalars['String']>
-  PHONE_NUMBER_PATTERN?: InputMaybe<Scalars['String']>
-  USER_NOTIFICATION_DELIVERY_METHOD?: InputMaybe<Scalars['String']>
+  NID_NUMBER_PATTERN?: InputMaybe<Scalars['String']['input']>
+  PHONE_NUMBER_PATTERN?: InputMaybe<Scalars['String']['input']>
+  USER_NOTIFICATION_DELIVERY_METHOD?: InputMaybe<Scalars['String']['input']>
 }
 
 export type AssignmentData = {
   __typename?: 'AssignmentData'
-  avatarURL: Scalars['String']
-  firstName?: Maybe<Scalars['String']>
-  lastName?: Maybe<Scalars['String']>
-  officeName?: Maybe<Scalars['String']>
-  userId?: Maybe<Scalars['String']>
+  avatarURL: Scalars['String']['output']
+  firstName?: Maybe<Scalars['String']['output']>
+  lastName?: Maybe<Scalars['String']['output']>
+  officeName?: Maybe<Scalars['String']['output']>
+  userId?: Maybe<Scalars['String']['output']>
 }
 
 export type Attachment = {
   __typename?: 'Attachment'
-  _fhirID?: Maybe<Scalars['ID']>
-  contentType?: Maybe<Scalars['String']>
-  createdAt?: Maybe<Scalars['Date']>
-  data?: Maybe<Scalars['String']>
-  description?: Maybe<Scalars['String']>
-  id: Scalars['ID']
-  originalFileName?: Maybe<Scalars['String']>
-  status?: Maybe<Scalars['String']>
-  subject?: Maybe<Scalars['String']>
-  systemFileName?: Maybe<Scalars['String']>
-  type?: Maybe<Scalars['String']>
-  uri?: Maybe<Scalars['String']>
+  _fhirID?: Maybe<Scalars['ID']['output']>
+  contentType?: Maybe<Scalars['String']['output']>
+  createdAt?: Maybe<Scalars['Date']['output']>
+  data?: Maybe<Scalars['String']['output']>
+  description?: Maybe<Scalars['String']['output']>
+  id: Scalars['ID']['output']
+  originalFileName?: Maybe<Scalars['String']['output']>
+  status?: Maybe<Scalars['String']['output']>
+  subject?: Maybe<Scalars['String']['output']>
+  systemFileName?: Maybe<Scalars['String']['output']>
+  type?: Maybe<Scalars['String']['output']>
+  uri?: Maybe<Scalars['String']['output']>
 }
 
 export type AttachmentInput = {
-  _fhirID?: InputMaybe<Scalars['ID']>
-  contentType?: InputMaybe<Scalars['String']>
-  createdAt?: InputMaybe<Scalars['Date']>
-  data?: InputMaybe<Scalars['String']>
-  description?: InputMaybe<Scalars['String']>
-  originalFileName?: InputMaybe<Scalars['String']>
-  status?: InputMaybe<Scalars['String']>
-  subject?: InputMaybe<Scalars['String']>
-  systemFileName?: InputMaybe<Scalars['String']>
-  type?: InputMaybe<Scalars['String']>
-  uri?: InputMaybe<Scalars['String']>
+  _fhirID?: InputMaybe<Scalars['ID']['input']>
+  contentType?: InputMaybe<Scalars['String']['input']>
+  createdAt?: InputMaybe<Scalars['Date']['input']>
+  data?: InputMaybe<Scalars['String']['input']>
+  description?: InputMaybe<Scalars['String']['input']>
+  originalFileName?: InputMaybe<Scalars['String']['input']>
+  status?: InputMaybe<Scalars['String']['input']>
+  subject?: InputMaybe<Scalars['String']['input']>
+  systemFileName?: InputMaybe<Scalars['String']['input']>
+  type?: InputMaybe<Scalars['String']['input']>
+  uri?: InputMaybe<Scalars['String']['input']>
 }
 
 export type AuditLogItemBase = {
-  action: Scalars['String']
-  ipAddress: Scalars['String']
-  practitionerId: Scalars['String']
-  time: Scalars['String']
-  userAgent: Scalars['String']
+  action: Scalars['String']['output']
+  ipAddress: Scalars['String']['output']
+  practitionerId: Scalars['String']['output']
+  time: Scalars['String']['output']
+  userAgent: Scalars['String']['output']
 }
 
 export type Avatar = {
   __typename?: 'Avatar'
-  data: Scalars['String']
-  type: Scalars['String']
+  data: Scalars['String']['output']
+  type: Scalars['String']['output']
 }
 
 export type AvatarInput = {
-  data: Scalars['String']
-  type: Scalars['String']
+  data: Scalars['String']['input']
+  type: Scalars['String']['input']
 }
 
 export type Birth = {
   __typename?: 'Birth'
   FEE?: Maybe<BirthFee>
-  LATE_REGISTRATION_TARGET?: Maybe<Scalars['Int']>
-  PRINT_IN_ADVANCE?: Maybe<Scalars['Boolean']>
-  REGISTRATION_TARGET?: Maybe<Scalars['Int']>
+  LATE_REGISTRATION_TARGET?: Maybe<Scalars['Int']['output']>
+  PRINT_IN_ADVANCE?: Maybe<Scalars['Boolean']['output']>
+  REGISTRATION_TARGET?: Maybe<Scalars['Int']['output']>
 }
 
 export type BirthEventSearchSet = EventSearchSet & {
   __typename?: 'BirthEventSearchSet'
-  childGender?: Maybe<Scalars['String']>
+  childGender?: Maybe<Scalars['String']['output']>
+  childIdentifier?: Maybe<Scalars['String']['output']>
   childName?: Maybe<Array<Maybe<HumanName>>>
-  dateOfBirth?: Maybe<Scalars['Date']>
-  fatherDateOfBirth?: Maybe<Scalars['String']>
-  fatherIdentifier?: Maybe<Scalars['String']>
-  fathersFirstName?: Maybe<Scalars['String']>
-  fathersLastName?: Maybe<Scalars['String']>
-  id: Scalars['ID']
-  motherDateOfBirth?: Maybe<Scalars['String']>
-  motherIdentifier?: Maybe<Scalars['String']>
-  mothersFirstName?: Maybe<Scalars['String']>
-  mothersLastName?: Maybe<Scalars['String']>
+  dateOfBirth?: Maybe<Scalars['Date']['output']>
+  fatherDateOfBirth?: Maybe<Scalars['String']['output']>
+  fatherIdentifier?: Maybe<Scalars['String']['output']>
+  fathersFirstName?: Maybe<Scalars['String']['output']>
+  fathersLastName?: Maybe<Scalars['String']['output']>
+  id: Scalars['ID']['output']
+  motherDateOfBirth?: Maybe<Scalars['String']['output']>
+  motherIdentifier?: Maybe<Scalars['String']['output']>
+  mothersFirstName?: Maybe<Scalars['String']['output']>
+  mothersLastName?: Maybe<Scalars['String']['output']>
   operationHistories?: Maybe<Array<Maybe<OperationHistorySearchSet>>>
-  placeOfBirth?: Maybe<Scalars['String']>
+  placeOfBirth?: Maybe<Scalars['String']['output']>
   registration?: Maybe<RegistrationSearchSet>
-  type?: Maybe<Scalars['String']>
+  type?: Maybe<Scalars['String']['output']>
 }
 
 export type BirthFee = {
   __typename?: 'BirthFee'
-  DELAYED?: Maybe<Scalars['Float']>
-  LATE?: Maybe<Scalars['Float']>
-  ON_TIME?: Maybe<Scalars['Float']>
+  DELAYED?: Maybe<Scalars['Float']['output']>
+  LATE?: Maybe<Scalars['Float']['output']>
+  ON_TIME?: Maybe<Scalars['Float']['output']>
 }
 
 export type BirthFeeInput = {
-  DELAYED?: InputMaybe<Scalars['Float']>
-  LATE?: InputMaybe<Scalars['Float']>
-  ON_TIME?: InputMaybe<Scalars['Float']>
+  DELAYED?: InputMaybe<Scalars['Float']['input']>
+  LATE?: InputMaybe<Scalars['Float']['input']>
+  ON_TIME?: InputMaybe<Scalars['Float']['input']>
 }
 
 export type BirthInput = {
   FEE?: InputMaybe<BirthFeeInput>
-  LATE_REGISTRATION_TARGET?: InputMaybe<Scalars['Int']>
-  PRINT_IN_ADVANCE?: InputMaybe<Scalars['Boolean']>
-  REGISTRATION_TARGET?: InputMaybe<Scalars['Int']>
+  LATE_REGISTRATION_TARGET?: InputMaybe<Scalars['Int']['input']>
+  PRINT_IN_ADVANCE?: InputMaybe<Scalars['Boolean']['input']>
+  REGISTRATION_TARGET?: InputMaybe<Scalars['Int']['input']>
 }
 
 export type BirthRegResultSet = {
   __typename?: 'BirthRegResultSet'
   results?: Maybe<Array<Maybe<BirthRegistration>>>
-  totalItems?: Maybe<Scalars['Int']>
+  totalItems?: Maybe<Scalars['Int']['output']>
 }
 
 export type BirthRegistration = EventRegistration & {
   __typename?: 'BirthRegistration'
-  _fhirIDMap?: Maybe<Scalars['Map']>
-  attendantAtBirth?: Maybe<Scalars['String']>
-  birthType?: Maybe<Scalars['String']>
+  _fhirIDMap?: Maybe<Scalars['Map']['output']>
+  attendantAtBirth?: Maybe<Scalars['String']['output']>
+  birthType?: Maybe<Scalars['String']['output']>
   child?: Maybe<Person>
-  childrenBornAliveToMother?: Maybe<Scalars['Int']>
-  createdAt?: Maybe<Scalars['Date']>
+  childrenBornAliveToMother?: Maybe<Scalars['Int']['output']>
+  createdAt?: Maybe<Scalars['Date']['output']>
   eventLocation?: Maybe<Location>
   father?: Maybe<Person>
-  foetalDeathsToMother?: Maybe<Scalars['Int']>
+  foetalDeathsToMother?: Maybe<Scalars['Int']['output']>
   history?: Maybe<Array<Maybe<History>>>
-  id: Scalars['ID']
+  id: Scalars['ID']['output']
   informant?: Maybe<RelatedPerson>
-  lastPreviousLiveBirth?: Maybe<Scalars['Date']>
+  lastPreviousLiveBirth?: Maybe<Scalars['Date']['output']>
   mother?: Maybe<Person>
-  otherAttendantAtBirth?: Maybe<Scalars['String']>
+  otherAttendantAtBirth?: Maybe<Scalars['String']['output']>
   questionnaire?: Maybe<Array<Maybe<QuestionnaireQuestion>>>
   registration?: Maybe<Registration>
-  updatedAt?: Maybe<Scalars['Date']>
-  weightAtBirth?: Maybe<Scalars['Float']>
+  updatedAt?: Maybe<Scalars['Date']['output']>
+  weightAtBirth?: Maybe<Scalars['Float']['output']>
 }
 
 export type BirthRegistrationInput = {
-  _fhirIDMap?: InputMaybe<Scalars['Map']>
-  attendantAtBirth?: InputMaybe<Scalars['String']>
-  birthType?: InputMaybe<Scalars['String']>
+  _fhirIDMap?: InputMaybe<Scalars['Map']['input']>
+  attendantAtBirth?: InputMaybe<Scalars['String']['input']>
+  birthType?: InputMaybe<Scalars['String']['input']>
   child?: InputMaybe<PersonInput>
-  childrenBornAliveToMother?: InputMaybe<Scalars['Int']>
-  createdAt?: InputMaybe<Scalars['Date']>
+  childrenBornAliveToMother?: InputMaybe<Scalars['Int']['input']>
+  createdAt?: InputMaybe<Scalars['Date']['input']>
   eventLocation?: InputMaybe<LocationInput>
   father?: InputMaybe<PersonInput>
-  foetalDeathsToMother?: InputMaybe<Scalars['Int']>
+  foetalDeathsToMother?: InputMaybe<Scalars['Int']['input']>
   informant?: InputMaybe<RelatedPersonInput>
-  lastPreviousLiveBirth?: InputMaybe<Scalars['Date']>
+  lastPreviousLiveBirth?: InputMaybe<Scalars['Date']['input']>
   mother?: InputMaybe<PersonInput>
-  otherAttendantAtBirth?: InputMaybe<Scalars['String']>
+  otherAttendantAtBirth?: InputMaybe<Scalars['String']['input']>
   questionnaire?: InputMaybe<Array<InputMaybe<QuestionnaireQuestionInput>>>
   registration?: InputMaybe<RegistrationInput>
-  updatedAt?: InputMaybe<Scalars['Date']>
-  weightAtBirth?: InputMaybe<Scalars['Float']>
+  updatedAt?: InputMaybe<Scalars['Date']['input']>
+  weightAtBirth?: InputMaybe<Scalars['Float']['input']>
 }
 
 export type BookMarkedSearches = {
@@ -390,54 +406,54 @@ export type BookMarkedSearches = {
 }
 
 export type BookmarkSearchInput = {
-  name: Scalars['String']
+  name: Scalars['String']['input']
   parameters: AdvancedSearchParametersInput
-  userId: Scalars['String']
+  userId: Scalars['String']['input']
 }
 
 export type BookmarkedSeachItem = {
   __typename?: 'BookmarkedSeachItem'
-  name: Scalars['String']
+  name: Scalars['String']['output']
   parameters: AdvancedSeachParameters
-  searchId: Scalars['String']
+  searchId: Scalars['String']['output']
 }
 
 export type Certificate = {
   __typename?: 'Certificate'
   collector?: Maybe<RelatedPerson>
-  data?: Maybe<Scalars['String']>
-  hasShowedVerifiedDocument?: Maybe<Scalars['Boolean']>
+  data?: Maybe<Scalars['String']['output']>
+  hasShowedVerifiedDocument?: Maybe<Scalars['Boolean']['output']>
   payments?: Maybe<Array<Maybe<Payment>>>
 }
 
 export type CertificateInput = {
   collector?: InputMaybe<RelatedPersonInput>
-  data?: InputMaybe<Scalars['String']>
-  hasShowedVerifiedDocument?: InputMaybe<Scalars['Boolean']>
+  data?: InputMaybe<Scalars['String']['input']>
+  hasShowedVerifiedDocument?: InputMaybe<Scalars['Boolean']['input']>
   payments?: InputMaybe<Array<InputMaybe<PaymentInput>>>
 }
 
 export type CertificateSvg = {
   __typename?: 'CertificateSVG'
   event: Event
-  id: Scalars['ID']
+  id: Scalars['ID']['output']
   status: CertificateStatus
-  svgCode: Scalars['String']
-  svgDateCreated: Scalars['String']
-  svgDateUpdated: Scalars['String']
-  svgFilename: Scalars['String']
-  user: Scalars['String']
+  svgCode: Scalars['String']['output']
+  svgDateCreated: Scalars['String']['output']
+  svgDateUpdated: Scalars['String']['output']
+  svgFilename: Scalars['String']['output']
+  user: Scalars['String']['output']
 }
 
 export type CertificateSvgInput = {
   event: Event
-  id?: InputMaybe<Scalars['ID']>
+  id?: InputMaybe<Scalars['ID']['input']>
   status: CertificateStatus
-  svgCode: Scalars['String']
-  svgDateCreated?: InputMaybe<Scalars['Int']>
-  svgDateUpdated?: InputMaybe<Scalars['Int']>
-  svgFilename: Scalars['String']
-  user: Scalars['String']
+  svgCode: Scalars['String']['input']
+  svgDateCreated?: InputMaybe<Scalars['Int']['input']>
+  svgDateUpdated?: InputMaybe<Scalars['Int']['input']>
+  svgFilename: Scalars['String']['input']
+  user: Scalars['String']['input']
 }
 
 export enum CertificateStatus {
@@ -447,222 +463,224 @@ export enum CertificateStatus {
 
 export type CertificationMetric = {
   __typename?: 'CertificationMetric'
-  eventType: Scalars['String']
-  total: Scalars['Float']
+  eventType: Scalars['String']['output']
+  total: Scalars['Float']['output']
 }
 
 export type Comment = {
   __typename?: 'Comment'
-  comment?: Maybe<Scalars['String']>
-  createdAt?: Maybe<Scalars['Date']>
-  id: Scalars['ID']
+  comment?: Maybe<Scalars['String']['output']>
+  createdAt?: Maybe<Scalars['Date']['output']>
+  id: Scalars['ID']['output']
   user?: Maybe<User>
 }
 
 export type CommentInput = {
-  comment?: InputMaybe<Scalars['String']>
-  createdAt?: InputMaybe<Scalars['Date']>
+  comment?: InputMaybe<Scalars['String']['input']>
+  createdAt?: InputMaybe<Scalars['Date']['input']>
   user?: InputMaybe<UserInput>
 }
 
 export type ComparisonInput = {
-  eq?: InputMaybe<Scalars['String']>
-  gt?: InputMaybe<Scalars['String']>
-  gte?: InputMaybe<Scalars['String']>
-  in?: InputMaybe<Array<Scalars['String']>>
-  lt?: InputMaybe<Scalars['String']>
-  lte?: InputMaybe<Scalars['String']>
-  ne?: InputMaybe<Scalars['String']>
-  nin?: InputMaybe<Array<Scalars['String']>>
+  eq?: InputMaybe<Scalars['String']['input']>
+  gt?: InputMaybe<Scalars['String']['input']>
+  gte?: InputMaybe<Scalars['String']['input']>
+  in?: InputMaybe<Array<Scalars['String']['input']>>
+  lt?: InputMaybe<Scalars['String']['input']>
+  lte?: InputMaybe<Scalars['String']['input']>
+  ne?: InputMaybe<Scalars['String']['input']>
+  nin?: InputMaybe<Array<Scalars['String']['input']>>
 }
 
 export type ContactPoint = {
   __typename?: 'ContactPoint'
-  system?: Maybe<Scalars['String']>
-  use?: Maybe<Scalars['String']>
-  value?: Maybe<Scalars['String']>
+  system?: Maybe<Scalars['String']['output']>
+  use?: Maybe<Scalars['String']['output']>
+  value?: Maybe<Scalars['String']['output']>
 }
 
 export type ContactPointInput = {
-  system?: InputMaybe<Scalars['String']>
-  use?: InputMaybe<Scalars['String']>
-  value?: InputMaybe<Scalars['String']>
+  system?: InputMaybe<Scalars['String']['input']>
+  use?: InputMaybe<Scalars['String']['input']>
+  value?: InputMaybe<Scalars['String']['input']>
 }
 
 export type CorrectionInput = {
-  attestedAndCopied?: InputMaybe<Scalars['Boolean']>
-  data?: InputMaybe<Scalars['String']>
-  hasShowedVerifiedDocument?: InputMaybe<Scalars['Boolean']>
+  attestedAndCopied?: InputMaybe<Scalars['Boolean']['input']>
+  data?: InputMaybe<Scalars['String']['input']>
+  hasShowedVerifiedDocument?: InputMaybe<Scalars['Boolean']['input']>
   location?: InputMaybe<LocationInput>
-  noSupportingDocumentationRequired?: InputMaybe<Scalars['Boolean']>
-  note?: InputMaybe<Scalars['String']>
-  otherReason?: InputMaybe<Scalars['String']>
+  noSupportingDocumentationRequired?: InputMaybe<Scalars['Boolean']['input']>
+  note?: InputMaybe<Scalars['String']['input']>
+  otherReason?: InputMaybe<Scalars['String']['input']>
   payments?: InputMaybe<Array<InputMaybe<PaymentInput>>>
-  reason?: InputMaybe<Scalars['String']>
-  requester?: InputMaybe<Scalars['ID']>
+  reason?: InputMaybe<Scalars['String']['input']>
+  requester?: InputMaybe<Scalars['ID']['input']>
   values?: InputMaybe<Array<InputMaybe<CorrectionValueInput>>>
 }
 
 export type CorrectionMetric = {
   __typename?: 'CorrectionMetric'
-  reason: Scalars['String']
-  total: Scalars['Float']
+  reason: Scalars['String']['output']
+  total: Scalars['Float']['output']
 }
 
 export type CorrectionValueInput = {
-  fieldName?: InputMaybe<Scalars['String']>
-  newValue?: InputMaybe<Scalars['String']>
-  oldValue?: InputMaybe<Scalars['String']>
-  section?: InputMaybe<Scalars['String']>
+  fieldName?: InputMaybe<Scalars['String']['input']>
+  newValue?: InputMaybe<Scalars['String']['input']>
+  oldValue?: InputMaybe<Scalars['String']['input']>
+  section?: InputMaybe<Scalars['String']['input']>
 }
 
 export type CountryLogo = {
   __typename?: 'CountryLogo'
-  file?: Maybe<Scalars['String']>
-  fileName?: Maybe<Scalars['String']>
+  file?: Maybe<Scalars['String']['output']>
+  fileName?: Maybe<Scalars['String']['output']>
 }
 
 export type CountryLogoInput = {
-  file?: InputMaybe<Scalars['String']>
-  fileName?: InputMaybe<Scalars['String']>
+  file?: InputMaybe<Scalars['String']['input']>
+  fileName?: InputMaybe<Scalars['String']['input']>
 }
 
 export type CreatedIds = {
   __typename?: 'CreatedIds'
-  compositionId?: Maybe<Scalars['String']>
-  isPotentiallyDuplicate?: Maybe<Scalars['Boolean']>
-  trackingId?: Maybe<Scalars['String']>
+  compositionId?: Maybe<Scalars['String']['output']>
+  isPotentiallyDuplicate?: Maybe<Scalars['Boolean']['output']>
+  trackingId?: Maybe<Scalars['String']['output']>
 }
 
 export type Currency = {
   __typename?: 'Currency'
-  isoCode?: Maybe<Scalars['String']>
-  languagesAndCountry?: Maybe<Array<Maybe<Scalars['String']>>>
+  isoCode?: Maybe<Scalars['String']['output']>
+  languagesAndCountry?: Maybe<Array<Maybe<Scalars['String']['output']>>>
 }
 
 export type CurrencyInput = {
-  isoCode?: InputMaybe<Scalars['String']>
-  languagesAndCountry?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
+  isoCode?: InputMaybe<Scalars['String']['input']>
+  languagesAndCountry?: InputMaybe<
+    Array<InputMaybe<Scalars['String']['input']>>
+  >
 }
 
 export type Death = {
   __typename?: 'Death'
   FEE?: Maybe<DeathFee>
-  PRINT_IN_ADVANCE?: Maybe<Scalars['Boolean']>
-  REGISTRATION_TARGET?: Maybe<Scalars['Int']>
+  PRINT_IN_ADVANCE?: Maybe<Scalars['Boolean']['output']>
+  REGISTRATION_TARGET?: Maybe<Scalars['Int']['output']>
 }
 
 export type DeathEventSearchSet = EventSearchSet & {
   __typename?: 'DeathEventSearchSet'
-  dateOfDeath?: Maybe<Scalars['Date']>
-  deceasedGender?: Maybe<Scalars['String']>
+  dateOfDeath?: Maybe<Scalars['Date']['output']>
+  deceasedGender?: Maybe<Scalars['String']['output']>
   deceasedName?: Maybe<Array<Maybe<HumanName>>>
-  id: Scalars['ID']
+  id: Scalars['ID']['output']
   operationHistories?: Maybe<Array<Maybe<OperationHistorySearchSet>>>
   registration?: Maybe<RegistrationSearchSet>
-  type?: Maybe<Scalars['String']>
+  type?: Maybe<Scalars['String']['output']>
 }
 
 export type DeathFee = {
   __typename?: 'DeathFee'
-  DELAYED?: Maybe<Scalars['Float']>
-  ON_TIME?: Maybe<Scalars['Float']>
+  DELAYED?: Maybe<Scalars['Float']['output']>
+  ON_TIME?: Maybe<Scalars['Float']['output']>
 }
 
 export type DeathFeeInput = {
-  DELAYED?: InputMaybe<Scalars['Float']>
-  ON_TIME?: InputMaybe<Scalars['Float']>
+  DELAYED?: InputMaybe<Scalars['Float']['input']>
+  ON_TIME?: InputMaybe<Scalars['Float']['input']>
 }
 
 export type DeathInput = {
   FEE?: InputMaybe<DeathFeeInput>
-  PRINT_IN_ADVANCE?: InputMaybe<Scalars['Boolean']>
-  REGISTRATION_TARGET?: InputMaybe<Scalars['Int']>
+  PRINT_IN_ADVANCE?: InputMaybe<Scalars['Boolean']['input']>
+  REGISTRATION_TARGET?: InputMaybe<Scalars['Int']['input']>
 }
 
 export type DeathRegistration = EventRegistration & {
   __typename?: 'DeathRegistration'
-  _fhirIDMap?: Maybe<Scalars['Map']>
-  causeOfDeath?: Maybe<Scalars['String']>
-  causeOfDeathEstablished?: Maybe<Scalars['String']>
-  causeOfDeathMethod?: Maybe<Scalars['String']>
-  createdAt?: Maybe<Scalars['Date']>
-  deathDescription?: Maybe<Scalars['String']>
+  _fhirIDMap?: Maybe<Scalars['Map']['output']>
+  causeOfDeath?: Maybe<Scalars['String']['output']>
+  causeOfDeathEstablished?: Maybe<Scalars['String']['output']>
+  causeOfDeathMethod?: Maybe<Scalars['String']['output']>
+  createdAt?: Maybe<Scalars['Date']['output']>
+  deathDescription?: Maybe<Scalars['String']['output']>
   deceased?: Maybe<Person>
   eventLocation?: Maybe<Location>
   father?: Maybe<Person>
-  femaleDependentsOfDeceased?: Maybe<Scalars['Float']>
+  femaleDependentsOfDeceased?: Maybe<Scalars['Float']['output']>
   history?: Maybe<Array<Maybe<History>>>
-  id: Scalars['ID']
+  id: Scalars['ID']['output']
   informant?: Maybe<RelatedPerson>
-  maleDependentsOfDeceased?: Maybe<Scalars['Float']>
-  mannerOfDeath?: Maybe<Scalars['String']>
+  maleDependentsOfDeceased?: Maybe<Scalars['Float']['output']>
+  mannerOfDeath?: Maybe<Scalars['String']['output']>
   medicalPractitioner?: Maybe<MedicalPractitioner>
   mother?: Maybe<Person>
   questionnaire?: Maybe<Array<Maybe<QuestionnaireQuestion>>>
   registration?: Maybe<Registration>
   spouse?: Maybe<Person>
-  updatedAt?: Maybe<Scalars['Date']>
+  updatedAt?: Maybe<Scalars['Date']['output']>
 }
 
 export type DeathRegistrationInput = {
-  _fhirIDMap?: InputMaybe<Scalars['Map']>
-  causeOfDeath?: InputMaybe<Scalars['String']>
-  causeOfDeathEstablished?: InputMaybe<Scalars['String']>
-  causeOfDeathMethod?: InputMaybe<Scalars['String']>
-  createdAt?: InputMaybe<Scalars['Date']>
-  deathDescription?: InputMaybe<Scalars['String']>
+  _fhirIDMap?: InputMaybe<Scalars['Map']['input']>
+  causeOfDeath?: InputMaybe<Scalars['String']['input']>
+  causeOfDeathEstablished?: InputMaybe<Scalars['String']['input']>
+  causeOfDeathMethod?: InputMaybe<Scalars['String']['input']>
+  createdAt?: InputMaybe<Scalars['Date']['input']>
+  deathDescription?: InputMaybe<Scalars['String']['input']>
   deceased?: InputMaybe<PersonInput>
   eventLocation?: InputMaybe<LocationInput>
   father?: InputMaybe<PersonInput>
-  femaleDependentsOfDeceased?: InputMaybe<Scalars['Float']>
+  femaleDependentsOfDeceased?: InputMaybe<Scalars['Float']['input']>
   informant?: InputMaybe<RelatedPersonInput>
-  maleDependentsOfDeceased?: InputMaybe<Scalars['Float']>
-  mannerOfDeath?: InputMaybe<Scalars['String']>
+  maleDependentsOfDeceased?: InputMaybe<Scalars['Float']['input']>
+  mannerOfDeath?: InputMaybe<Scalars['String']['input']>
   medicalPractitioner?: InputMaybe<MedicalPractitionerInput>
   mother?: InputMaybe<PersonInput>
   questionnaire?: InputMaybe<Array<InputMaybe<QuestionnaireQuestionInput>>>
   registration?: InputMaybe<RegistrationInput>
   spouse?: InputMaybe<PersonInput>
-  updatedAt?: InputMaybe<Scalars['Date']>
+  updatedAt?: InputMaybe<Scalars['Date']['input']>
 }
 
 export type Deceased = {
   __typename?: 'Deceased'
-  deathDate?: Maybe<Scalars['String']>
-  deceased?: Maybe<Scalars['Boolean']>
+  deathDate?: Maybe<Scalars['String']['output']>
+  deceased?: Maybe<Scalars['Boolean']['output']>
 }
 
 export type DeceasedInput = {
-  deathDate?: InputMaybe<Scalars['String']>
-  deceased?: InputMaybe<Scalars['Boolean']>
+  deathDate?: InputMaybe<Scalars['String']['input']>
+  deceased?: InputMaybe<Scalars['Boolean']['input']>
 }
 
 export type DeclarationsStartedMetrics = {
   __typename?: 'DeclarationsStartedMetrics'
-  fieldAgentDeclarations: Scalars['Int']
-  hospitalDeclarations: Scalars['Int']
-  officeDeclarations: Scalars['Int']
+  fieldAgentDeclarations: Scalars['Int']['output']
+  hospitalDeclarations: Scalars['Int']['output']
+  officeDeclarations: Scalars['Int']['output']
 }
 
 export type Dummy = {
   __typename?: 'Dummy'
-  dummy: Scalars['String']
+  dummy: Scalars['String']['output']
 }
 
 export type DuplicatesInfo = {
   __typename?: 'DuplicatesInfo'
-  compositionId?: Maybe<Scalars['ID']>
-  trackingId?: Maybe<Scalars['String']>
+  compositionId?: Maybe<Scalars['ID']['output']>
+  trackingId?: Maybe<Scalars['String']['output']>
 }
 
 export type Estimation = {
   __typename?: 'Estimation'
-  femaleEstimation: Scalars['Int']
-  locationId: Scalars['String']
-  locationLevel: Scalars['String']
-  maleEstimation: Scalars['Int']
-  totalEstimation: Scalars['Int']
+  femaleEstimation: Scalars['Int']['output']
+  locationId: Scalars['String']['output']
+  locationLevel: Scalars['String']['output']
+  maleEstimation: Scalars['Int']['output']
+  totalEstimation: Scalars['Int']['output']
 }
 
 export enum Event {
@@ -673,89 +691,89 @@ export enum Event {
 
 export type EventMetrics = {
   __typename?: 'EventMetrics'
-  eventLocationType: Scalars['String']
-  gender: Scalars['String']
-  practitionerRole: Scalars['String']
-  timeLabel: Scalars['String']
-  total: Scalars['Int']
+  eventLocationType: Scalars['String']['output']
+  gender: Scalars['String']['output']
+  practitionerRole: Scalars['String']['output']
+  timeLabel: Scalars['String']['output']
+  total: Scalars['Int']['output']
 }
 
 export type EventMetricsByLocation = {
   __typename?: 'EventMetricsByLocation'
-  delayed: Scalars['Int']
-  healthFacility: Scalars['Int']
-  home: Scalars['Int']
-  late: Scalars['Int']
+  delayed: Scalars['Int']['output']
+  healthFacility: Scalars['Int']['output']
+  home: Scalars['Int']['output']
+  late: Scalars['Int']['output']
   location: Location
-  total: Scalars['Int']
+  total: Scalars['Int']['output']
 }
 
 export type EventMetricsByRegistrar = {
   __typename?: 'EventMetricsByRegistrar'
-  delayed: Scalars['Int']
-  late: Scalars['Int']
+  delayed: Scalars['Int']['output']
+  late: Scalars['Int']['output']
   registrarPractitioner?: Maybe<User>
-  total: Scalars['Int']
+  total: Scalars['Int']['output']
 }
 
 export type EventMetricsByTime = {
   __typename?: 'EventMetricsByTime'
-  delayed: Scalars['Int']
-  healthFacility: Scalars['Int']
-  home: Scalars['Int']
-  late: Scalars['Int']
-  month: Scalars['String']
-  time: Scalars['String']
-  total: Scalars['Int']
+  delayed: Scalars['Int']['output']
+  healthFacility: Scalars['Int']['output']
+  home: Scalars['Int']['output']
+  late: Scalars['Int']['output']
+  month: Scalars['String']['output']
+  time: Scalars['String']['output']
+  total: Scalars['Int']['output']
 }
 
 export type EventProgressData = {
   __typename?: 'EventProgressData'
-  timeInProgress?: Maybe<Scalars['Int']>
-  timeInReadyForReview?: Maybe<Scalars['Int']>
-  timeInReadyToPrint?: Maybe<Scalars['Int']>
-  timeInRequiresUpdates?: Maybe<Scalars['Int']>
-  timeInWaitingForApproval?: Maybe<Scalars['Int']>
-  timeInWaitingForBRIS?: Maybe<Scalars['Int']>
+  timeInProgress?: Maybe<Scalars['Int']['output']>
+  timeInReadyForReview?: Maybe<Scalars['Int']['output']>
+  timeInReadyToPrint?: Maybe<Scalars['Int']['output']>
+  timeInRequiresUpdates?: Maybe<Scalars['Int']['output']>
+  timeInWaitingForApproval?: Maybe<Scalars['Int']['output']>
+  timeInWaitingForBRIS?: Maybe<Scalars['Int']['output']>
 }
 
 export type EventProgressResultSet = {
   __typename?: 'EventProgressResultSet'
   results?: Maybe<Array<Maybe<EventProgressSet>>>
-  totalItems?: Maybe<Scalars['Int']>
+  totalItems?: Maybe<Scalars['Int']['output']>
 }
 
 export type EventProgressSet = {
   __typename?: 'EventProgressSet'
-  dateOfEvent?: Maybe<Scalars['Date']>
-  id: Scalars['ID']
+  dateOfEvent?: Maybe<Scalars['Date']['output']>
+  id: Scalars['ID']['output']
   name?: Maybe<Array<Maybe<HumanName>>>
   progressReport?: Maybe<EventProgressData>
   registration?: Maybe<RegistrationSearchSet>
-  startedAt?: Maybe<Scalars['Date']>
+  startedAt?: Maybe<Scalars['Date']['output']>
   startedBy?: Maybe<User>
-  startedByFacility?: Maybe<Scalars['String']>
-  type?: Maybe<Scalars['String']>
+  startedByFacility?: Maybe<Scalars['String']['output']>
+  type?: Maybe<Scalars['String']['output']>
 }
 
 export type EventRegistration = {
-  createdAt?: Maybe<Scalars['Date']>
+  createdAt?: Maybe<Scalars['Date']['output']>
   history?: Maybe<Array<Maybe<History>>>
-  id: Scalars['ID']
+  id: Scalars['ID']['output']
   registration?: Maybe<Registration>
 }
 
 export type EventSearchResultSet = {
   __typename?: 'EventSearchResultSet'
   results?: Maybe<Array<Maybe<EventSearchSet>>>
-  totalItems?: Maybe<Scalars['Int']>
+  totalItems?: Maybe<Scalars['Int']['output']>
 }
 
 export type EventSearchSet = {
-  id: Scalars['ID']
+  id: Scalars['ID']['output']
   operationHistories?: Maybe<Array<Maybe<OperationHistorySearchSet>>>
   registration?: Maybe<RegistrationSearchSet>
-  type?: Maybe<Scalars['String']>
+  type?: Maybe<Scalars['String']['output']>
 }
 
 export type History = {
@@ -763,20 +781,20 @@ export type History = {
   action?: Maybe<RegAction>
   certificates?: Maybe<Array<Maybe<Certificate>>>
   comments?: Maybe<Array<Maybe<Comment>>>
-  date?: Maybe<Scalars['Date']>
-  dhis2Notification?: Maybe<Scalars['Boolean']>
-  duplicateOf?: Maybe<Scalars['String']>
-  hasShowedVerifiedDocument?: Maybe<Scalars['Boolean']>
+  date?: Maybe<Scalars['Date']['output']>
+  dhis2Notification?: Maybe<Scalars['Boolean']['output']>
+  duplicateOf?: Maybe<Scalars['String']['output']>
+  hasShowedVerifiedDocument?: Maybe<Scalars['Boolean']['output']>
   input?: Maybe<Array<Maybe<InputOutput>>>
-  ipAddress?: Maybe<Scalars['String']>
+  ipAddress?: Maybe<Scalars['String']['output']>
   location?: Maybe<Location>
   office?: Maybe<Location>
-  otherReason?: Maybe<Scalars['String']>
+  otherReason?: Maybe<Scalars['String']['output']>
   output?: Maybe<Array<Maybe<InputOutput>>>
-  potentialDuplicates?: Maybe<Array<Scalars['String']>>
-  reason?: Maybe<Scalars['String']>
+  potentialDuplicates?: Maybe<Array<Scalars['String']['output']>>
+  reason?: Maybe<Scalars['String']['output']>
   regStatus?: Maybe<RegStatus>
-  requester?: Maybe<Scalars['String']>
+  requester?: Maybe<Scalars['String']['output']>
   signature?: Maybe<Signature>
   statusReason?: Maybe<StatusReason>
   system?: Maybe<IntegratedSystem>
@@ -785,38 +803,40 @@ export type History = {
 
 export type HumanName = {
   __typename?: 'HumanName'
-  familyName?: Maybe<Scalars['String']>
-  firstNames?: Maybe<Scalars['String']>
-  marriedLastName?: Maybe<Scalars['String']>
-  use?: Maybe<Scalars['String']>
+  familyName?: Maybe<Scalars['String']['output']>
+  firstNames?: Maybe<Scalars['String']['output']>
+  marriedLastName?: Maybe<Scalars['String']['output']>
+  use?: Maybe<Scalars['String']['output']>
 }
 
 export type HumanNameInput = {
-  familyName?: InputMaybe<Scalars['String']>
-  firstNames?: InputMaybe<Scalars['String']>
-  marriedLastName?: InputMaybe<Scalars['String']>
-  use?: InputMaybe<Scalars['String']>
+  familyName?: InputMaybe<Scalars['String']['input']>
+  firstNames?: InputMaybe<Scalars['String']['input']>
+  marriedLastName?: InputMaybe<Scalars['String']['input']>
+  use?: InputMaybe<Scalars['String']['input']>
 }
 
 export type Identifier = {
   __typename?: 'Identifier'
-  system?: Maybe<Scalars['String']>
-  value?: Maybe<Scalars['String']>
+  system?: Maybe<Scalars['String']['output']>
+  value?: Maybe<Scalars['String']['output']>
 }
 
 export type IdentityInput = {
-  fieldsModifiedByIdentity?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  id?: InputMaybe<Scalars['ID']>
-  otherType?: InputMaybe<Scalars['String']>
-  type?: InputMaybe<Scalars['String']>
+  fieldsModifiedByIdentity?: InputMaybe<
+    Array<InputMaybe<Scalars['String']['input']>>
+  >
+  id?: InputMaybe<Scalars['ID']['input']>
+  otherType?: InputMaybe<Scalars['String']['input']>
+  type?: InputMaybe<Scalars['String']['input']>
 }
 
 export type IdentityType = {
   __typename?: 'IdentityType'
-  fieldsModifiedByIdentity?: Maybe<Array<Maybe<Scalars['String']>>>
-  id?: Maybe<Scalars['ID']>
-  otherType?: Maybe<Scalars['String']>
-  type?: Maybe<Scalars['String']>
+  fieldsModifiedByIdentity?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  id?: Maybe<Scalars['ID']['output']>
+  otherType?: Maybe<Scalars['String']['output']>
+  type?: Maybe<Scalars['String']['output']>
 }
 
 export enum ImageFit {
@@ -826,16 +846,16 @@ export enum ImageFit {
 
 export type InputOutput = {
   __typename?: 'InputOutput'
-  valueCode?: Maybe<Scalars['String']>
-  valueId?: Maybe<Scalars['String']>
-  valueString?: Maybe<Scalars['String']>
+  valueCode?: Maybe<Scalars['String']['output']>
+  valueId?: Maybe<Scalars['String']['output']>
+  valueString?: Maybe<Scalars['String']['output']>
 }
 
 export type IntegratedSystem = {
   __typename?: 'IntegratedSystem'
-  name?: Maybe<Scalars['String']>
-  type?: Maybe<Scalars['String']>
-  username?: Maybe<Scalars['String']>
+  name?: Maybe<Scalars['String']['output']>
+  type?: Maybe<Scalars['String']['output']>
+  username?: Maybe<Scalars['String']['output']>
 }
 
 export enum IntegratingSystemType {
@@ -845,8 +865,8 @@ export enum IntegratingSystemType {
 }
 
 export type LabelInput = {
-  label: Scalars['String']
-  lang: Scalars['String']
+  label: Scalars['String']['input']
+  lang: Scalars['String']['input']
 }
 
 export type LocalRegistrar = {
@@ -858,152 +878,152 @@ export type LocalRegistrar = {
 
 export type Location = {
   __typename?: 'Location'
-  _fhirID?: Maybe<Scalars['ID']>
+  _fhirID?: Maybe<Scalars['ID']['output']>
   address?: Maybe<Address>
-  alias?: Maybe<Array<Scalars['String']>>
-  altitude?: Maybe<Scalars['Float']>
-  description?: Maybe<Scalars['String']>
-  geoData?: Maybe<Scalars['String']>
-  id: Scalars['ID']
+  alias?: Maybe<Array<Scalars['String']['output']>>
+  altitude?: Maybe<Scalars['Float']['output']>
+  description?: Maybe<Scalars['String']['output']>
+  geoData?: Maybe<Scalars['String']['output']>
+  id: Scalars['ID']['output']
   identifier?: Maybe<Array<Identifier>>
-  latitude?: Maybe<Scalars['Float']>
-  longitude?: Maybe<Scalars['Float']>
-  name?: Maybe<Scalars['String']>
-  partOf?: Maybe<Scalars['String']>
-  status?: Maybe<Scalars['String']>
+  latitude?: Maybe<Scalars['Float']['output']>
+  longitude?: Maybe<Scalars['Float']['output']>
+  name?: Maybe<Scalars['String']['output']>
+  partOf?: Maybe<Scalars['String']['output']>
+  status?: Maybe<Scalars['String']['output']>
   telecom?: Maybe<Array<Maybe<ContactPoint>>>
-  type?: Maybe<Scalars['String']>
+  type?: Maybe<Scalars['String']['output']>
 }
 
 export type LocationInput = {
-  _fhirID?: InputMaybe<Scalars['ID']>
+  _fhirID?: InputMaybe<Scalars['ID']['input']>
   address?: InputMaybe<AddressInput>
-  alias?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  altitude?: InputMaybe<Scalars['Float']>
-  description?: InputMaybe<Scalars['String']>
-  geoData?: InputMaybe<Scalars['String']>
-  identifier?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>
-  latitude?: InputMaybe<Scalars['Float']>
-  longitude?: InputMaybe<Scalars['Float']>
-  name?: InputMaybe<Scalars['String']>
-  partOf?: InputMaybe<Scalars['String']>
-  status?: InputMaybe<Scalars['String']>
+  alias?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
+  altitude?: InputMaybe<Scalars['Float']['input']>
+  description?: InputMaybe<Scalars['String']['input']>
+  geoData?: InputMaybe<Scalars['String']['input']>
+  identifier?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>
+  latitude?: InputMaybe<Scalars['Float']['input']>
+  longitude?: InputMaybe<Scalars['Float']['input']>
+  name?: InputMaybe<Scalars['String']['input']>
+  partOf?: InputMaybe<Scalars['String']['input']>
+  status?: InputMaybe<Scalars['String']['input']>
   telecom?: InputMaybe<Array<InputMaybe<ContactPointInput>>>
-  type?: InputMaybe<Scalars['String']>
+  type?: InputMaybe<Scalars['String']['input']>
 }
 
 export type LocationStatisticsResponse = {
   __typename?: 'LocationStatisticsResponse'
-  offices: Scalars['Int']
-  population?: Maybe<Scalars['Int']>
-  registrars: Scalars['Int']
+  offices: Scalars['Int']['output']
+  population?: Maybe<Scalars['Int']['output']>
+  registrars: Scalars['Int']['output']
 }
 
 export type LocationWiseEstimationMetric = {
   __typename?: 'LocationWiseEstimationMetric'
-  estimated: Scalars['Int']
-  locationId: Scalars['String']
-  locationName: Scalars['String']
-  total: Scalars['Int']
-  within1Year: Scalars['Int']
-  within5Years: Scalars['Int']
-  withinTarget: Scalars['Int']
+  estimated: Scalars['Int']['output']
+  locationId: Scalars['String']['output']
+  locationName: Scalars['String']['output']
+  total: Scalars['Int']['output']
+  within1Year: Scalars['Int']['output']
+  within5Years: Scalars['Int']['output']
+  withinTarget: Scalars['Int']['output']
 }
 
 export type LoginBackground = {
   __typename?: 'LoginBackground'
-  backgroundColor?: Maybe<Scalars['String']>
-  backgroundImage?: Maybe<Scalars['String']>
+  backgroundColor?: Maybe<Scalars['String']['output']>
+  backgroundImage?: Maybe<Scalars['String']['output']>
   imageFit?: Maybe<ImageFit>
 }
 
 export type LoginBackgroundInput = {
-  backgroundColor?: InputMaybe<Scalars['String']>
-  backgroundImage?: InputMaybe<Scalars['String']>
+  backgroundColor?: InputMaybe<Scalars['String']['input']>
+  backgroundImage?: InputMaybe<Scalars['String']['input']>
   imageFit?: InputMaybe<ImageFit>
 }
 
 export type Marriage = {
   __typename?: 'Marriage'
   FEE?: Maybe<MarriageFee>
-  PRINT_IN_ADVANCE?: Maybe<Scalars['Boolean']>
-  REGISTRATION_TARGET?: Maybe<Scalars['Int']>
+  PRINT_IN_ADVANCE?: Maybe<Scalars['Boolean']['output']>
+  REGISTRATION_TARGET?: Maybe<Scalars['Int']['output']>
 }
 
 export type MarriageEventSearchSet = EventSearchSet & {
   __typename?: 'MarriageEventSearchSet'
-  brideIdentifier?: Maybe<Scalars['String']>
+  brideIdentifier?: Maybe<Scalars['String']['output']>
   brideName?: Maybe<Array<Maybe<HumanName>>>
-  dateOfMarriage?: Maybe<Scalars['Date']>
-  groomIdentifier?: Maybe<Scalars['String']>
+  dateOfMarriage?: Maybe<Scalars['Date']['output']>
+  groomIdentifier?: Maybe<Scalars['String']['output']>
   groomName?: Maybe<Array<Maybe<HumanName>>>
-  id: Scalars['ID']
+  id: Scalars['ID']['output']
   operationHistories?: Maybe<Array<Maybe<OperationHistorySearchSet>>>
   registration?: Maybe<RegistrationSearchSet>
-  type?: Maybe<Scalars['String']>
+  type?: Maybe<Scalars['String']['output']>
 }
 
 export type MarriageFee = {
   __typename?: 'MarriageFee'
-  DELAYED?: Maybe<Scalars['Float']>
-  ON_TIME?: Maybe<Scalars['Float']>
+  DELAYED?: Maybe<Scalars['Float']['output']>
+  ON_TIME?: Maybe<Scalars['Float']['output']>
 }
 
 export type MarriageFeeInput = {
-  DELAYED?: InputMaybe<Scalars['Float']>
-  ON_TIME?: InputMaybe<Scalars['Float']>
+  DELAYED?: InputMaybe<Scalars['Float']['input']>
+  ON_TIME?: InputMaybe<Scalars['Float']['input']>
 }
 
 export type MarriageInput = {
   FEE?: InputMaybe<MarriageFeeInput>
-  PRINT_IN_ADVANCE?: InputMaybe<Scalars['Boolean']>
-  REGISTRATION_TARGET?: InputMaybe<Scalars['Int']>
+  PRINT_IN_ADVANCE?: InputMaybe<Scalars['Boolean']['input']>
+  REGISTRATION_TARGET?: InputMaybe<Scalars['Int']['input']>
 }
 
 export type MarriageRegistration = EventRegistration & {
   __typename?: 'MarriageRegistration'
-  _fhirIDMap?: Maybe<Scalars['Map']>
+  _fhirIDMap?: Maybe<Scalars['Map']['output']>
   bride?: Maybe<Person>
-  createdAt?: Maybe<Scalars['Date']>
+  createdAt?: Maybe<Scalars['Date']['output']>
   eventLocation?: Maybe<Location>
   groom?: Maybe<Person>
   history?: Maybe<Array<Maybe<History>>>
-  id: Scalars['ID']
+  id: Scalars['ID']['output']
   informant?: Maybe<RelatedPerson>
   questionnaire?: Maybe<Array<Maybe<QuestionnaireQuestion>>>
   registration?: Maybe<Registration>
-  typeOfMarriage?: Maybe<Scalars['String']>
-  updatedAt?: Maybe<Scalars['Date']>
+  typeOfMarriage?: Maybe<Scalars['String']['output']>
+  updatedAt?: Maybe<Scalars['Date']['output']>
   witnessOne?: Maybe<RelatedPerson>
   witnessTwo?: Maybe<RelatedPerson>
 }
 
 export type MarriageRegistrationInput = {
-  _fhirIDMap?: InputMaybe<Scalars['Map']>
+  _fhirIDMap?: InputMaybe<Scalars['Map']['input']>
   bride?: InputMaybe<PersonInput>
-  createdAt?: InputMaybe<Scalars['Date']>
+  createdAt?: InputMaybe<Scalars['Date']['input']>
   eventLocation?: InputMaybe<LocationInput>
   groom?: InputMaybe<PersonInput>
   informant?: InputMaybe<RelatedPersonInput>
   questionnaire?: InputMaybe<Array<InputMaybe<QuestionnaireQuestionInput>>>
   registration?: InputMaybe<RegistrationInput>
-  typeOfMarriage?: InputMaybe<Scalars['String']>
-  updatedAt?: InputMaybe<Scalars['Date']>
+  typeOfMarriage?: InputMaybe<Scalars['String']['input']>
+  updatedAt?: InputMaybe<Scalars['Date']['input']>
   witnessOne?: InputMaybe<RelatedPersonInput>
   witnessTwo?: InputMaybe<RelatedPersonInput>
 }
 
 export type MedicalPractitioner = {
   __typename?: 'MedicalPractitioner'
-  lastVisitDate?: Maybe<Scalars['Date']>
-  name?: Maybe<Scalars['String']>
-  qualification?: Maybe<Scalars['String']>
+  lastVisitDate?: Maybe<Scalars['Date']['output']>
+  name?: Maybe<Scalars['String']['output']>
+  qualification?: Maybe<Scalars['String']['output']>
 }
 
 export type MedicalPractitionerInput = {
-  lastVisitDate?: InputMaybe<Scalars['Date']>
-  name?: InputMaybe<Scalars['String']>
-  qualification?: InputMaybe<Scalars['String']>
+  lastVisitDate?: InputMaybe<Scalars['Date']['input']>
+  name?: InputMaybe<Scalars['String']['input']>
+  qualification?: InputMaybe<Scalars['String']['input']>
 }
 
 export type MixedTotalMetricsResult =
@@ -1013,24 +1033,24 @@ export type MixedTotalMetricsResult =
 
 export type MonthWiseEstimationMetric = {
   __typename?: 'MonthWiseEstimationMetric'
-  estimated: Scalars['Int']
-  month: Scalars['Int']
-  total: Scalars['Int']
-  within1Year: Scalars['Int']
-  within5Years: Scalars['Int']
-  withinTarget: Scalars['Int']
-  year: Scalars['Int']
+  estimated: Scalars['Int']['output']
+  month: Scalars['Int']['output']
+  total: Scalars['Int']['output']
+  within1Year: Scalars['Int']['output']
+  within5Years: Scalars['Int']['output']
+  withinTarget: Scalars['Int']['output']
+  year: Scalars['Int']['output']
 }
 
 export type Mutation = {
   __typename?: 'Mutation'
-  activateUser?: Maybe<Scalars['String']>
-  auditUser?: Maybe<Scalars['String']>
+  activateUser?: Maybe<Scalars['String']['output']>
+  auditUser?: Maybe<Scalars['String']['output']>
   bookmarkAdvancedSearch?: Maybe<BookMarkedSearches>
   changeAvatar?: Maybe<Avatar>
-  changeEmail?: Maybe<Scalars['String']>
-  changePassword?: Maybe<Scalars['String']>
-  changePhone?: Maybe<Scalars['String']>
+  changeEmail?: Maybe<Scalars['String']['output']>
+  changePassword?: Maybe<Scalars['String']['output']>
+  changePhone?: Maybe<Scalars['String']['output']>
   createBirthRegistration: CreatedIds
   createDeathRegistration: CreatedIds
   createMarriageRegistration: CreatedIds
@@ -1039,56 +1059,56 @@ export type Mutation = {
   createOrUpdateUser: User
   deactivateSystem?: Maybe<System>
   deleteSystem?: Maybe<System>
-  markBirthAsCertified: Scalars['ID']
-  markBirthAsIssued: Scalars['ID']
+  markBirthAsCertified: Scalars['ID']['output']
+  markBirthAsIssued: Scalars['ID']['output']
   markBirthAsRegistered: BirthRegistration
-  markBirthAsValidated?: Maybe<Scalars['ID']>
+  markBirthAsValidated?: Maybe<Scalars['ID']['output']>
   markBirthAsVerified?: Maybe<BirthRegistration>
-  markDeathAsCertified: Scalars['ID']
-  markDeathAsIssued: Scalars['ID']
+  markDeathAsCertified: Scalars['ID']['output']
+  markDeathAsIssued: Scalars['ID']['output']
   markDeathAsRegistered: DeathRegistration
-  markDeathAsValidated?: Maybe<Scalars['ID']>
+  markDeathAsValidated?: Maybe<Scalars['ID']['output']>
   markDeathAsVerified?: Maybe<DeathRegistration>
-  markEventAsArchived: Scalars['ID']
-  markEventAsDuplicate: Scalars['ID']
-  markEventAsNotDuplicate: Scalars['ID']
+  markEventAsArchived: Scalars['ID']['output']
+  markEventAsDuplicate: Scalars['ID']['output']
+  markEventAsNotDuplicate: Scalars['ID']['output']
   markEventAsReinstated?: Maybe<Reinstated>
-  markEventAsUnassigned: Scalars['ID']
-  markEventAsVoided: Scalars['ID']
-  markMarriageAsCertified: Scalars['ID']
-  markMarriageAsIssued: Scalars['ID']
+  markEventAsUnassigned: Scalars['ID']['output']
+  markEventAsVoided: Scalars['ID']['output']
+  markMarriageAsCertified: Scalars['ID']['output']
+  markMarriageAsIssued: Scalars['ID']['output']
   markMarriageAsRegistered: MarriageRegistration
-  markMarriageAsValidated?: Maybe<Scalars['ID']>
+  markMarriageAsValidated?: Maybe<Scalars['ID']['output']>
   reactivateSystem?: Maybe<System>
   refreshSystemSecret?: Maybe<SystemSecret>
   registerSystem?: Maybe<SystemSecret>
   removeBookmarkedAdvancedSearch?: Maybe<BookMarkedSearches>
-  requestBirthRegistrationCorrection: Scalars['ID']
-  requestDeathRegistrationCorrection: Scalars['ID']
-  requestMarriageRegistrationCorrection: Scalars['ID']
-  resendInvite?: Maybe<Scalars['String']>
-  resetPasswordInvite?: Maybe<Scalars['String']>
+  requestBirthRegistrationCorrection: Scalars['ID']['output']
+  requestDeathRegistrationCorrection: Scalars['ID']['output']
+  requestMarriageRegistrationCorrection: Scalars['ID']['output']
+  resendInvite?: Maybe<Scalars['String']['output']>
+  resetPasswordInvite?: Maybe<Scalars['String']['output']>
   toggleInformantSMSNotification?: Maybe<Array<SmsNotification>>
   updateApplicationConfig?: Maybe<ApplicationConfiguration>
-  updateBirthRegistration: Scalars['ID']
-  updateDeathRegistration: Scalars['ID']
+  updateBirthRegistration: Scalars['ID']['output']
+  updateDeathRegistration: Scalars['ID']['output']
   updatePermissions?: Maybe<System>
   updateRole: Response
-  usernameReminder?: Maybe<Scalars['String']>
+  usernameReminder?: Maybe<Scalars['String']['output']>
   voidNotification?: Maybe<Notification>
 }
 
 export type MutationActivateUserArgs = {
-  password: Scalars['String']
+  password: Scalars['String']['input']
   securityQNAs: Array<InputMaybe<SecurityQuestionAnswer>>
-  userId: Scalars['String']
+  userId: Scalars['String']['input']
 }
 
 export type MutationAuditUserArgs = {
-  action: Scalars['String']
-  comment?: InputMaybe<Scalars['String']>
-  reason: Scalars['String']
-  userId: Scalars['String']
+  action: Scalars['String']['input']
+  comment?: InputMaybe<Scalars['String']['input']>
+  reason: Scalars['String']['input']
+  userId: Scalars['String']['input']
 }
 
 export type MutationBookmarkAdvancedSearchArgs = {
@@ -1097,27 +1117,27 @@ export type MutationBookmarkAdvancedSearchArgs = {
 
 export type MutationChangeAvatarArgs = {
   avatar: AvatarInput
-  userId: Scalars['String']
+  userId: Scalars['String']['input']
 }
 
 export type MutationChangeEmailArgs = {
-  email: Scalars['String']
-  nonce: Scalars['String']
-  userId: Scalars['String']
-  verifyCode: Scalars['String']
+  email: Scalars['String']['input']
+  nonce: Scalars['String']['input']
+  userId: Scalars['String']['input']
+  verifyCode: Scalars['String']['input']
 }
 
 export type MutationChangePasswordArgs = {
-  existingPassword: Scalars['String']
-  password: Scalars['String']
-  userId: Scalars['String']
+  existingPassword: Scalars['String']['input']
+  password: Scalars['String']['input']
+  userId: Scalars['String']['input']
 }
 
 export type MutationChangePhoneArgs = {
-  nonce: Scalars['String']
-  phoneNumber: Scalars['String']
-  userId: Scalars['String']
-  verifyCode: Scalars['String']
+  nonce: Scalars['String']['input']
+  phoneNumber: Scalars['String']['input']
+  userId: Scalars['String']['input']
+  verifyCode: Scalars['String']['input']
 }
 
 export type MutationCreateBirthRegistrationArgs = {
@@ -1145,121 +1165,121 @@ export type MutationCreateOrUpdateUserArgs = {
 }
 
 export type MutationDeactivateSystemArgs = {
-  clientId: Scalars['ID']
+  clientId: Scalars['ID']['input']
 }
 
 export type MutationDeleteSystemArgs = {
-  clientId: Scalars['ID']
+  clientId: Scalars['ID']['input']
 }
 
 export type MutationMarkBirthAsCertifiedArgs = {
   details: BirthRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkBirthAsIssuedArgs = {
   details: BirthRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkBirthAsRegisteredArgs = {
   details: BirthRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkBirthAsValidatedArgs = {
   details?: InputMaybe<BirthRegistrationInput>
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkBirthAsVerifiedArgs = {
   details?: InputMaybe<BirthRegistrationInput>
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkDeathAsCertifiedArgs = {
   details: DeathRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkDeathAsIssuedArgs = {
   details: DeathRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkDeathAsRegisteredArgs = {
   details: DeathRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkDeathAsValidatedArgs = {
   details?: InputMaybe<DeathRegistrationInput>
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkDeathAsVerifiedArgs = {
   details?: InputMaybe<DeathRegistrationInput>
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkEventAsArchivedArgs = {
-  comment?: InputMaybe<Scalars['String']>
-  duplicateTrackingId?: InputMaybe<Scalars['String']>
-  id: Scalars['String']
-  reason?: InputMaybe<Scalars['String']>
+  comment?: InputMaybe<Scalars['String']['input']>
+  duplicateTrackingId?: InputMaybe<Scalars['String']['input']>
+  id: Scalars['String']['input']
+  reason?: InputMaybe<Scalars['String']['input']>
 }
 
 export type MutationMarkEventAsDuplicateArgs = {
-  comment?: InputMaybe<Scalars['String']>
-  duplicateTrackingId?: InputMaybe<Scalars['String']>
-  id: Scalars['String']
-  reason: Scalars['String']
+  comment?: InputMaybe<Scalars['String']['input']>
+  duplicateTrackingId?: InputMaybe<Scalars['String']['input']>
+  id: Scalars['String']['input']
+  reason: Scalars['String']['input']
 }
 
 export type MutationMarkEventAsNotDuplicateArgs = {
-  id: Scalars['String']
+  id: Scalars['String']['input']
 }
 
 export type MutationMarkEventAsReinstatedArgs = {
-  id: Scalars['String']
+  id: Scalars['String']['input']
 }
 
 export type MutationMarkEventAsUnassignedArgs = {
-  id: Scalars['String']
+  id: Scalars['String']['input']
 }
 
 export type MutationMarkEventAsVoidedArgs = {
-  comment?: InputMaybe<Scalars['String']>
-  id: Scalars['String']
-  reason: Scalars['String']
+  comment?: InputMaybe<Scalars['String']['input']>
+  id: Scalars['String']['input']
+  reason: Scalars['String']['input']
 }
 
 export type MutationMarkMarriageAsCertifiedArgs = {
   details: MarriageRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkMarriageAsIssuedArgs = {
   details: MarriageRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkMarriageAsRegisteredArgs = {
   details: MarriageRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationMarkMarriageAsValidatedArgs = {
   details?: InputMaybe<MarriageRegistrationInput>
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationReactivateSystemArgs = {
-  clientId: Scalars['ID']
+  clientId: Scalars['ID']['input']
 }
 
 export type MutationRefreshSystemSecretArgs = {
-  clientId: Scalars['String']
+  clientId: Scalars['String']['input']
 }
 
 export type MutationRegisterSystemArgs = {
@@ -1272,25 +1292,25 @@ export type MutationRemoveBookmarkedAdvancedSearchArgs = {
 
 export type MutationRequestBirthRegistrationCorrectionArgs = {
   details: BirthRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationRequestDeathRegistrationCorrectionArgs = {
   details: DeathRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationRequestMarriageRegistrationCorrectionArgs = {
   details: MarriageRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationResendInviteArgs = {
-  userId: Scalars['String']
+  userId: Scalars['String']['input']
 }
 
 export type MutationResetPasswordInviteArgs = {
-  userId: Scalars['String']
+  userId: Scalars['String']['input']
 }
 
 export type MutationToggleInformantSmsNotificationArgs = {
@@ -1303,12 +1323,12 @@ export type MutationUpdateApplicationConfigArgs = {
 
 export type MutationUpdateBirthRegistrationArgs = {
   details: BirthRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationUpdateDeathRegistrationArgs = {
   details: DeathRegistrationInput
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type MutationUpdatePermissionsArgs = {
@@ -1320,108 +1340,108 @@ export type MutationUpdateRoleArgs = {
 }
 
 export type MutationUsernameReminderArgs = {
-  userId: Scalars['String']
+  userId: Scalars['String']['input']
 }
 
 export type MutationVoidNotificationArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type Notification = {
   __typename?: 'Notification'
   child?: Maybe<Person>
-  createdAt?: Maybe<Scalars['Date']>
+  createdAt?: Maybe<Scalars['Date']['output']>
   father?: Maybe<Person>
-  id: Scalars['ID']
+  id: Scalars['ID']['output']
   informant?: Maybe<Person>
   location?: Maybe<Location>
   mother?: Maybe<Person>
-  updatedAt?: Maybe<Scalars['Date']>
+  updatedAt?: Maybe<Scalars['Date']['output']>
 }
 
 export type NotificationInput = {
   child?: InputMaybe<PersonInput>
-  createdAt?: InputMaybe<Scalars['Date']>
+  createdAt?: InputMaybe<Scalars['Date']['input']>
   father?: InputMaybe<PersonInput>
   informant?: InputMaybe<PersonInput>
   location?: InputMaybe<LocationInput>
   mother?: InputMaybe<PersonInput>
-  updatedAt?: InputMaybe<Scalars['Date']>
+  updatedAt?: InputMaybe<Scalars['Date']['input']>
 }
 
 export type OidpUserAddress = {
   __typename?: 'OIDPUserAddress'
-  city?: Maybe<Scalars['String']>
-  country?: Maybe<Scalars['String']>
-  formatted?: Maybe<Scalars['String']>
-  locality?: Maybe<Scalars['String']>
-  postal_code?: Maybe<Scalars['String']>
-  region?: Maybe<Scalars['String']>
-  street_address?: Maybe<Scalars['String']>
+  city?: Maybe<Scalars['String']['output']>
+  country?: Maybe<Scalars['String']['output']>
+  formatted?: Maybe<Scalars['String']['output']>
+  locality?: Maybe<Scalars['String']['output']>
+  postal_code?: Maybe<Scalars['String']['output']>
+  region?: Maybe<Scalars['String']['output']>
+  street_address?: Maybe<Scalars['String']['output']>
 }
 
 export type OidpUserInfo = {
   __typename?: 'OIDPUserInfo'
   address?: Maybe<OidpUserAddress>
-  birthdate?: Maybe<Scalars['String']>
-  email?: Maybe<Scalars['String']>
-  email_verified?: Maybe<Scalars['Boolean']>
-  family_name?: Maybe<Scalars['String']>
-  gender?: Maybe<Scalars['String']>
-  given_name?: Maybe<Scalars['String']>
-  locale?: Maybe<Scalars['String']>
-  middle_name?: Maybe<Scalars['String']>
-  name?: Maybe<Scalars['String']>
-  nickname?: Maybe<Scalars['String']>
-  phone_number?: Maybe<Scalars['String']>
-  phone_number_verified?: Maybe<Scalars['Boolean']>
-  picture?: Maybe<Scalars['String']>
-  preferred_username?: Maybe<Scalars['String']>
-  profile?: Maybe<Scalars['String']>
-  sub: Scalars['String']
-  updated_at?: Maybe<Scalars['Int']>
-  website?: Maybe<Scalars['String']>
-  zoneinfo?: Maybe<Scalars['String']>
+  birthdate?: Maybe<Scalars['String']['output']>
+  email?: Maybe<Scalars['String']['output']>
+  email_verified?: Maybe<Scalars['Boolean']['output']>
+  family_name?: Maybe<Scalars['String']['output']>
+  gender?: Maybe<Scalars['String']['output']>
+  given_name?: Maybe<Scalars['String']['output']>
+  locale?: Maybe<Scalars['String']['output']>
+  middle_name?: Maybe<Scalars['String']['output']>
+  name?: Maybe<Scalars['String']['output']>
+  nickname?: Maybe<Scalars['String']['output']>
+  phone_number?: Maybe<Scalars['String']['output']>
+  phone_number_verified?: Maybe<Scalars['Boolean']['output']>
+  picture?: Maybe<Scalars['String']['output']>
+  preferred_username?: Maybe<Scalars['String']['output']>
+  profile?: Maybe<Scalars['String']['output']>
+  sub: Scalars['String']['output']
+  updated_at?: Maybe<Scalars['Int']['output']>
+  website?: Maybe<Scalars['String']['output']>
+  zoneinfo?: Maybe<Scalars['String']['output']>
 }
 
 export type OperationHistorySearchSet = {
   __typename?: 'OperationHistorySearchSet'
-  notificationFacilityAlias?: Maybe<Array<Maybe<Scalars['String']>>>
-  notificationFacilityName?: Maybe<Scalars['String']>
-  operatedOn?: Maybe<Scalars['Date']>
-  operationType?: Maybe<Scalars['String']>
+  notificationFacilityAlias?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  notificationFacilityName?: Maybe<Scalars['String']['output']>
+  operatedOn?: Maybe<Scalars['Date']['output']>
+  operationType?: Maybe<Scalars['String']['output']>
   operatorName?: Maybe<Array<Maybe<HumanName>>>
-  operatorOfficeAlias?: Maybe<Array<Maybe<Scalars['String']>>>
-  operatorOfficeName?: Maybe<Scalars['String']>
-  operatorRole?: Maybe<Scalars['String']>
-  rejectComment?: Maybe<Scalars['String']>
-  rejectReason?: Maybe<Scalars['String']>
+  operatorOfficeAlias?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  operatorOfficeName?: Maybe<Scalars['String']['output']>
+  operatorRole?: Maybe<Scalars['String']['output']>
+  rejectComment?: Maybe<Scalars['String']['output']>
+  rejectReason?: Maybe<Scalars['String']['output']>
 }
 
 export type Payment = {
   __typename?: 'Payment'
-  amount?: Maybe<Scalars['Float']>
-  date?: Maybe<Scalars['Date']>
+  amount?: Maybe<Scalars['Float']['output']>
+  date?: Maybe<Scalars['Date']['output']>
   outcome?: Maybe<PaymentOutcomeType>
-  paymentId?: Maybe<Scalars['ID']>
-  total?: Maybe<Scalars['Float']>
+  paymentId?: Maybe<Scalars['ID']['output']>
+  total?: Maybe<Scalars['Float']['output']>
   type?: Maybe<PaymentType>
 }
 
 export type PaymentInput = {
-  amount?: InputMaybe<Scalars['Float']>
-  data?: InputMaybe<Scalars['String']>
-  date?: InputMaybe<Scalars['Date']>
+  amount?: InputMaybe<Scalars['Float']['input']>
+  data?: InputMaybe<Scalars['String']['input']>
+  date?: InputMaybe<Scalars['Date']['input']>
   outcome?: InputMaybe<PaymentOutcomeType>
-  paymentId?: InputMaybe<Scalars['ID']>
-  total?: InputMaybe<Scalars['Float']>
+  paymentId?: InputMaybe<Scalars['ID']['input']>
+  total?: InputMaybe<Scalars['Float']['input']>
   type?: InputMaybe<PaymentType>
 }
 
 export type PaymentMetric = {
   __typename?: 'PaymentMetric'
-  paymentType: Scalars['String']
-  total: Scalars['Float']
+  paymentType: Scalars['String']['output']
+  total: Scalars['Float']['output']
 }
 
 export enum PaymentOutcomeType {
@@ -1436,48 +1456,48 @@ export enum PaymentType {
 
 export type Person = {
   __typename?: 'Person'
-  _fhirID?: Maybe<Scalars['ID']>
+  _fhirID?: Maybe<Scalars['ID']['output']>
   address?: Maybe<Array<Maybe<Address>>>
-  age?: Maybe<Scalars['Float']>
-  ageOfIndividualInYears?: Maybe<Scalars['Int']>
-  birthDate?: Maybe<Scalars['String']>
-  dateOfMarriage?: Maybe<Scalars['Date']>
+  age?: Maybe<Scalars['Float']['output']>
+  ageOfIndividualInYears?: Maybe<Scalars['Int']['output']>
+  birthDate?: Maybe<Scalars['String']['output']>
+  dateOfMarriage?: Maybe<Scalars['Date']['output']>
   deceased?: Maybe<Deceased>
-  detailsExist?: Maybe<Scalars['Boolean']>
-  educationalAttainment?: Maybe<Scalars['String']>
-  exactDateOfBirthUnknown?: Maybe<Scalars['Boolean']>
-  gender?: Maybe<Scalars['String']>
-  id?: Maybe<Scalars['ID']>
+  detailsExist?: Maybe<Scalars['Boolean']['output']>
+  educationalAttainment?: Maybe<Scalars['String']['output']>
+  exactDateOfBirthUnknown?: Maybe<Scalars['Boolean']['output']>
+  gender?: Maybe<Scalars['String']['output']>
+  id?: Maybe<Scalars['ID']['output']>
   identifier?: Maybe<Array<Maybe<IdentityType>>>
-  maritalStatus?: Maybe<Scalars['String']>
-  multipleBirth?: Maybe<Scalars['Int']>
+  maritalStatus?: Maybe<Scalars['String']['output']>
+  multipleBirth?: Maybe<Scalars['Int']['output']>
   name?: Maybe<Array<Maybe<HumanName>>>
-  nationality?: Maybe<Array<Maybe<Scalars['String']>>>
-  occupation?: Maybe<Scalars['String']>
+  nationality?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  occupation?: Maybe<Scalars['String']['output']>
   photo?: Maybe<Array<Maybe<Attachment>>>
-  reasonNotApplying?: Maybe<Scalars['String']>
+  reasonNotApplying?: Maybe<Scalars['String']['output']>
   telecom?: Maybe<Array<Maybe<ContactPoint>>>
 }
 
 export type PersonInput = {
-  _fhirID?: InputMaybe<Scalars['ID']>
+  _fhirID?: InputMaybe<Scalars['ID']['input']>
   address?: InputMaybe<Array<InputMaybe<AddressInput>>>
-  age?: InputMaybe<Scalars['Float']>
-  ageOfIndividualInYears?: InputMaybe<Scalars['Int']>
-  birthDate?: InputMaybe<Scalars['String']>
-  dateOfMarriage?: InputMaybe<Scalars['Date']>
+  age?: InputMaybe<Scalars['Float']['input']>
+  ageOfIndividualInYears?: InputMaybe<Scalars['Int']['input']>
+  birthDate?: InputMaybe<Scalars['String']['input']>
+  dateOfMarriage?: InputMaybe<Scalars['Date']['input']>
   deceased?: InputMaybe<DeceasedInput>
-  detailsExist?: InputMaybe<Scalars['Boolean']>
-  educationalAttainment?: InputMaybe<Scalars['String']>
-  gender?: InputMaybe<Scalars['String']>
+  detailsExist?: InputMaybe<Scalars['Boolean']['input']>
+  educationalAttainment?: InputMaybe<Scalars['String']['input']>
+  gender?: InputMaybe<Scalars['String']['input']>
   identifier?: InputMaybe<Array<InputMaybe<IdentityInput>>>
-  maritalStatus?: InputMaybe<Scalars['String']>
-  multipleBirth?: InputMaybe<Scalars['Int']>
+  maritalStatus?: InputMaybe<Scalars['String']['input']>
+  multipleBirth?: InputMaybe<Scalars['Int']['input']>
   name?: InputMaybe<Array<InputMaybe<HumanNameInput>>>
-  nationality?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  occupation?: InputMaybe<Scalars['String']>
+  nationality?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
+  occupation?: InputMaybe<Scalars['String']['input']>
   photo?: InputMaybe<Array<AttachmentInput>>
-  reasonNotApplying?: InputMaybe<Scalars['String']>
+  reasonNotApplying?: InputMaybe<Scalars['String']['input']>
   telecom?: InputMaybe<Array<InputMaybe<ContactPointInput>>>
 }
 
@@ -1529,55 +1549,55 @@ export type Query = {
 }
 
 export type QueryFetchBirthRegistrationArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type QueryFetchDeathRegistrationArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type QueryFetchEventRegistrationArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type QueryFetchLocationWiseEventMetricsArgs = {
-  event: Scalars['String']
-  locationId?: InputMaybe<Scalars['String']>
-  timeEnd: Scalars['String']
-  timeStart: Scalars['String']
+  event: Scalars['String']['input']
+  locationId?: InputMaybe<Scalars['String']['input']>
+  timeEnd: Scalars['String']['input']
+  timeStart: Scalars['String']['input']
 }
 
 export type QueryFetchMarriageRegistrationArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type QueryFetchMonthWiseEventMetricsArgs = {
-  event: Scalars['String']
-  locationId?: InputMaybe<Scalars['String']>
-  timeEnd: Scalars['String']
-  timeStart: Scalars['String']
+  event: Scalars['String']['input']
+  locationId?: InputMaybe<Scalars['String']['input']>
+  timeEnd: Scalars['String']['input']
+  timeStart: Scalars['String']['input']
 }
 
 export type QueryFetchRecordDetailsForVerificationArgs = {
-  id: Scalars['String']
+  id: Scalars['String']['input']
 }
 
 export type QueryFetchRegistrationArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type QueryFetchRegistrationCountByStatusArgs = {
-  event?: InputMaybe<Scalars['String']>
-  locationId?: InputMaybe<Scalars['String']>
-  status: Array<InputMaybe<Scalars['String']>>
+  event?: InputMaybe<Scalars['String']['input']>
+  locationId?: InputMaybe<Scalars['String']['input']>
+  status: Array<InputMaybe<Scalars['String']['input']>>
 }
 
 export type QueryFetchRegistrationForViewingArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }
 
 export type QueryFetchSystemArgs = {
-  clientId: Scalars['ID']
+  clientId: Scalars['ID']['input']
 }
 
 export type QueryGetCertificateSvgArgs = {
@@ -1586,202 +1606,205 @@ export type QueryGetCertificateSvgArgs = {
 }
 
 export type QueryGetDeclarationsStartedMetricsArgs = {
-  locationId: Scalars['String']
-  timeEnd: Scalars['String']
-  timeStart: Scalars['String']
+  locationId: Scalars['String']['input']
+  timeEnd: Scalars['String']['input']
+  timeStart: Scalars['String']['input']
 }
 
 export type QueryGetEventsWithProgressArgs = {
-  compositionType?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  count?: InputMaybe<Scalars['Int']>
-  declarationJurisdictionId?: InputMaybe<Scalars['String']>
-  registrationStatuses?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  skip?: InputMaybe<Scalars['Int']>
-  sort?: InputMaybe<Scalars['String']>
+  compositionType?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
+  count?: InputMaybe<Scalars['Int']['input']>
+  declarationJurisdictionId?: InputMaybe<Scalars['String']['input']>
+  registrationStatuses?: InputMaybe<
+    Array<InputMaybe<Scalars['String']['input']>>
+  >
+  skip?: InputMaybe<Scalars['Int']['input']>
+  sort?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryGetLocationStatisticsArgs = {
-  locationId?: InputMaybe<Scalars['String']>
-  populationYear: Scalars['Int']
+  locationId?: InputMaybe<Scalars['String']['input']>
+  populationYear: Scalars['Int']['input']
 }
 
 export type QueryGetOidpUserInfoArgs = {
-  clientId: Scalars['String']
-  code: Scalars['String']
-  grantType?: InputMaybe<Scalars['String']>
-  redirectUri: Scalars['String']
+  clientId: Scalars['String']['input']
+  code: Scalars['String']['input']
+  grantType?: InputMaybe<Scalars['String']['input']>
+  redirectUri: Scalars['String']['input']
 }
 
 export type QueryGetRegistrationsListByFilterArgs = {
-  event: Scalars['String']
-  filterBy: Scalars['String']
-  locationId?: InputMaybe<Scalars['String']>
-  size: Scalars['Int']
-  skip: Scalars['Int']
-  timeEnd: Scalars['String']
-  timeStart: Scalars['String']
+  event: Scalars['String']['input']
+  filterBy: Scalars['String']['input']
+  locationId?: InputMaybe<Scalars['String']['input']>
+  size: Scalars['Int']['input']
+  skip: Scalars['Int']['input']
+  timeEnd: Scalars['String']['input']
+  timeStart: Scalars['String']['input']
 }
 
 export type QueryGetSystemRolesArgs = {
-  active?: InputMaybe<Scalars['Boolean']>
-  role?: InputMaybe<Scalars['String']>
-  sortBy?: InputMaybe<Scalars['String']>
-  sortOrder?: InputMaybe<Scalars['String']>
-  title?: InputMaybe<Scalars['String']>
+  active?: InputMaybe<Scalars['Boolean']['input']>
+  role?: InputMaybe<Scalars['String']['input']>
+  sortBy?: InputMaybe<Scalars['String']['input']>
+  sortOrder?: InputMaybe<Scalars['String']['input']>
+  title?: InputMaybe<Scalars['String']['input']>
   value?: InputMaybe<ComparisonInput>
 }
 
 export type QueryGetTotalCertificationsArgs = {
-  locationId?: InputMaybe<Scalars['String']>
-  timeEnd: Scalars['String']
-  timeStart: Scalars['String']
+  locationId?: InputMaybe<Scalars['String']['input']>
+  timeEnd: Scalars['String']['input']
+  timeStart: Scalars['String']['input']
 }
 
 export type QueryGetTotalCorrectionsArgs = {
-  event: Scalars['String']
-  locationId?: InputMaybe<Scalars['String']>
-  timeEnd: Scalars['String']
-  timeStart: Scalars['String']
+  event: Scalars['String']['input']
+  locationId?: InputMaybe<Scalars['String']['input']>
+  timeEnd: Scalars['String']['input']
+  timeStart: Scalars['String']['input']
 }
 
 export type QueryGetTotalMetricsArgs = {
-  event: Scalars['String']
-  locationId?: InputMaybe<Scalars['String']>
-  timeEnd: Scalars['String']
-  timeStart: Scalars['String']
+  event: Scalars['String']['input']
+  locationId?: InputMaybe<Scalars['String']['input']>
+  timeEnd: Scalars['String']['input']
+  timeStart: Scalars['String']['input']
 }
 
 export type QueryGetTotalPaymentsArgs = {
-  event: Scalars['String']
-  locationId?: InputMaybe<Scalars['String']>
-  timeEnd: Scalars['String']
-  timeStart: Scalars['String']
+  event: Scalars['String']['input']
+  locationId?: InputMaybe<Scalars['String']['input']>
+  timeEnd: Scalars['String']['input']
+  timeStart: Scalars['String']['input']
 }
 
 export type QueryGetUserArgs = {
-  userId?: InputMaybe<Scalars['String']>
+  userId?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryGetUserAuditLogArgs = {
-  count: Scalars['Int']
-  practitionerId: Scalars['String']
-  skip?: InputMaybe<Scalars['Int']>
-  timeEnd?: InputMaybe<Scalars['String']>
-  timeStart?: InputMaybe<Scalars['String']>
+  count: Scalars['Int']['input']
+  practitionerId: Scalars['String']['input']
+  skip?: InputMaybe<Scalars['Int']['input']>
+  timeEnd?: InputMaybe<Scalars['String']['input']>
+  timeStart?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryGetUserByEmailArgs = {
-  email?: InputMaybe<Scalars['String']>
+  email?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryGetUserByMobileArgs = {
-  mobile?: InputMaybe<Scalars['String']>
+  mobile?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryHasChildLocationArgs = {
-  parentId?: InputMaybe<Scalars['String']>
+  parentId?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryListBirthRegistrationsArgs = {
-  count?: InputMaybe<Scalars['Int']>
-  from?: InputMaybe<Scalars['Date']>
-  locationIds?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  skip?: InputMaybe<Scalars['Int']>
-  status?: InputMaybe<Scalars['String']>
-  to?: InputMaybe<Scalars['Date']>
-  userId?: InputMaybe<Scalars['String']>
+  count?: InputMaybe<Scalars['Int']['input']>
+  from?: InputMaybe<Scalars['Date']['input']>
+  locationIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
+  skip?: InputMaybe<Scalars['Int']['input']>
+  status?: InputMaybe<Scalars['String']['input']>
+  to?: InputMaybe<Scalars['Date']['input']>
+  userId?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryListNotificationsArgs = {
-  from?: InputMaybe<Scalars['Date']>
-  locationIds?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  status?: InputMaybe<Scalars['String']>
-  to?: InputMaybe<Scalars['Date']>
-  userId?: InputMaybe<Scalars['String']>
+  from?: InputMaybe<Scalars['Date']['input']>
+  locationIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
+  status?: InputMaybe<Scalars['String']['input']>
+  to?: InputMaybe<Scalars['Date']['input']>
+  userId?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryLocationByIdArgs = {
-  locationId?: InputMaybe<Scalars['String']>
+  locationId?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryLocationsByParentArgs = {
-  parentId?: InputMaybe<Scalars['String']>
-  type?: InputMaybe<Scalars['String']>
+  parentId?: InputMaybe<Scalars['String']['input']>
+  type?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryQueryPersonByIdentifierArgs = {
-  identifier: Scalars['ID']
+  identifier: Scalars['ID']['input']
 }
 
 export type QueryQueryPersonByNidIdentifierArgs = {
-  country?: InputMaybe<Scalars['String']>
-  dob?: InputMaybe<Scalars['String']>
-  nid?: InputMaybe<Scalars['String']>
+  country?: InputMaybe<Scalars['String']['input']>
+  dob?: InputMaybe<Scalars['String']['input']>
+  nid?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryQueryRegistrationByIdentifierArgs = {
-  identifier: Scalars['ID']
+  identifier: Scalars['ID']['input']
 }
 
 export type QuerySearchBirthRegistrationsArgs = {
-  fromDate?: InputMaybe<Scalars['Date']>
-  toDate?: InputMaybe<Scalars['Date']>
+  fromDate?: InputMaybe<Scalars['Date']['input']>
+  toDate?: InputMaybe<Scalars['Date']['input']>
 }
 
 export type QuerySearchDeathRegistrationsArgs = {
-  fromDate?: InputMaybe<Scalars['Date']>
-  toDate?: InputMaybe<Scalars['Date']>
+  fromDate?: InputMaybe<Scalars['Date']['input']>
+  toDate?: InputMaybe<Scalars['Date']['input']>
 }
 
 export type QuerySearchEventsArgs = {
   advancedSearchParameters: AdvancedSearchParametersInput
-  count?: InputMaybe<Scalars['Int']>
-  skip?: InputMaybe<Scalars['Int']>
-  sort?: InputMaybe<Scalars['String']>
-  sortColumn?: InputMaybe<Scalars['String']>
-  userId?: InputMaybe<Scalars['String']>
+  count?: InputMaybe<Scalars['Int']['input']>
+  skip?: InputMaybe<Scalars['Int']['input']>
+  sort?: InputMaybe<Scalars['String']['input']>
+  sortBy?: InputMaybe<Array<SortBy>>
+  sortColumn?: InputMaybe<Scalars['String']['input']>
+  userId?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QuerySearchFieldAgentsArgs = {
-  count?: InputMaybe<Scalars['Int']>
-  event?: InputMaybe<Scalars['String']>
-  language?: InputMaybe<Scalars['String']>
-  locationId?: InputMaybe<Scalars['String']>
-  primaryOfficeId?: InputMaybe<Scalars['String']>
-  skip?: InputMaybe<Scalars['Int']>
-  sort?: InputMaybe<Scalars['String']>
-  status?: InputMaybe<Scalars['String']>
-  timeEnd: Scalars['String']
-  timeStart: Scalars['String']
+  count?: InputMaybe<Scalars['Int']['input']>
+  event?: InputMaybe<Scalars['String']['input']>
+  language?: InputMaybe<Scalars['String']['input']>
+  locationId?: InputMaybe<Scalars['String']['input']>
+  primaryOfficeId?: InputMaybe<Scalars['String']['input']>
+  skip?: InputMaybe<Scalars['Int']['input']>
+  sort?: InputMaybe<Scalars['String']['input']>
+  status?: InputMaybe<Scalars['String']['input']>
+  timeEnd: Scalars['String']['input']
+  timeStart: Scalars['String']['input']
 }
 
 export type QuerySearchUsersArgs = {
-  count?: InputMaybe<Scalars['Int']>
-  email?: InputMaybe<Scalars['String']>
-  locationId?: InputMaybe<Scalars['String']>
-  mobile?: InputMaybe<Scalars['String']>
-  primaryOfficeId?: InputMaybe<Scalars['String']>
-  skip?: InputMaybe<Scalars['Int']>
-  sort?: InputMaybe<Scalars['String']>
-  status?: InputMaybe<Scalars['String']>
-  systemRole?: InputMaybe<Scalars['String']>
-  username?: InputMaybe<Scalars['String']>
+  count?: InputMaybe<Scalars['Int']['input']>
+  email?: InputMaybe<Scalars['String']['input']>
+  locationId?: InputMaybe<Scalars['String']['input']>
+  mobile?: InputMaybe<Scalars['String']['input']>
+  primaryOfficeId?: InputMaybe<Scalars['String']['input']>
+  skip?: InputMaybe<Scalars['Int']['input']>
+  sort?: InputMaybe<Scalars['String']['input']>
+  status?: InputMaybe<Scalars['String']['input']>
+  systemRole?: InputMaybe<Scalars['String']['input']>
+  username?: InputMaybe<Scalars['String']['input']>
 }
 
 export type QueryVerifyPasswordByIdArgs = {
-  id: Scalars['String']
-  password: Scalars['String']
+  id: Scalars['String']['input']
+  password: Scalars['String']['input']
 }
 
 export type QuestionnaireQuestion = {
   __typename?: 'QuestionnaireQuestion'
-  fieldId?: Maybe<Scalars['String']>
-  value?: Maybe<Scalars['String']>
+  fieldId?: Maybe<Scalars['String']['output']>
+  value?: Maybe<Scalars['String']['output']>
 }
 
 export type QuestionnaireQuestionInput = {
-  fieldId?: InputMaybe<Scalars['String']>
-  value?: InputMaybe<Scalars['String']>
+  fieldId?: InputMaybe<Scalars['String']['input']>
+  value?: InputMaybe<Scalars['String']['input']>
 }
 
 export type RecordDetails = BirthRegistration | DeathRegistration
@@ -1815,12 +1838,12 @@ export enum RegStatus {
 export type RegWorkflow = {
   __typename?: 'RegWorkflow'
   comments?: Maybe<Array<Maybe<Comment>>>
-  id: Scalars['ID']
+  id: Scalars['ID']['output']
   location?: Maybe<Location>
   office?: Maybe<Location>
-  reason?: Maybe<Scalars['String']>
-  timeLogged?: Maybe<Scalars['Int']>
-  timestamp?: Maybe<Scalars['Date']>
+  reason?: Maybe<Scalars['String']['output']>
+  timeLogged?: Maybe<Scalars['Int']['output']>
+  timestamp?: Maybe<Scalars['Date']['output']>
   type?: Maybe<RegStatus>
   user?: Maybe<User>
 }
@@ -1828,98 +1851,98 @@ export type RegWorkflow = {
 export type RegWorkflowInput = {
   comments?: InputMaybe<Array<InputMaybe<CommentInput>>>
   location?: InputMaybe<LocationInput>
-  reason?: InputMaybe<Scalars['String']>
-  timeLoggedMS?: InputMaybe<Scalars['Int']>
-  timestamp?: InputMaybe<Scalars['Date']>
+  reason?: InputMaybe<Scalars['String']['input']>
+  timeLoggedMS?: InputMaybe<Scalars['Int']['input']>
+  timestamp?: InputMaybe<Scalars['Date']['input']>
   type?: InputMaybe<RegStatus>
   user?: InputMaybe<UserInput>
 }
 
 export type Registration = {
   __typename?: 'Registration'
-  _fhirID?: Maybe<Scalars['ID']>
+  _fhirID?: Maybe<Scalars['ID']['output']>
   assignment?: Maybe<AssignmentData>
   attachments?: Maybe<Array<Maybe<Attachment>>>
-  book?: Maybe<Scalars['String']>
-  brideSignature?: Maybe<Scalars['String']>
-  brideSignatureURI?: Maybe<Scalars['String']>
+  book?: Maybe<Scalars['String']['output']>
+  brideSignature?: Maybe<Scalars['String']['output']>
+  brideSignatureURI?: Maybe<Scalars['String']['output']>
   certificates?: Maybe<Array<Maybe<Certificate>>>
-  contact?: Maybe<Scalars['String']>
-  contactEmail?: Maybe<Scalars['String']>
-  contactPhoneNumber?: Maybe<Scalars['String']>
-  contactRelationship?: Maybe<Scalars['String']>
-  draftId?: Maybe<Scalars['String']>
+  contact?: Maybe<Scalars['String']['output']>
+  contactEmail?: Maybe<Scalars['String']['output']>
+  contactPhoneNumber?: Maybe<Scalars['String']['output']>
+  contactRelationship?: Maybe<Scalars['String']['output']>
+  draftId?: Maybe<Scalars['String']['output']>
   duplicates?: Maybe<Array<Maybe<DuplicatesInfo>>>
-  groomSignature?: Maybe<Scalars['String']>
-  groomSignatureURI?: Maybe<Scalars['String']>
-  id?: Maybe<Scalars['ID']>
-  inCompleteFields?: Maybe<Scalars['String']>
-  informantType?: Maybe<Scalars['String']>
-  informantsSignature?: Maybe<Scalars['String']>
-  informantsSignatureURI?: Maybe<Scalars['String']>
-  mosipAid?: Maybe<Scalars['String']>
-  otherInformantType?: Maybe<Scalars['String']>
-  page?: Maybe<Scalars['String']>
-  paperFormID?: Maybe<Scalars['String']>
-  registrationNumber?: Maybe<Scalars['String']>
+  groomSignature?: Maybe<Scalars['String']['output']>
+  groomSignatureURI?: Maybe<Scalars['String']['output']>
+  id?: Maybe<Scalars['ID']['output']>
+  inCompleteFields?: Maybe<Scalars['String']['output']>
+  informantType?: Maybe<Scalars['String']['output']>
+  informantsSignature?: Maybe<Scalars['String']['output']>
+  informantsSignatureURI?: Maybe<Scalars['String']['output']>
+  mosipAid?: Maybe<Scalars['String']['output']>
+  otherInformantType?: Maybe<Scalars['String']['output']>
+  page?: Maybe<Scalars['String']['output']>
+  paperFormID?: Maybe<Scalars['String']['output']>
+  registrationNumber?: Maybe<Scalars['String']['output']>
   status?: Maybe<Array<Maybe<RegWorkflow>>>
-  trackingId?: Maybe<Scalars['String']>
+  trackingId?: Maybe<Scalars['String']['output']>
   type?: Maybe<RegistrationType>
-  witnessOneSignature?: Maybe<Scalars['String']>
-  witnessOneSignatureURI?: Maybe<Scalars['String']>
-  witnessTwoSignature?: Maybe<Scalars['String']>
-  witnessTwoSignatureURI?: Maybe<Scalars['String']>
+  witnessOneSignature?: Maybe<Scalars['String']['output']>
+  witnessOneSignatureURI?: Maybe<Scalars['String']['output']>
+  witnessTwoSignature?: Maybe<Scalars['String']['output']>
+  witnessTwoSignatureURI?: Maybe<Scalars['String']['output']>
 }
 
 export type RegistrationCountResult = {
   __typename?: 'RegistrationCountResult'
   results: Array<Maybe<StatusWiseRegistrationCount>>
-  total: Scalars['Int']
+  total: Scalars['Int']['output']
 }
 
 export type RegistrationInput = {
-  _fhirID?: InputMaybe<Scalars['ID']>
+  _fhirID?: InputMaybe<Scalars['ID']['input']>
   attachments?: InputMaybe<Array<AttachmentInput>>
-  book?: InputMaybe<Scalars['String']>
-  brideSignature?: InputMaybe<Scalars['String']>
+  book?: InputMaybe<Scalars['String']['input']>
+  brideSignature?: InputMaybe<Scalars['String']['input']>
   certificates?: InputMaybe<Array<InputMaybe<CertificateInput>>>
-  contactEmail?: InputMaybe<Scalars['String']>
-  contactPhoneNumber?: InputMaybe<Scalars['String']>
+  contactEmail?: InputMaybe<Scalars['String']['input']>
+  contactPhoneNumber?: InputMaybe<Scalars['String']['input']>
   correction?: InputMaybe<CorrectionInput>
-  draftId?: InputMaybe<Scalars['String']>
-  groomSignature?: InputMaybe<Scalars['String']>
-  inCompleteFields?: InputMaybe<Scalars['String']>
-  informantType?: InputMaybe<Scalars['String']>
-  informantsSignature?: InputMaybe<Scalars['String']>
+  draftId?: InputMaybe<Scalars['String']['input']>
+  groomSignature?: InputMaybe<Scalars['String']['input']>
+  inCompleteFields?: InputMaybe<Scalars['String']['input']>
+  informantType?: InputMaybe<Scalars['String']['input']>
+  informantsSignature?: InputMaybe<Scalars['String']['input']>
   location?: InputMaybe<LocationInput>
-  mosipAid?: InputMaybe<Scalars['String']>
-  otherInformantType?: InputMaybe<Scalars['String']>
-  page?: InputMaybe<Scalars['String']>
-  paperFormID?: InputMaybe<Scalars['String']>
-  registrationNumber?: InputMaybe<Scalars['String']>
+  mosipAid?: InputMaybe<Scalars['String']['input']>
+  otherInformantType?: InputMaybe<Scalars['String']['input']>
+  page?: InputMaybe<Scalars['String']['input']>
+  paperFormID?: InputMaybe<Scalars['String']['input']>
+  registrationNumber?: InputMaybe<Scalars['String']['input']>
   status?: InputMaybe<Array<InputMaybe<RegWorkflowInput>>>
-  trackingId?: InputMaybe<Scalars['String']>
+  trackingId?: InputMaybe<Scalars['String']['input']>
   type?: InputMaybe<RegistrationType>
-  witnessOneSignature?: InputMaybe<Scalars['String']>
-  witnessTwoSignature?: InputMaybe<Scalars['String']>
+  witnessOneSignature?: InputMaybe<Scalars['String']['input']>
+  witnessTwoSignature?: InputMaybe<Scalars['String']['input']>
 }
 
 export type RegistrationSearchSet = {
   __typename?: 'RegistrationSearchSet'
   assignment?: Maybe<AssignmentData>
-  comment?: Maybe<Scalars['String']>
-  contactNumber?: Maybe<Scalars['String']>
-  contactRelationship?: Maybe<Scalars['String']>
-  createdAt?: Maybe<Scalars['String']>
-  dateOfDeclaration?: Maybe<Scalars['Date']>
-  duplicates?: Maybe<Array<Maybe<Scalars['ID']>>>
-  eventLocationId?: Maybe<Scalars['String']>
-  modifiedAt?: Maybe<Scalars['String']>
-  reason?: Maybe<Scalars['String']>
-  registeredLocationId?: Maybe<Scalars['String']>
-  registrationNumber?: Maybe<Scalars['String']>
-  status?: Maybe<Scalars['String']>
-  trackingId?: Maybe<Scalars['String']>
+  comment?: Maybe<Scalars['String']['output']>
+  contactNumber?: Maybe<Scalars['String']['output']>
+  contactRelationship?: Maybe<Scalars['String']['output']>
+  createdAt?: Maybe<Scalars['String']['output']>
+  dateOfDeclaration?: Maybe<Scalars['Date']['output']>
+  duplicates?: Maybe<Array<Maybe<Scalars['ID']['output']>>>
+  eventLocationId?: Maybe<Scalars['String']['output']>
+  modifiedAt?: Maybe<Scalars['String']['output']>
+  reason?: Maybe<Scalars['String']['output']>
+  registeredLocationId?: Maybe<Scalars['String']['output']>
+  registrationNumber?: Maybe<Scalars['String']['output']>
+  status?: Maybe<Scalars['String']['output']>
+  trackingId?: Maybe<Scalars['String']['output']>
 }
 
 export enum RegistrationType {
@@ -1931,149 +1954,154 @@ export enum RegistrationType {
 export type Reinstated = {
   __typename?: 'Reinstated'
   registrationStatus?: Maybe<RegStatus>
-  taskEntryResourceID: Scalars['ID']
+  taskEntryResourceID: Scalars['ID']['output']
 }
 
 export type RelatedPerson = {
   __typename?: 'RelatedPerson'
-  _fhirID?: Maybe<Scalars['ID']>
-  _fhirIDPatient?: Maybe<Scalars['ID']>
+  _fhirID?: Maybe<Scalars['ID']['output']>
+  _fhirIDPatient?: Maybe<Scalars['ID']['output']>
   address?: Maybe<Array<Maybe<Address>>>
   affidavit?: Maybe<Array<Maybe<Attachment>>>
-  age?: Maybe<Scalars['Float']>
-  ageOfIndividualInYears?: Maybe<Scalars['Int']>
-  birthDate?: Maybe<Scalars['String']>
-  dateOfMarriage?: Maybe<Scalars['Date']>
+  age?: Maybe<Scalars['Float']['output']>
+  ageOfIndividualInYears?: Maybe<Scalars['Int']['output']>
+  birthDate?: Maybe<Scalars['String']['output']>
+  dateOfMarriage?: Maybe<Scalars['Date']['output']>
   deceased?: Maybe<Deceased>
-  detailsExist?: Maybe<Scalars['Boolean']>
-  educationalAttainment?: Maybe<Scalars['String']>
-  exactDateOfBirthUnknown?: Maybe<Scalars['Boolean']>
-  gender?: Maybe<Scalars['String']>
-  id?: Maybe<Scalars['ID']>
+  detailsExist?: Maybe<Scalars['Boolean']['output']>
+  educationalAttainment?: Maybe<Scalars['String']['output']>
+  exactDateOfBirthUnknown?: Maybe<Scalars['Boolean']['output']>
+  gender?: Maybe<Scalars['String']['output']>
+  id?: Maybe<Scalars['ID']['output']>
   identifier?: Maybe<Array<Maybe<IdentityType>>>
-  maritalStatus?: Maybe<Scalars['String']>
-  multipleBirth?: Maybe<Scalars['Int']>
+  maritalStatus?: Maybe<Scalars['String']['output']>
+  multipleBirth?: Maybe<Scalars['Int']['output']>
   name?: Maybe<Array<Maybe<HumanName>>>
-  nationality?: Maybe<Array<Maybe<Scalars['String']>>>
-  occupation?: Maybe<Scalars['String']>
-  otherRelationship?: Maybe<Scalars['String']>
+  nationality?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  occupation?: Maybe<Scalars['String']['output']>
+  otherRelationship?: Maybe<Scalars['String']['output']>
   photo?: Maybe<Array<Maybe<Attachment>>>
-  reasonNotApplying?: Maybe<Scalars['String']>
-  relationship?: Maybe<Scalars['String']>
+  reasonNotApplying?: Maybe<Scalars['String']['output']>
+  relationship?: Maybe<Scalars['String']['output']>
   telecom?: Maybe<Array<Maybe<ContactPoint>>>
 }
 
 export type RelatedPersonInput = {
-  _fhirID?: InputMaybe<Scalars['ID']>
-  _fhirIDPatient?: InputMaybe<Scalars['ID']>
+  _fhirID?: InputMaybe<Scalars['ID']['input']>
+  _fhirIDPatient?: InputMaybe<Scalars['ID']['input']>
   address?: InputMaybe<Array<InputMaybe<AddressInput>>>
   affidavit?: InputMaybe<Array<AttachmentInput>>
-  age?: InputMaybe<Scalars['Float']>
-  ageOfIndividualInYears?: InputMaybe<Scalars['Int']>
-  birthDate?: InputMaybe<Scalars['String']>
-  dateOfMarriage?: InputMaybe<Scalars['Date']>
+  age?: InputMaybe<Scalars['Float']['input']>
+  ageOfIndividualInYears?: InputMaybe<Scalars['Int']['input']>
+  birthDate?: InputMaybe<Scalars['String']['input']>
+  dateOfMarriage?: InputMaybe<Scalars['Date']['input']>
   deceased?: InputMaybe<DeceasedInput>
-  detailsExist?: InputMaybe<Scalars['Boolean']>
-  educationalAttainment?: InputMaybe<Scalars['String']>
-  exactDateOfBirthUnknown?: InputMaybe<Scalars['Boolean']>
-  gender?: InputMaybe<Scalars['String']>
-  id?: InputMaybe<Scalars['ID']>
+  detailsExist?: InputMaybe<Scalars['Boolean']['input']>
+  educationalAttainment?: InputMaybe<Scalars['String']['input']>
+  exactDateOfBirthUnknown?: InputMaybe<Scalars['Boolean']['input']>
+  gender?: InputMaybe<Scalars['String']['input']>
+  id?: InputMaybe<Scalars['ID']['input']>
   identifier?: InputMaybe<Array<InputMaybe<IdentityInput>>>
-  maritalStatus?: InputMaybe<Scalars['String']>
-  multipleBirth?: InputMaybe<Scalars['Int']>
+  maritalStatus?: InputMaybe<Scalars['String']['input']>
+  multipleBirth?: InputMaybe<Scalars['Int']['input']>
   name?: InputMaybe<Array<InputMaybe<HumanNameInput>>>
-  nationality?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  occupation?: InputMaybe<Scalars['String']>
-  otherRelationship?: InputMaybe<Scalars['String']>
+  nationality?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
+  occupation?: InputMaybe<Scalars['String']['input']>
+  otherRelationship?: InputMaybe<Scalars['String']['input']>
   photo?: InputMaybe<Array<AttachmentInput>>
-  reasonNotApplying?: InputMaybe<Scalars['String']>
-  relationship?: InputMaybe<Scalars['String']>
+  reasonNotApplying?: InputMaybe<Scalars['String']['input']>
+  relationship?: InputMaybe<Scalars['String']['input']>
   telecom?: InputMaybe<Array<InputMaybe<ContactPointInput>>>
 }
 
 export type RemoveBookmarkedSeachInput = {
-  searchId: Scalars['String']
-  userId: Scalars['String']
+  searchId: Scalars['String']['input']
+  userId: Scalars['String']['input']
 }
 
 export type Response = {
   __typename?: 'Response'
-  roleIdMap: Scalars['Map']
+  roleIdMap: Scalars['Map']['output']
 }
 
 export type Role = {
   __typename?: 'Role'
-  _id: Scalars['ID']
+  _id: Scalars['ID']['output']
   labels: Array<RoleLabel>
 }
 
 export type RoleInput = {
-  _id?: InputMaybe<Scalars['ID']>
+  _id?: InputMaybe<Scalars['ID']['input']>
   labels: Array<LabelInput>
 }
 
 export type RoleLabel = {
   __typename?: 'RoleLabel'
-  label: Scalars['String']
-  lang: Scalars['String']
+  label: Scalars['String']['output']
+  lang: Scalars['String']['output']
 }
 
 export type SmsNotification = {
   __typename?: 'SMSNotification'
-  createdAt: Scalars['String']
-  enabled: Scalars['Boolean']
-  id?: Maybe<Scalars['String']>
-  name: Scalars['String']
-  updatedAt: Scalars['String']
+  createdAt: Scalars['String']['output']
+  enabled: Scalars['Boolean']['output']
+  id?: Maybe<Scalars['String']['output']>
+  name: Scalars['String']['output']
+  updatedAt: Scalars['String']['output']
 }
 
 export type SmsNotificationInput = {
-  enabled: Scalars['Boolean']
-  id: Scalars['String']
-  name: Scalars['String']
+  enabled: Scalars['Boolean']['input']
+  id: Scalars['String']['input']
+  name: Scalars['String']['input']
 }
 
 export type SearchFieldAgentResponse = {
   __typename?: 'SearchFieldAgentResponse'
   avatar?: Maybe<Avatar>
-  averageTimeForDeclaredDeclarations?: Maybe<Scalars['Int']>
-  creationDate?: Maybe<Scalars['String']>
-  fullName?: Maybe<Scalars['String']>
-  practitionerId?: Maybe<Scalars['String']>
-  primaryOfficeId?: Maybe<Scalars['String']>
+  averageTimeForDeclaredDeclarations?: Maybe<Scalars['Int']['output']>
+  creationDate?: Maybe<Scalars['String']['output']>
+  fullName?: Maybe<Scalars['String']['output']>
+  practitionerId?: Maybe<Scalars['String']['output']>
+  primaryOfficeId?: Maybe<Scalars['String']['output']>
   role?: Maybe<Role>
   status?: Maybe<Status>
-  totalNumberOfDeclarationStarted?: Maybe<Scalars['Int']>
-  totalNumberOfInProgressAppStarted?: Maybe<Scalars['Int']>
-  totalNumberOfRejectedDeclarations?: Maybe<Scalars['Int']>
+  totalNumberOfDeclarationStarted?: Maybe<Scalars['Int']['output']>
+  totalNumberOfInProgressAppStarted?: Maybe<Scalars['Int']['output']>
+  totalNumberOfRejectedDeclarations?: Maybe<Scalars['Int']['output']>
 }
 
 export type SearchFieldAgentResult = {
   __typename?: 'SearchFieldAgentResult'
   results?: Maybe<Array<Maybe<SearchFieldAgentResponse>>>
-  totalItems?: Maybe<Scalars['Int']>
+  totalItems?: Maybe<Scalars['Int']['output']>
 }
 
 export type SearchUserResult = {
   __typename?: 'SearchUserResult'
   results?: Maybe<Array<Maybe<User>>>
-  totalItems?: Maybe<Scalars['Int']>
+  totalItems?: Maybe<Scalars['Int']['output']>
 }
 
 export type SecurityQuestionAnswer = {
-  answer?: InputMaybe<Scalars['String']>
-  questionKey?: InputMaybe<Scalars['String']>
+  answer?: InputMaybe<Scalars['String']['input']>
+  questionKey?: InputMaybe<Scalars['String']['input']>
 }
 
 export type Signature = {
   __typename?: 'Signature'
-  data?: Maybe<Scalars['String']>
-  type?: Maybe<Scalars['String']>
+  data?: Maybe<Scalars['String']['output']>
+  type?: Maybe<Scalars['String']['output']>
 }
 
 export type SignatureInput = {
-  data: Scalars['String']
-  type?: InputMaybe<Scalars['String']>
+  data: Scalars['String']['input']
+  type?: InputMaybe<Scalars['String']['input']>
+}
+
+export type SortBy = {
+  column: Scalars['String']['input']
+  order: Scalars['String']['input']
 }
 
 export enum Status {
@@ -2085,47 +2113,47 @@ export enum Status {
 
 export type StatusReason = {
   __typename?: 'StatusReason'
-  text?: Maybe<Scalars['String']>
+  text?: Maybe<Scalars['String']['output']>
 }
 
 export type StatusWiseRegistrationCount = {
   __typename?: 'StatusWiseRegistrationCount'
-  count: Scalars['Int']
-  status: Scalars['String']
+  count: Scalars['Int']['output']
+  status: Scalars['String']['output']
 }
 
 export type System = {
   __typename?: 'System'
-  _id: Scalars['ID']
-  clientId: Scalars['ID']
+  _id: Scalars['ID']['output']
+  clientId: Scalars['ID']['output']
   integratingSystemType?: Maybe<IntegratingSystemType>
-  name: Scalars['String']
+  name: Scalars['String']['output']
   settings?: Maybe<SystemSettings>
-  shaSecret: Scalars['ID']
+  shaSecret: Scalars['ID']['output']
   status: SystemStatus
   type: SystemType
 }
 
 export type SystemInput = {
   integratingSystemType?: InputMaybe<IntegratingSystemType>
-  name: Scalars['String']
+  name: Scalars['String']['input']
   settings?: InputMaybe<SystemSettingsInput>
   type: SystemType
 }
 
 export type SystemRole = {
   __typename?: 'SystemRole'
-  active: Scalars['Boolean']
-  id: Scalars['ID']
+  active: Scalars['Boolean']['output']
+  id: Scalars['ID']['output']
   roles: Array<Role>
   value: SystemRoleType
 }
 
 export type SystemRoleInput = {
-  active?: InputMaybe<Scalars['Boolean']>
-  id: Scalars['ID']
+  active?: InputMaybe<Scalars['Boolean']['input']>
+  id: Scalars['ID']['input']
   roles?: InputMaybe<Array<RoleInput>>
-  value?: InputMaybe<Scalars['String']>
+  value?: InputMaybe<Scalars['String']['input']>
 }
 
 export enum SystemRoleType {
@@ -2140,21 +2168,21 @@ export enum SystemRoleType {
 
 export type SystemSecret = {
   __typename?: 'SystemSecret'
-  clientSecret: Scalars['ID']
+  clientSecret: Scalars['ID']['output']
   system: System
 }
 
 export type SystemSettings = {
   __typename?: 'SystemSettings'
-  dailyQuota?: Maybe<Scalars['Int']>
-  openIdProviderBaseUrl?: Maybe<Scalars['String']>
-  openIdProviderClaims?: Maybe<Scalars['String']>
-  openIdProviderClientId?: Maybe<Scalars['String']>
+  dailyQuota?: Maybe<Scalars['Int']['output']>
+  openIdProviderBaseUrl?: Maybe<Scalars['String']['output']>
+  openIdProviderClaims?: Maybe<Scalars['String']['output']>
+  openIdProviderClientId?: Maybe<Scalars['String']['output']>
   webhook?: Maybe<Array<WebhookPermission>>
 }
 
 export type SystemSettingsInput = {
-  dailyQuota?: InputMaybe<Scalars['Int']>
+  dailyQuota?: InputMaybe<Scalars['Int']['input']>
   webhook?: InputMaybe<Array<InputMaybe<WebhookInput>>>
 }
 
@@ -2173,19 +2201,19 @@ export enum SystemType {
 export type TotalMetricsByLocation = {
   __typename?: 'TotalMetricsByLocation'
   results: Array<EventMetricsByLocation>
-  total?: Maybe<Scalars['Int']>
+  total?: Maybe<Scalars['Int']['output']>
 }
 
 export type TotalMetricsByRegistrar = {
   __typename?: 'TotalMetricsByRegistrar'
   results: Array<EventMetricsByRegistrar>
-  total?: Maybe<Scalars['Int']>
+  total?: Maybe<Scalars['Int']['output']>
 }
 
 export type TotalMetricsByTime = {
   __typename?: 'TotalMetricsByTime'
   results: Array<EventMetricsByTime>
-  total?: Maybe<Scalars['Int']>
+  total?: Maybe<Scalars['Int']['output']>
 }
 
 export type TotalMetricsResult = {
@@ -2200,7 +2228,7 @@ export type TotalVsExport = {
 }
 
 export type UpdatePermissionsInput = {
-  clientId: Scalars['String']
+  clientId: Scalars['String']['input']
   webhook: Array<WebhookInput>
 }
 
@@ -2208,43 +2236,43 @@ export type User = {
   __typename?: 'User'
   avatar?: Maybe<Avatar>
   catchmentArea?: Maybe<Array<Location>>
-  creationDate: Scalars['String']
-  device?: Maybe<Scalars['String']>
-  email?: Maybe<Scalars['String']>
-  id: Scalars['ID']
+  creationDate: Scalars['String']['output']
+  device?: Maybe<Scalars['String']['output']>
+  email?: Maybe<Scalars['String']['output']>
+  id: Scalars['ID']['output']
   identifier?: Maybe<Identifier>
   localRegistrar?: Maybe<LocalRegistrar>
-  mobile?: Maybe<Scalars['String']>
+  mobile?: Maybe<Scalars['String']['output']>
   name: Array<HumanName>
-  practitionerId: Scalars['String']
+  practitionerId: Scalars['String']['output']
   primaryOffice?: Maybe<Location>
   role: Role
   searches?: Maybe<Array<BookmarkedSeachItem>>
   signature?: Maybe<Signature>
   status: Status
   systemRole: SystemRoleType
-  underInvestigation?: Maybe<Scalars['Boolean']>
-  userMgntUserID: Scalars['ID']
-  username?: Maybe<Scalars['String']>
+  underInvestigation?: Maybe<Scalars['Boolean']['output']>
+  userMgntUserID: Scalars['ID']['output']
+  username?: Maybe<Scalars['String']['output']>
 }
 
 export type UserAuditLogItem = AuditLogItemBase & {
   __typename?: 'UserAuditLogItem'
-  action: Scalars['String']
-  ipAddress: Scalars['String']
-  practitionerId: Scalars['String']
-  time: Scalars['String']
-  userAgent: Scalars['String']
+  action: Scalars['String']['output']
+  ipAddress: Scalars['String']['output']
+  practitionerId: Scalars['String']['output']
+  time: Scalars['String']['output']
+  userAgent: Scalars['String']['output']
 }
 
 export type UserAuditLogItemWithComposition = AuditLogItemBase & {
   __typename?: 'UserAuditLogItemWithComposition'
-  action: Scalars['String']
+  action: Scalars['String']['output']
   data: AdditionalIdWithCompositionId
-  ipAddress: Scalars['String']
-  practitionerId: Scalars['String']
-  time: Scalars['String']
-  userAgent: Scalars['String']
+  ipAddress: Scalars['String']['output']
+  practitionerId: Scalars['String']['output']
+  time: Scalars['String']['output']
+  userAgent: Scalars['String']['output']
 }
 
 export type UserAuditLogResultItem =
@@ -2254,75 +2282,75 @@ export type UserAuditLogResultItem =
 export type UserAuditLogResultSet = {
   __typename?: 'UserAuditLogResultSet'
   results: Array<UserAuditLogResultItem>
-  total: Scalars['Int']
+  total: Scalars['Int']['output']
 }
 
 export type UserIdentifierInput = {
-  system?: InputMaybe<Scalars['String']>
-  use?: InputMaybe<Scalars['String']>
-  value?: InputMaybe<Scalars['String']>
+  system?: InputMaybe<Scalars['String']['input']>
+  use?: InputMaybe<Scalars['String']['input']>
+  value?: InputMaybe<Scalars['String']['input']>
 }
 
 export type UserInfo = {
   __typename?: 'UserInfo'
-  districtFhirId?: Maybe<Scalars['String']>
-  locationLevel3FhirId?: Maybe<Scalars['String']>
+  districtFhirId?: Maybe<Scalars['String']['output']>
+  locationLevel3FhirId?: Maybe<Scalars['String']['output']>
   oidpUserInfo?: Maybe<OidpUserInfo>
-  stateFhirId?: Maybe<Scalars['String']>
+  stateFhirId?: Maybe<Scalars['String']['output']>
 }
 
 export type UserInput = {
-  catchmentArea?: InputMaybe<Array<InputMaybe<Scalars['String']>>>
-  device?: InputMaybe<Scalars['String']>
-  email?: InputMaybe<Scalars['String']>
-  id?: InputMaybe<Scalars['ID']>
+  catchmentArea?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
+  device?: InputMaybe<Scalars['String']['input']>
+  email?: InputMaybe<Scalars['String']['input']>
+  id?: InputMaybe<Scalars['ID']['input']>
   identifier?: InputMaybe<Array<InputMaybe<UserIdentifierInput>>>
-  mobile?: InputMaybe<Scalars['String']>
+  mobile?: InputMaybe<Scalars['String']['input']>
   name: Array<HumanNameInput>
-  password?: InputMaybe<Scalars['String']>
-  primaryOffice?: InputMaybe<Scalars['String']>
-  role?: InputMaybe<Scalars['String']>
+  password?: InputMaybe<Scalars['String']['input']>
+  primaryOffice?: InputMaybe<Scalars['String']['input']>
+  role?: InputMaybe<Scalars['String']['input']>
   signature?: InputMaybe<SignatureInput>
   status?: InputMaybe<Status>
   systemRole: SystemRoleType
-  username?: InputMaybe<Scalars['String']>
+  username?: InputMaybe<Scalars['String']['input']>
 }
 
 export type VsExport = {
   __typename?: 'VSExport'
-  createdOn: Scalars['Date']
-  endDate: Scalars['Date']
-  event: Scalars['String']
-  fileSize: Scalars['String']
-  startDate: Scalars['Date']
-  url: Scalars['String']
+  createdOn: Scalars['Date']['output']
+  endDate: Scalars['Date']['output']
+  event: Scalars['String']['output']
+  fileSize: Scalars['String']['output']
+  startDate: Scalars['Date']['output']
+  url: Scalars['String']['output']
 }
 
 export type VerifyPasswordResult = {
   __typename?: 'VerifyPasswordResult'
-  id?: Maybe<Scalars['String']>
-  mobile?: Maybe<Scalars['String']>
-  scrope?: Maybe<Array<Maybe<Scalars['String']>>>
-  status?: Maybe<Scalars['String']>
-  username?: Maybe<Scalars['String']>
+  id?: Maybe<Scalars['String']['output']>
+  mobile?: Maybe<Scalars['String']['output']>
+  scrope?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  status?: Maybe<Scalars['String']['output']>
+  username?: Maybe<Scalars['String']['output']>
 }
 
 export type WebhookInput = {
-  event: Scalars['String']
-  permissions: Array<InputMaybe<Scalars['String']>>
+  event: Scalars['String']['input']
+  permissions: Array<InputMaybe<Scalars['String']['input']>>
 }
 
 export type WebhookPermission = {
   __typename?: 'WebhookPermission'
-  event: Scalars['String']
-  permissions: Array<Scalars['String']>
+  event: Scalars['String']['output']
+  permissions: Array<Scalars['String']['output']>
 }
 
 export type SearchEventsQueryVariables = Exact<{
   advancedSearchParameters: AdvancedSearchParametersInput
-  sort?: InputMaybe<Scalars['String']>
-  count?: InputMaybe<Scalars['Int']>
-  skip?: InputMaybe<Scalars['Int']>
+  count?: InputMaybe<Scalars['Int']['input']>
+  skip?: InputMaybe<Scalars['Int']['input']>
+  sortBy?: InputMaybe<Array<SortBy> | SortBy>
 }>
 
 export type SearchEventsQuery = {
@@ -2340,7 +2368,7 @@ export type SearchEventsQuery = {
 }
 
 export type FetchRegistrationQueryVariables = Exact<{
-  id: Scalars['ID']
+  id: Scalars['ID']['input']
 }>
 
 export type FetchRegistrationQuery = {
@@ -2352,6 +2380,8 @@ export type FetchRegistrationQuery = {
         child?: {
           __typename?: 'Person'
           id?: string | null
+          birthDate?: string | null
+          gender?: string | null
           name?: Array<{
             __typename?: 'HumanName'
             use?: string | null
@@ -2389,11 +2419,17 @@ export type FetchRegistrationQuery = {
         deceased?: {
           __typename?: 'Person'
           id?: string | null
+          gender?: string | null
           name?: Array<{
             __typename?: 'HumanName'
             use?: string | null
             firstNames?: string | null
             familyName?: string | null
+          } | null> | null
+          identifier?: Array<{
+            __typename?: 'IdentityType'
+            id?: string | null
+            type?: string | null
           } | null> | null
         } | null
         eventLocation?: {
@@ -2448,6 +2484,11 @@ export type FetchRegistrationQuery = {
             firstNames?: string | null
             familyName?: string | null
           } | null> | null
+          identifier?: Array<{
+            __typename?: 'IdentityType'
+            id?: string | null
+            type?: string | null
+          } | null> | null
         } | null
         groom?: {
           __typename?: 'Person'
@@ -2458,6 +2499,11 @@ export type FetchRegistrationQuery = {
             use?: string | null
             firstNames?: string | null
             familyName?: string | null
+          } | null> | null
+          identifier?: Array<{
+            __typename?: 'IdentityType'
+            id?: string | null
+            type?: string | null
           } | null> | null
         } | null
         registration?: {

@@ -16,8 +16,10 @@ export function searchRequestToAdvancedSearchParameters(
       }>
     | undefined
   const parameters: SearchEventsQueryVariables['advancedSearchParameters'] = {}
-  // let sortOrder: "asc" | "desc" = "asc";
-  // let sortColumn: string | undefined;
+  const sortBy = sort?.map(({ attribute_name: column, sort_order: order }) => ({
+    column,
+    order
+  }))
 
   if (query.identifier_type.value === 'BRN') {
     parameters.registrationNumber = query.identifier_value
@@ -35,17 +37,5 @@ export function searchRequestToAdvancedSearchParameters(
 
   parameters.event = request.search_criteria.reg_event_type?.value
 
-  if ((sort?.length ?? 0) > 1) {
-    throw new ParseError('Sorting by more than one attribute is not supported')
-  }
-
-  if (sort?.[0]?.attribute_name === 'dateOfDeclaration') {
-    // sortColumn = "dateOfDeclaration";
-  }
-
-  if (sort?.[0]?.sort_order !== undefined) {
-    // sortOrder = sort?.[0]?.sort_order;
-  }
-
-  return { advancedSearchParameters: parameters }
+  return { advancedSearchParameters: parameters, sortBy }
 }
