@@ -233,7 +233,8 @@ export function searchResponseBuilder(
 
 export function registrySyncSearchBuilder(
   responses: SearchResponseWithMetadata[],
-  request: SyncSearchRequest
+  request: SyncSearchRequest,
+  correlationId?: ReturnType<typeof randomUUID>
 ) {
   const totalCount = responses
     .map(({ registrations }) => registrations.length ?? 0)
@@ -253,7 +254,7 @@ export function registrySyncSearchBuilder(
     },
     message: {
       transaction_id: request.message.transaction_id,
-      correlation_id: randomUUID(),
+      correlation_id: correlationId ?? randomUUID(),
       search_response: responses.flatMap(
         ({ registrations, originalRequest, responseFinishedTimestamp }) =>
           registrations.length > 0

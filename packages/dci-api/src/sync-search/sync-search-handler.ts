@@ -2,12 +2,13 @@ import type * as Hapi from '@hapi/hapi'
 import { advancedRecordSearch, fetchRegistration } from 'opencrvs-api'
 import {
   registrySyncSearchBuilder,
+  AuthorizationError,
   searchRequestToAdvancedSearchParameters
 } from 'dci-opencrvs-bridge'
 import { compact } from 'lodash/fp'
-import { type SyncSearchRequest, requestSchema } from '../validations'
+import { type SyncSearchRequest, syncSearchRequestSchema } from '../validations'
 import { fromZodError } from 'zod-validation-error'
-import { AuthorizationError, ValidationError } from '../error'
+import { ValidationError } from '../error'
 import { parseToken } from '../auth'
 
 async function fetchRegistrations(token: string, ids: string[]) {
@@ -16,7 +17,10 @@ async function fetchRegistrations(token: string, ids: string[]) {
   )
 }
 
-async function search(token: string, request: SyncSearchRequest['message']) {
+export async function search(
+  token: string,
+  request: SyncSearchRequest['message']
+) {
   const searchRequests = request.search_request
   const searchResults = await Promise.all(
     searchRequests.map(async (searchRequest) => {
@@ -45,7 +49,7 @@ export async function syncSearchHandler(
   request: Hapi.Request<{ Headers: { authorization?: string } }>,
   _h: Hapi.ResponseToolkit
 ) {
-  const result = requestSchema.safeParse(request.payload)
+  const result = syncSearchRequestSchema.safeParse(request.payload)
   if (!result.success) {
     throw new ValidationError(fromZodError(result.error).message)
   }

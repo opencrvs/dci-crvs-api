@@ -1,9 +1,9 @@
 import * as Hapi from '@hapi/hapi'
 import { HOST, PORT, DEFAULT_TIMEOUT_MS, NODE_ENV } from './constants'
 import { routes } from './routes'
-import { ParseError } from 'dci-opencrvs-bridge'
+import { AuthorizationError, ParseError } from 'dci-opencrvs-bridge'
 import pino from 'hapi-pino'
-import { ValidationError, AuthorizationError, error } from './error'
+import { ValidationError, error } from './error'
 
 export async function createServer() {
   const server = new Hapi.Server({

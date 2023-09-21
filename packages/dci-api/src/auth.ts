@@ -1,4 +1,4 @@
-import { AuthorizationError } from './error'
+import { AuthorizationError } from 'dci-opencrvs-bridge'
 
 export function parseToken(header: string) {
   if (!header.startsWith('Bearer')) {

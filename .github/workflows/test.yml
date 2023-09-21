@@ -10,10 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set the correct Node version using nvm
-        shell: bash -l {0}
-        run: nvm install
+      - name: Read nvmrc
+        run: echo "nvmrc=$(cat .nvmrc)" >> "$GITHUB_OUTPUT"
+        id: nvm
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ steps.nvm.outputs.nvmrc }}
+          cache: "npm"
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Run tests
         run: npm test

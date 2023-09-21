@@ -37,20 +37,32 @@ const authorize = z.object({
     .optional()
 })
 
-const languageCode = z.string()
+const languageCode = z.string().regex(/^[a-z]{3,3}$/)
 
 const version = z.string().optional().default('1.0.0')
 
-const header = z.object({
+const syncHeader = z.object({
   version,
   message_id: z.string(),
   message_ts: dateTime,
-  action: z.string(),
+  action: z.literal('search'),
   sender_id: z.string(),
   sender_uri: z.string().optional(),
   receiver_id: z.string().optional(),
   total_count: z.number(),
-  is_msg_encrypted: z.boolean().optional()
+  is_msg_encrypted: z.boolean().optional().default(false)
+})
+
+const asyncHeader = z.object({
+  version,
+  message_id: z.string(),
+  message_ts: dateTime,
+  action: z.literal('search'),
+  sender_id: z.string(),
+  sender_uri: z.string(),
+  receiver_id: z.string().optional(),
+  total_count: z.number(),
+  is_msg_encrypted: z.boolean().optional().default(false)
 })
 
 /**
@@ -110,7 +122,7 @@ const predicateQuery = z.object({
 })
 
 const searchRequest = z.object({
-  transaction_id: z.string(),
+  transaction_id: z.string().max(99),
   search_request: z.array(
     z.object({
       reference_id: z.string(),
@@ -132,12 +144,18 @@ const searchRequest = z.object({
   )
 })
 
-export const requestSchema = z.object({
+export const syncSearchRequestSchema = z.object({
   signature: z.string().optional(),
-  header,
-  action: z.enum(['search']).optional(),
+  header: syncHeader,
   message: searchRequest
 })
 
-export type SyncSearchRequest = TypeOf<typeof requestSchema>
+export const asyncSearchRequestSchema = z.object({
+  signature: z.string().optional(),
+  header: asyncHeader,
+  message: searchRequest
+})
+
+export type SyncSearchRequest = TypeOf<typeof syncSearchRequestSchema>
 export type EventType = TypeOf<typeof eventTypes>
+export type AsyncSearchRequest = TypeOf<typeof asyncSearchRequestSchema>
