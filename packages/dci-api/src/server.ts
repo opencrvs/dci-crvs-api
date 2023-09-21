@@ -4,6 +4,7 @@ import { routes } from './routes'
 import { AuthorizationError, ParseError } from 'dci-opencrvs-bridge'
 import pino from 'hapi-pino'
 import { ValidationError, error } from './error'
+import H2o2 from '@hapi/h2o2'
 
 export async function createServer() {
   const server = new Hapi.Server({
@@ -15,8 +16,8 @@ export async function createServer() {
     }
   })
 
-  server.route(routes)
-
+  // H2o2 allows proxying token requests directly to OpenCRVS core auth
+  await server.register(H2o2)
   await server.register({
     plugin: pino,
     options: {
@@ -30,6 +31,8 @@ export async function createServer() {
           })
     }
   })
+
+  server.route(routes)
 
   server.ext('onPreResponse', (request, reply) => {
     if (
@@ -69,4 +72,8 @@ export async function createServer() {
   }
 
   return { start, init, stop }
+}
+
+export interface ReqResWithAuthorization extends Hapi.ReqRefDefaults {
+  Headers: { authorization?: string }
 }

@@ -10,6 +10,7 @@ import { type SyncSearchRequest, syncSearchRequestSchema } from '../validations'
 import { fromZodError } from 'zod-validation-error'
 import { ValidationError } from '../error'
 import { parseToken } from '../auth'
+import { type ReqResWithAuthorization } from '../server'
 
 async function fetchRegistrations(token: string, ids: string[]) {
   return await Promise.all(
@@ -46,7 +47,7 @@ export async function search(
 }
 
 export async function syncSearchHandler(
-  request: Hapi.Request<{ Headers: { authorization?: string } }>,
+  request: Hapi.Request<ReqResWithAuthorization>,
   _h: Hapi.ResponseToolkit
 ) {
   const result = syncSearchRequestSchema.safeParse(request.payload)

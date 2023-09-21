@@ -14,6 +14,7 @@ import {
 } from 'dci-opencrvs-bridge'
 import { parseToken } from '../auth'
 import { randomUUID } from 'node:crypto'
+import { type ReqResWithAuthorization } from '../server'
 
 async function asyncSearch(
   token: string,
@@ -39,7 +40,7 @@ async function asyncSearch(
 }
 
 export async function asyncSearchHandler(
-  request: Hapi.Request<{ Headers: { authorization?: string } }>,
+  request: Hapi.Request<ReqResWithAuthorization>,
   h: Hapi.ResponseToolkit
 ) {
   const header = request.headers.authorization
