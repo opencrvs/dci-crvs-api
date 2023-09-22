@@ -87,39 +87,58 @@ const reference = (value: ZodType = z.string()) =>
     value
   })
 
-const attributeValue = z.string().or(z.number()).or(z.boolean())
+const commonSearchCriteria = z.object({
+  version,
+  reg_type: reference().optional(),
+  reg_event_type: reference(eventTypes),
+  result_record_type: reference(),
+  sort: z.array(searchSort).optional(),
+  pagination: paginationRequest.optional(),
+  consent: consent.optional(),
+  authorize: authorize.optional()
+})
+
+const attributeValue = z.string()
 
 const identifierTypeValue = z.object({
   identifier_type: reference(),
   identifier_value: attributeValue
 })
 
-const identifierTypeQuery = z.object({
-  query_type: z.literal('idtype-value'),
-  query: identifierTypeValue
-})
+const identifierTypeQuery = commonSearchCriteria.and(
+  z.object({
+    query_type: z.literal('idtype-value'),
+    query: identifierTypeValue
+  })
+)
 
-const expressionCondition = z.enum(['and', 'or', 'not'])
+const expressionCondition = z.enum(['and'])
 
-const expressionOperator = z.enum(['gt', 'lt', 'eq', 'ge', 'le', 'in'])
+const expressionOperator = z.enum(['gt', 'lt', 'eq', 'ge', 'le'])
+
+const expressionSupportedFields = z.enum(['birthdate'])
 
 const expressionPredicate = z.object({
-  attribute_name: z.string(),
+  attribute_name: expressionSupportedFields,
   operator: expressionOperator,
-  attribute_value: attributeValue
+  attribute_value: z.coerce.date()
 })
 
-const predicateQuery = z.object({
-  query_type: z.literal('predicate'),
-  query: z.array(
-    z.object({
-      seq_num: z.number().optional(),
-      expression1: expressionPredicate,
-      condition: expressionCondition.optional(),
-      expression2: expressionPredicate.optional()
-    })
-  )
-})
+const predicateQuery = commonSearchCriteria.and(
+  z.object({
+    query_type: z.literal('predicate'),
+    query: z.array(
+      z.object({
+        seq_num: z.number().optional(),
+        expression1: expressionPredicate,
+        condition: expressionCondition.optional(),
+        expression2: expressionPredicate
+      })
+    )
+  })
+)
+
+const searchCriteria = predicateQuery.or(identifierTypeQuery)
 
 const searchRequest = z.object({
   transaction_id: z.string().max(99),
@@ -127,18 +146,7 @@ const searchRequest = z.object({
     z.object({
       reference_id: z.string(),
       timestamp: dateTime,
-      search_criteria: z
-        .object({
-          version,
-          reg_type: reference().optional(),
-          reg_event_type: reference(eventTypes),
-          result_record_type: reference(),
-          sort: z.array(searchSort).optional(),
-          pagination: paginationRequest.optional(),
-          consent: consent.optional(),
-          authorize: authorize.optional()
-        })
-        .and(predicateQuery.or(identifierTypeQuery)),
+      search_criteria: searchCriteria,
       locale: languageCode.optional().default('eng')
     })
   )
@@ -159,3 +167,6 @@ export const asyncSearchRequestSchema = z.object({
 export type SyncSearchRequest = TypeOf<typeof syncSearchRequestSchema>
 export type EventType = TypeOf<typeof eventTypes>
 export type AsyncSearchRequest = TypeOf<typeof asyncSearchRequestSchema>
+export type SearchCriteria = TypeOf<typeof searchCriteria>
+export type PredicateQuery = TypeOf<typeof predicateQuery>
+export type IdentifierTypeQuery = TypeOf<typeof identifierTypeQuery>
