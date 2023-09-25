@@ -4,7 +4,9 @@ import {
   type SearchCriteria,
   type IdentifierTypeQuery
 } from 'dci-api'
-import { subDays, formatISO, addDays } from 'date-fns/fp'
+import { subDays, formatISOWithOptions, addDays } from 'date-fns/fp'
+
+const formatDate = formatISOWithOptions({ representation: 'date' })
 
 function isIdentifierTypeQuery(
   criteria: SearchCriteria
@@ -33,59 +35,61 @@ function parameters(criteria: SearchCriteria) {
     for (const criterion of criteria.query) {
       if (criteria.reg_event_type.value === Event.Birth) {
         if (criterion.expression1.operator === 'ge') {
-          parameters.childDoBStart = formatISO(
+          parameters.childDoBStart = formatDate(
             criterion.expression1.attribute_value
           )
         }
 
         if (criterion.expression1.operator === 'gt') {
-          parameters.childDoBStart = formatISO(
+          parameters.childDoBStart = formatDate(
             addDays(1)(criterion.expression1.attribute_value)
           )
         }
 
         if (criterion.expression2.operator === 'le') {
-          parameters.childDoBEnd = formatISO(
+          parameters.childDoBEnd = formatDate(
             criterion.expression2.attribute_value
           )
         }
 
         if (criterion.expression2.operator === 'lt') {
-          parameters.childDoBEnd = formatISO(
+          parameters.childDoBEnd = formatDate(
             subDays(1)(criterion.expression2.attribute_value)
           )
         }
 
         if (criterion.expression1.operator === 'eq') {
-          parameters.childDoB = formatISO(criterion.expression1.attribute_value)
+          parameters.childDoB = formatDate(
+            criterion.expression1.attribute_value
+          )
         }
       } else if (criteria.reg_event_type.value === Event.Death) {
         if (criterion.expression1.operator === 'ge') {
-          parameters.deceasedDoBStart = formatISO(
+          parameters.deceasedDoBStart = formatDate(
             criterion.expression1.attribute_value
           )
         }
 
         if (criterion.expression1.operator === 'gt') {
-          parameters.deceasedDoBStart = formatISO(
+          parameters.deceasedDoBStart = formatDate(
             addDays(1)(criterion.expression1.attribute_value)
           )
         }
 
         if (criterion.expression2?.operator === 'le') {
-          parameters.deceasedDoBEnd = formatISO(
+          parameters.deceasedDoBEnd = formatDate(
             criterion.expression2.attribute_value
           )
         }
 
         if (criterion.expression2?.operator === 'lt') {
-          parameters.deceasedDoBEnd = formatISO(
+          parameters.deceasedDoBEnd = formatDate(
             subDays(1)(criterion.expression2.attribute_value)
           )
         }
 
         if (criterion.expression1.operator === 'eq') {
-          parameters.deceasedDoB = formatISO(
+          parameters.deceasedDoB = formatDate(
             criterion.expression1.attribute_value
           )
         }

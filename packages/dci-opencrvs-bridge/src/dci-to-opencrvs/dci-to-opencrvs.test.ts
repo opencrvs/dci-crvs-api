@@ -37,11 +37,11 @@ describe('DCI standard to OpenCRVS', () => {
 
     assert.strictEqual(
       parameters.advancedSearchParameters.childDoBStart,
-      '2010-05-05T00:00:00Z'
+      '2010-05-05'
     )
     assert.strictEqual(
       parameters.advancedSearchParameters.childDoBEnd,
-      '2022-05-03T00:00:00Z'
+      '2022-05-03'
     )
   })
 
@@ -60,13 +60,13 @@ describe('DCI standard to OpenCRVS', () => {
             expression1: {
               attribute_name: 'birthdate',
               operator: 'ge',
-              attribute_value: new Date('2010-05-04T00:00:00.000Z')
+              attribute_value: new Date('2010-05-04')
             },
             condition: 'and',
             expression2: {
               attribute_name: 'birthdate',
               operator: 'le',
-              attribute_value: new Date('2022-05-04T00:00:00.000Z')
+              attribute_value: new Date('2022-05-04')
             }
           }
         ]
@@ -76,11 +76,11 @@ describe('DCI standard to OpenCRVS', () => {
 
     assert.strictEqual(
       parameters.advancedSearchParameters.childDoBStart,
-      '2010-05-04T00:00:00Z'
+      '2010-05-04'
     )
     assert.strictEqual(
       parameters.advancedSearchParameters.childDoBEnd,
-      '2022-05-04T00:00:00Z'
+      '2022-05-04'
     )
   })
 })
