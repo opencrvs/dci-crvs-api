@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "start": "npm start --workspace=dci-api",
-    "test": "npm run test --workspaces",
+    "test": "npm run test --workspace=dci-api",
     "test:watch": "npm run test:watch --workspaces"
   },
   "devDependencies": {
