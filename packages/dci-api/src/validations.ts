@@ -98,11 +98,11 @@ const commonSearchCriteria = z.object({
   authorize: authorize.optional()
 })
 
-const attributeValue = z.string()
+const identifier = z.enum(['BRN', 'DRN', 'MRN', 'OPENCRVS_RECORD_ID', 'NID'])
 
 const identifierTypeValue = z.object({
-  identifier_type: reference(),
-  identifier_value: attributeValue
+  identifier_type: reference(identifier),
+  identifier_value: z.string()
 })
 
 const identifierTypeQuery = commonSearchCriteria.and(
@@ -114,13 +114,13 @@ const identifierTypeQuery = commonSearchCriteria.and(
 
 const expressionCondition = z.enum(['and'])
 
-const expressionOperator = z.enum(['gt', 'lt', 'eq', 'ge', 'le'])
+const expression = z.enum(['gt', 'lt', 'eq', 'ge', 'le'])
 
 const expressionSupportedFields = z.enum(['birthdate'])
 
 const expressionPredicate = z.object({
   attribute_name: expressionSupportedFields,
-  operator: expressionOperator,
+  operator: expression,
   attribute_value: z.coerce.date()
 })
 

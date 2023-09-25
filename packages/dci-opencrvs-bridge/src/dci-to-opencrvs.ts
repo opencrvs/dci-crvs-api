@@ -1,10 +1,9 @@
 import { type SearchEventsQueryVariables, Event } from 'opencrvs-api'
-import type {
-  SyncSearchRequest,
-  SearchCriteria,
-  IdentifierTypeQuery
+import {
+  type SyncSearchRequest,
+  type SearchCriteria,
+  type IdentifierTypeQuery
 } from 'dci-api'
-import { ParseError } from './error'
 import { subDays, formatISO, addDays } from 'date-fns/fp'
 
 function isIdentifierTypeQuery(
@@ -13,18 +12,10 @@ function isIdentifierTypeQuery(
   return criteria.query_type === 'idtype-value'
 }
 
-export function searchRequestToAdvancedSearchParameters(
-  request: SyncSearchRequest['message']['search_request'][number]
-): SearchEventsQueryVariables {
-  const criteria = request.search_criteria
-  const sort = request.search_criteria.sort
+function parameters(criteria: SearchCriteria) {
   const parameters: SearchEventsQueryVariables['advancedSearchParameters'] = {}
-  const sortBy = sort?.map(
-    ({ attribute_name: column = '', sort_order: order }) => ({
-      column,
-      order
-    })
-  )
+
+  parameters.event = criteria.reg_event_type?.value
 
   if (isIdentifierTypeQuery(criteria)) {
     if (criteria.query.identifier_type.value === 'BRN') {
@@ -37,8 +28,6 @@ export function searchRequestToAdvancedSearchParameters(
       parameters.recordId = criteria.query.identifier_value
     } else if (criteria.query.identifier_type.value === 'NID') {
       parameters.nationalId = criteria.query.identifier_value
-    } else {
-      throw new ParseError('Unsupported identifier type')
     }
   } else {
     for (const criterion of criteria.query) {
@@ -104,7 +93,19 @@ export function searchRequestToAdvancedSearchParameters(
     }
   }
 
-  parameters.event = request.search_criteria.reg_event_type?.value
+  return parameters
+}
 
-  return { advancedSearchParameters: parameters, sortBy }
+export function searchRequestToAdvancedSearchParameters(
+  request: SyncSearchRequest['message']['search_request'][number]
+): SearchEventsQueryVariables {
+  const criteria = request.search_criteria
+  const sort = request.search_criteria.sort
+  const sortBy = sort?.map(
+    ({ attribute_name: column = '', sort_order: order }) => ({
+      column,
+      order
+    })
+  )
+  return { advancedSearchParameters: parameters(criteria), sortBy }
 }
