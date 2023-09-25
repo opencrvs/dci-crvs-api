@@ -39,10 +39,10 @@ const authorize = z.object({
 
 const languageCode = z.string().regex(/^[a-z]{3,3}$/)
 
-const version = z.string().optional().default('1.0.0')
+const version = z.string().default('1.0.0')
 
 const syncHeader = z.object({
-  version,
+  version: version.optional(),
   message_id: z.string(),
   message_ts: dateTime,
   action: z.literal('search'),
@@ -54,7 +54,7 @@ const syncHeader = z.object({
 })
 
 const asyncHeader = z.object({
-  version,
+  version: version.optional(),
   message_id: z.string(),
   message_ts: dateTime,
   action: z.literal('search'),
@@ -88,7 +88,7 @@ const reference = (value: ZodType = z.string()) =>
   })
 
 const commonSearchCriteria = z.object({
-  version,
+  version: version.optional(),
   reg_type: reference().optional(),
   reg_event_type: reference(eventTypes),
   result_record_type: reference(),
