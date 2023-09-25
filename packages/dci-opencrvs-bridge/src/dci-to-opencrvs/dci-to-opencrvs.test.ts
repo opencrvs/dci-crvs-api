@@ -3,9 +3,10 @@ import { searchRequestToAdvancedSearchParameters } from './dci-to-opencrvs'
 import assert from 'node:assert'
 
 describe('DCI standard to OpenCRVS', () => {
-  // `gt` = > now + 1 day
-  // `ge` = > now
-  // etc.
+  // `gt` => date + 1 day
+  // `ge` => date
+  // `lt` => date - 1 day
+  // `le` => date
   it('converts gt and lt properly', () => {
     const parameters = searchRequestToAdvancedSearchParameters({
       reference_id: '123456789020211216223812',
