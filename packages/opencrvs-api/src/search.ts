@@ -33,7 +33,6 @@ export async function advancedRecordSearch(
   variables: SearchEventsQueryVariables,
   searchUrl = OPENCRVS_GATEWAY_URL
 ) {
-  console.log(variables)
   const request = await fetch(searchUrl, {
     method: 'POST',
     headers: {
