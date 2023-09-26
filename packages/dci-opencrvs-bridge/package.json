@@ -9,12 +9,13 @@
     "test:watch": "TZ=utc node --require ts-node/register --test --watch src/**/*.test.ts"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.197",
     "date-fns": "^2.30.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "typescript": "^5.2.2"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.197",
-    "typescript": "^5.2.2",
     "ts-node": "^10.9.1"
   }
 }
