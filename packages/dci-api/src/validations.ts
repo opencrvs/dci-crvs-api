@@ -131,7 +131,7 @@ const predicateQuery = commonSearchCriteria.and(
       z.object({
         seq_num: z.number().optional(),
         expression1: expressionPredicate,
-        condition: expressionCondition.optional(),
+        condition: expressionCondition,
         expression2: expressionPredicate
       })
     )
