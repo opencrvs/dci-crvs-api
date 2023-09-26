@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon --watch ../../packages --exec ts-node src/index.ts",
+    "start": "NODE_ENV=production ts-node src/index.ts",
+    "dev": "nodemon --watch ../../packages --exec ts-node src/index.ts",
     "test": "node --require ts-node/register --test src/**/*.test.ts",
     "test:watch": "node --require ts-node/register --test --watch src/**/*.test.ts",
     "generate-openapi-types": "openapi-typescript https://raw.githubusercontent.com/spdci/standards/draft/release/yaml/registry_core_api_v1.0.0.yaml -o ./src/registry-core-api.d.ts && npx prettier --write ./src/registry-core-api.d.ts"
@@ -14,19 +15,19 @@
     "@hapi/boom": "^10.0.1",
     "@hapi/h2o2": "^10.0.4",
     "@hapi/hapi": "^21.3.2",
+    "@types/lodash": "^4.14.197",
+    "@types/node": "^20.5.3",
     "hapi-pino": "^12.1.0",
     "lodash": "^4.17.21",
+    "ts-node": "^10.9.1",
     "typescript": "^5.1.6",
     "zod": "^3.22.2",
     "zod-validation-error": "^1.5.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.197",
-    "@types/node": "^20.5.3",
     "msw": "0.0.0-fetch.rc-19",
     "nodemon": "^3.0.1",
     "openapi-typescript": "^6.5.3",
-    "pino-pretty": "^10.2.0",
-    "ts-node": "^10.9.1"
+    "pino-pretty": "^10.2.0"
   }
 }
