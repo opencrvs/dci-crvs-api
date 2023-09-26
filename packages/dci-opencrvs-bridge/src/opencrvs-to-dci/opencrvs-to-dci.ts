@@ -7,8 +7,8 @@ import {
   Event
 } from 'opencrvs-api'
 import type { operations, components, SyncSearchRequest } from 'dci-api'
-import type { SearchResponseWithMetadata } from './types'
-import { ParseError } from './error'
+import type { SearchResponseWithMetadata } from '../types'
+import { ParseError } from '../error'
 import { compact, isNil } from 'lodash/fp'
 import { randomUUID } from 'node:crypto'
 

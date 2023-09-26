@@ -10,8 +10,8 @@
   "scripts": {
     "start": "npm start --workspace=dci-api",
     "dev": "npm run dev --workspace=dci-api",
-    "test": "npm run test --workspaces",
-    "test:watch": "npm run test:watch --workspaces"
+    "test": "npm run test --workspace=dci-api --workspace=dci-opencrvs-bridge",
+    "test:watch": "npm run test:watch --workspace=dci-api --workspace=dci-opencrvs-bridge"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.4.1",
