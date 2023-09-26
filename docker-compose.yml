@@ -4,4 +4,4 @@ services:
   dci-crvs-api:
     image: opencrvs/dci-crvs-api:${VERSION:-latest}
     build: .
-  restart: unless-stopped
+    restart: unless-stopped
