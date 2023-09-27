@@ -1,0 +1,7 @@
+version: "3.8"
+
+services:
+  dci-crvs-api:
+    image: opencrvs/dci-crvs-api:${VERSION:-latest}
+    build: .
+    restart: unless-stopped

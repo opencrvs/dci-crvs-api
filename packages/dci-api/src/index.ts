@@ -5,4 +5,4 @@ createServer().then(async (server) => {
 })
 
 export type * from './registry-core-api'
-export type { SyncSearchRequest, EventType } from './validations'
+export type * from './validations'

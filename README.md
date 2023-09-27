@@ -17,7 +17,7 @@ The package is a Node & TypeScript project and the API is built using [Hapi](htt
 ## Prerequisites
 
 - Existing OpenCRVS installation
-- [Node.js](https://nodejs.org/en/) (v20.6.1)
+- [Node.js](https://nodejs.org/en/) (v20.7.0)
 
 ## Local development
 
