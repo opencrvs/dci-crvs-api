@@ -241,7 +241,7 @@ export function registrySyncSearchBuilder(
     .reduce((a, b) => a + b, 0)
 
   return {
-    signature: '<<todo>>',
+    signature: '',
     header: {
       version: '1.0.0',
       message_id: request.header.message_id,

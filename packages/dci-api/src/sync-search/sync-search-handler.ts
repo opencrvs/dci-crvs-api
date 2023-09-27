@@ -11,6 +11,7 @@ import { fromZodError } from 'zod-validation-error'
 import { ValidationError } from '../error'
 import { parseToken } from '../auth'
 import { type ReqResWithAuthorization } from '../server'
+import { generateSignature } from '../crypto/sign'
 
 async function fetchRegistrations(token: string, ids: string[]) {
   return await Promise.all(
@@ -61,5 +62,10 @@ export async function syncSearchHandler(
   const token = parseToken(header)
   const payload = result.data
   const results = await search(token, payload.message)
-  return registrySyncSearchBuilder(results, payload)
+  const response = registrySyncSearchBuilder(results, payload)
+  response.signature = await generateSignature({
+    message: response.message,
+    header: response.header
+  })
+  return response
 }

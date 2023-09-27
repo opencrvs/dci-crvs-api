@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it, mock } from 'node:test'
 import assert from 'node:assert'
 import type * as Hapi from '@hapi/hapi'
 import { createServer } from '../server'
@@ -10,6 +10,7 @@ import testFetchRegistrationResponse from '../sync-search/test-fetchregistration
 import testSearchEventsResponse from '../sync-search/test-searchevents-response.json'
 import { readFileSync } from 'node:fs'
 import jwt from 'jsonwebtoken'
+import * as sign from '../crypto/sign'
 
 async function flushPromises() {
   return await new Promise((resolve) => setTimeout(resolve, 0))
@@ -21,10 +22,16 @@ describe('POST /registry/search', () => {
   beforeEach(async () => {
     const { init } = await createServer()
     server = await init()
+    mock.method(
+      sign,
+      'generateSignature',
+      async () => await Promise.resolve('')
+    )
   })
 
   afterEach(async () => {
     await server.stop()
+    mock.reset()
   })
 
   it(

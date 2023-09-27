@@ -15,6 +15,7 @@ import {
 import { parseToken } from '../auth'
 import { randomUUID } from 'node:crypto'
 import { type ReqResWithAuthorization } from '../server'
+import { generateSignature } from '../crypto/sign'
 
 async function asyncSearch(
   token: string,
@@ -22,15 +23,18 @@ async function asyncSearch(
   correlationId: ReturnType<typeof randomUUID>
 ) {
   const results = await search(token, request.message)
+  const syncSearchResponse = registrySyncSearchBuilder(
+    results,
+    request,
+    correlationId
+  ) satisfies operations['post_reg_on-search']['requestBody']['content']['application/json']
+  syncSearchResponse.signature = await generateSignature({
+    header: syncSearchResponse.header,
+    message: syncSearchResponse.message
+  })
   const response = await fetch(request.header.sender_uri, {
     method: 'POST',
-    body: JSON.stringify(
-      registrySyncSearchBuilder(
-        results,
-        request,
-        correlationId
-      ) satisfies operations['post_reg_on-search']['requestBody']['content']['application/json']
-    )
+    body: JSON.stringify(syncSearchResponse)
   })
   if (!response.ok) {
     throw new Error(
