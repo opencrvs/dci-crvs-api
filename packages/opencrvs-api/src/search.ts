@@ -6,6 +6,7 @@ import {
 import { print } from 'graphql'
 import gql from 'graphql-tag'
 import type { Registration } from './types'
+import { AuthorizationError } from 'dci-opencrvs-bridge'
 
 export const SEARCH_EVENTS = gql`
   query searchEvents(
@@ -49,6 +50,15 @@ export async function advancedRecordSearch(
     })
   })
   const response = await request.json()
+
+  if (
+    response.errors.find(
+      (error: { message: string }) => error.message === 'Unauthorized'
+    ) !== undefined
+  ) {
+    throw new AuthorizationError('Unauthorized in gateway')
+  }
+
   return response.data.searchEvents as SearchEventsQuery['searchEvents']
 }
 
