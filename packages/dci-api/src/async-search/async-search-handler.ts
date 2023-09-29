@@ -23,15 +23,15 @@ async function asyncSearch(
   correlationId: ReturnType<typeof randomUUID>
 ) {
   const results = await search(token, request.message)
-  const syncSearchResponse = registrySyncSearchBuilder(
-    results,
-    request,
-    correlationId
-  ) satisfies operations['post_reg_on-search']['requestBody']['content']['application/json']
-  syncSearchResponse.signature = await generateSignature({
-    header: syncSearchResponse.header,
-    message: syncSearchResponse.message
-  })
+  let syncSearchResponse: operations['post_reg_on-search']['requestBody']['content']['application/json'] =
+    registrySyncSearchBuilder(results, request, correlationId)
+  syncSearchResponse = {
+    signature: await generateSignature({
+      header: syncSearchResponse.header,
+      message: syncSearchResponse.message
+    }),
+    ...syncSearchResponse
+  }
   const response = await fetch(request.header.sender_uri, {
     method: 'POST',
     body: JSON.stringify(syncSearchResponse)

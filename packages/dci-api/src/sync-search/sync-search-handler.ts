@@ -12,6 +12,7 @@ import { ValidationError } from '../error'
 import { parseToken } from '../auth'
 import { type ReqResWithAuthorization } from '../server'
 import { generateSignature } from '../crypto/sign'
+import { type operations } from '../registry-core-api'
 
 async function fetchRegistrations(token: string, ids: string[]) {
   return await Promise.all(
@@ -62,10 +63,14 @@ export async function syncSearchHandler(
   const token = parseToken(header)
   const payload = result.data
   const results = await search(token, payload.message)
-  const response = registrySyncSearchBuilder(results, payload)
-  response.signature = await generateSignature({
-    message: response.message,
-    header: response.header
-  })
+  let response: operations['post_reg_sync_search']['responses']['default']['content']['application/json'] =
+    registrySyncSearchBuilder(results, payload)
+  response = {
+    signature: await generateSignature({
+      message: response.message,
+      header: response.header
+    }),
+    ...response
+  }
   return response
 }
