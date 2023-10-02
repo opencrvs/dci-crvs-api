@@ -10,3 +10,12 @@ export async function getSigningKeys(): KeyPairPromise {
   }
   return signingKeys
 }
+
+let encryptionKeys: Awaited<KeyPairPromise> | undefined
+
+export async function getEncryptionKeys(): KeyPairPromise {
+  if (encryptionKeys === undefined) {
+    encryptionKeys = await generateKeyPair('RS256')
+  }
+  return encryptionKeys
+}
