@@ -8,7 +8,8 @@ import { OPENCRVS_GATEWAY_URL } from 'opencrvs-api'
 import testPayload from './test-payload.json'
 import testFetchRegistrationResponse from './test-fetchregistration-response.json'
 import testSearchEventsResponse from './test-searchevents-response.json'
-import { CompactSign, exportJWK, generateKeyPair } from 'jose'
+import { CompactSign, FlattenedEncrypt, exportJWK, generateKeyPair } from 'jose'
+import { getEncryptionKeys } from '../crypto/keys'
 
 describe('POST /registry/sync/search', async () => {
   let server: Hapi.Server
@@ -89,6 +90,47 @@ describe('POST /registry/sync/search', async () => {
             Authorization: 'Bearer test-token'
           }
         })
+
+        assert.strictEqual(res.statusCode, 200)
+        assert.strictEqual(JSON.parse(res.payload).header.version, '1.0.0')
+      }
+    )
+  )
+  it(
+    'decrypts encrypted payload',
+    withRequestInterception(
+      [
+        http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
+          return new Response(JSON.stringify(testSearchEventsResponse))
+        }),
+        http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
+          return new Response(JSON.stringify(testFetchRegistrationResponse))
+        })
+      ],
+      async () => {
+        const { publicKey } = await getEncryptionKeys()
+        const res = await server.inject({
+          method: 'POST',
+          url: '/registry/sync/search',
+          payload: {
+            ...testPayload,
+            header: { ...testPayload.header, is_msg_encrypted: true },
+            message: await new FlattenedEncrypt(
+              new TextEncoder().encode(JSON.stringify(testPayload.message))
+            )
+              .setUnprotectedHeader({
+                alg: 'RSA-OAEP-256',
+                enc: 'A256GCM',
+                kid: 'unique_kid'
+              })
+              .encrypt(publicKey)
+          },
+          headers: {
+            Authorization: 'Bearer test-token'
+          }
+        })
+
+        console.log(JSON.parse(res.payload))
 
         assert.strictEqual(res.statusCode, 200)
         assert.strictEqual(JSON.parse(res.payload).header.version, '1.0.0')
