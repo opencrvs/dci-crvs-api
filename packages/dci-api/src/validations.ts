@@ -140,7 +140,7 @@ const predicateQuery = commonSearchCriteria.and(
 
 const searchCriteria = predicateQuery.or(identifierTypeQuery)
 
-const searchRequest = z.object({
+export const searchRequestSchema = z.object({
   transaction_id: z.string().max(99),
   search_request: z.array(
     z.object({
@@ -152,16 +152,34 @@ const searchRequest = z.object({
   )
 })
 
+const encryptedMessage = z.object({
+  header: z.object({
+    alg: z.string(),
+    enc: z.string(),
+    kid: z.string()
+  }),
+  ciphertext: z.string(),
+  encrypted_key: z.string(),
+  tag: z.string(),
+  iv: z.string()
+})
+
 export const syncSearchRequestSchema = z.object({
   signature: z.string().optional(),
   header: syncHeader,
-  message: searchRequest
+  message: searchRequestSchema
+})
+
+export const encryptedSyncSearchRequestSchema = z.object({
+  signature: z.string().optional(),
+  header: syncHeader,
+  message: encryptedMessage
 })
 
 export const asyncSearchRequestSchema = z.object({
   signature: z.string().optional(),
   header: asyncHeader,
-  message: searchRequest
+  message: searchRequestSchema
 })
 
 export type SyncSearchRequest = TypeOf<typeof syncSearchRequestSchema>

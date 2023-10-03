@@ -6,7 +6,12 @@ import {
   searchRequestToAdvancedSearchParameters
 } from 'dci-opencrvs-bridge'
 import { compact } from 'lodash/fp'
-import { type SyncSearchRequest, syncSearchRequestSchema } from '../validations'
+import {
+  type SyncSearchRequest,
+  syncSearchRequestSchema,
+  encryptedSyncSearchRequestSchema,
+  searchRequestSchema
+} from '../validations'
 import { fromZodError } from 'zod-validation-error'
 import { ValidationError } from '../error'
 import { parseToken } from '../auth'
@@ -14,6 +19,9 @@ import { type ReqResWithAuthorization } from '../server'
 import { withSignature } from '../crypto/sign'
 import { type operations } from '../registry-core-api'
 import { verifySignature } from '../crypto/verify'
+import { type TypeOf } from 'zod'
+import { flattenedDecrypt } from 'jose'
+import { getEncryptionKeys } from '../crypto/keys'
 
 async function fetchRegistrations(token: string, ids: string[]) {
   return await Promise.all(
@@ -49,11 +57,45 @@ export async function search(
   return searchResults
 }
 
+const maybeEncryptedSchema = syncSearchRequestSchema.or(
+  encryptedSyncSearchRequestSchema
+)
+
+function notEncrypted(
+  maybeEncryptedPayload: TypeOf<typeof maybeEncryptedSchema>
+): maybeEncryptedPayload is SyncSearchRequest {
+  return !maybeEncryptedPayload.header.is_msg_encrypted
+}
+
+async function decryptPayload(
+  maybeEncryptedPayload: TypeOf<typeof maybeEncryptedSchema>
+): Promise<SyncSearchRequest> {
+  if (notEncrypted(maybeEncryptedPayload)) {
+    return maybeEncryptedPayload
+  }
+  const encryptedPayload = maybeEncryptedPayload
+  const { privateKey } = await getEncryptionKeys()
+  const { plaintext } = await flattenedDecrypt(
+    encryptedPayload.message,
+    privateKey
+  )
+  const result = searchRequestSchema.safeParse(
+    new TextDecoder().decode(plaintext)
+  )
+  if (!result.success) {
+    throw new ValidationError(fromZodError(result.error).message)
+  }
+  return {
+    ...encryptedPayload,
+    message: result.data
+  }
+}
+
 export async function syncSearchHandler(
   request: Hapi.Request<ReqResWithAuthorization>,
   _h: Hapi.ResponseToolkit
 ) {
-  const result = syncSearchRequestSchema.safeParse(request.payload)
+  const result = maybeEncryptedSchema.safeParse(request.payload)
   if (!result.success) {
     throw new ValidationError(fromZodError(result.error).message)
   }
@@ -62,7 +104,7 @@ export async function syncSearchHandler(
     throw new AuthorizationError('Authorization header is missing')
   }
   const token = parseToken(header)
-  const payload = result.data
+  const payload = await decryptPayload(result.data)
 
   await verifySignature(payload, syncSearchRequestSchema)
 
