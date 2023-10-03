@@ -80,7 +80,7 @@ async function decryptPayload(
     privateKey
   )
   const result = searchRequestSchema.safeParse(
-    new TextDecoder().decode(plaintext)
+    JSON.parse(new TextDecoder().decode(plaintext))
   )
   if (!result.success) {
     throw new ValidationError(fromZodError(result.error).message)
