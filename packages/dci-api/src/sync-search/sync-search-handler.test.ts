@@ -130,8 +130,6 @@ describe('POST /registry/sync/search', async () => {
           }
         })
 
-        console.log(JSON.parse(res.payload))
-
         assert.strictEqual(res.statusCode, 200)
         assert.strictEqual(JSON.parse(res.payload).header.version, '1.0.0')
       }
