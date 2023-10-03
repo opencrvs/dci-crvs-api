@@ -2,7 +2,8 @@ import type * as Hapi from '@hapi/hapi'
 import { type operations } from '../registry-core-api'
 import {
   type AsyncSearchRequest,
-  asyncSearchRequestSchema
+  asyncSearchRequestSchema,
+  maybeEncryptedAsyncSearchRequestSchema
 } from '../validations'
 import { fromZodError } from 'zod-validation-error'
 import { ValidationError } from '../error'
@@ -17,6 +18,7 @@ import { randomUUID } from 'node:crypto'
 import { type ReqResWithAuthorization } from '../server'
 import { withSignature } from '../crypto/sign'
 import { verifySignature } from '../crypto/verify'
+import { decryptPayload } from '../crypto/decrypt'
 
 async function asyncSearch(
   token: string,
@@ -48,11 +50,13 @@ export async function asyncSearchHandler(
   }
   const token = parseToken(header)
   await validateToken(token)
-  const result = asyncSearchRequestSchema.safeParse(request.payload)
+  const result = maybeEncryptedAsyncSearchRequestSchema.safeParse(
+    request.payload
+  )
   if (!result.success) {
     throw new ValidationError(fromZodError(result.error).message)
   }
-  const payload = result.data
+  const payload = await decryptPayload(result.data)
 
   await verifySignature(payload, asyncSearchRequestSchema)
 

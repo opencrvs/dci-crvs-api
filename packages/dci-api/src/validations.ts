@@ -170,7 +170,7 @@ export const syncSearchRequestSchema = z.object({
   message: searchRequestSchema
 })
 
-export const encryptedSyncSearchRequestSchema = z.object({
+const encryptedSyncSearchRequest = z.object({
   signature: z.string().optional(),
   header: syncHeader,
   message: encryptedMessage
@@ -181,6 +181,19 @@ export const asyncSearchRequestSchema = z.object({
   header: asyncHeader,
   message: searchRequestSchema
 })
+
+const encryptedAsyncSearchRequest = z.object({
+  signature: z.string().optional(),
+  header: asyncHeader,
+  message: encryptedMessage
+})
+
+export const maybeEncryptedSyncSearchRequestSchema = syncSearchRequestSchema.or(
+  encryptedSyncSearchRequest
+)
+
+export const maybeEncryptedAsyncSearchRequestSchema =
+  asyncSearchRequestSchema.or(encryptedAsyncSearchRequest)
 
 export type SyncSearchRequest = TypeOf<typeof syncSearchRequestSchema>
 export type EventType = TypeOf<typeof eventTypes>
