@@ -19,6 +19,7 @@ import { withSignature } from '../crypto/sign'
 import { type operations } from '../registry-core-api'
 import { verifySignature } from '../crypto/verify'
 import { decryptPayload } from '../crypto/decrypt'
+import { encryptPayload } from '../crypto/encrypt'
 
 async function fetchRegistrations(token: string, ids: string[]) {
   return await Promise.all(
@@ -74,7 +75,17 @@ export async function syncSearchHandler(
   await verifySignature(payload, syncSearchRequestSchema)
 
   const results = await search(token, payload.message)
-  return (await withSignature(
+  const unencryptedResponse = (await withSignature(
     registrySyncSearchBuilder(results, payload)
   )) satisfies operations['post_reg_sync_search']['responses']['default']['content']['application/json']
+  if (payload.header.is_msg_encrypted) {
+    return {
+      ...unencryptedResponse,
+      message: await encryptPayload(
+        `${payload.header.sender_id}/.well-known/jwks.json`,
+        unencryptedResponse.message
+      )
+    }
+  }
+  return unencryptedResponse
 }
