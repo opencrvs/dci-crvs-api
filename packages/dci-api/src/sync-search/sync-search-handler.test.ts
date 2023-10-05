@@ -105,7 +105,18 @@ describe('POST /registry/sync/search', async () => {
         }),
         http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
           return new Response(JSON.stringify(testFetchRegistrationResponse))
-        })
+        }),
+        http.get(
+          'https://integrating-server.com/.well-known/jwks.json',
+          async () => {
+            const { publicKey } = await generateKeyPair('RSA-OAEP-256')
+            const jwk = await exportJWK(publicKey)
+            jwk.use = 'enc'
+            jwk.kid = 'unique_kid'
+            jwk.alg = 'RSA-OAEP-256'
+            return new Response(JSON.stringify({ keys: [jwk] }))
+          }
+        )
       ],
       async () => {
         const { publicKey } = await getEncryptionKeys()
