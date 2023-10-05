@@ -5,7 +5,7 @@ import {
   AuthorizationError,
   searchRequestToAdvancedSearchParameters
 } from 'dci-opencrvs-bridge'
-import { compact, isEqual } from 'lodash/fp'
+import { compact } from 'lodash/fp'
 import { type SyncSearchRequest, syncSearchRequestSchema } from '../validations'
 import { fromZodError } from 'zod-validation-error'
 import { ValidationError } from '../error'
@@ -64,27 +64,7 @@ export async function syncSearchHandler(
   const token = parseToken(header)
   const payload = result.data
 
-  if (payload.signature !== undefined) {
-    try {
-      const signedPayload = await verifySignature(
-        payload.signature,
-        `${payload.header.sender_id}/.well-known/jwks.json`
-      )
-      const parsedSignedPayload =
-        syncSearchRequestSchema.safeParse(signedPayload)
-      if (
-        !parsedSignedPayload.success ||
-        !isEqual(parsedSignedPayload.data, {
-          header: payload.header,
-          message: payload.message
-        })
-      ) {
-        throw new ValidationError('Signature verification failed')
-      }
-    } catch (e) {
-      throw new ValidationError('Signature verification failed')
-    }
-  }
+  await verifySignature(payload, syncSearchRequestSchema)
 
   const results = await search(token, payload.message)
   let response: operations['post_reg_sync_search']['responses']['default']['content']['application/json'] =

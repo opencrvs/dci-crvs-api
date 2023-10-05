@@ -17,7 +17,6 @@ import { randomUUID } from 'node:crypto'
 import { type ReqResWithAuthorization } from '../server'
 import { generateSignature } from '../crypto/sign'
 import { verifySignature } from '../crypto/verify'
-import { isEqual } from 'lodash/fp'
 
 async function asyncSearch(
   token: string,
@@ -61,27 +60,7 @@ export async function asyncSearchHandler(
   }
   const payload = result.data
 
-  if (payload.signature !== undefined) {
-    try {
-      const signedPayload = await verifySignature(
-        payload.signature,
-        `${payload.header.sender_id}/.well-known/jwks.json`
-      )
-      const parsedSignedPayload =
-        asyncSearchRequestSchema.safeParse(signedPayload)
-      if (
-        !parsedSignedPayload.success ||
-        !isEqual(parsedSignedPayload.data, {
-          header: payload.header,
-          message: payload.message
-        })
-      ) {
-        throw new ValidationError('Signature verification failed')
-      }
-    } catch (e) {
-      throw new ValidationError('Signature verification failed')
-    }
-  }
+  await verifySignature(payload, asyncSearchRequestSchema)
 
   const correlationId = randomUUID()
   // We are not awaiting for this promise to resolve
