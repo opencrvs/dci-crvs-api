@@ -24,8 +24,9 @@ describe('POST /registry/search', () => {
     server = await init()
     mock.method(
       sign,
-      'generateSignature',
-      async () => await Promise.resolve('')
+      'withSignature',
+      async (payload: any) =>
+        await Promise.resolve({ signature: '', ...payload })
     )
   })
 
