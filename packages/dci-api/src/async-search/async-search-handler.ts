@@ -19,6 +19,7 @@ import { type ReqResWithAuthorization } from '../server'
 import { withSignature } from '../crypto/sign'
 import { verifySignature } from '../crypto/verify'
 import { decryptPayload } from '../crypto/decrypt'
+import { encryptPayload } from '../crypto/encrypt'
 
 async function asyncSearch(
   token: string,
@@ -26,9 +27,18 @@ async function asyncSearch(
   correlationId: ReturnType<typeof randomUUID>
 ) {
   const results = await search(token, request.message)
-  const syncSearchResponse = (await withSignature(
+  const unencryptedResponse = (await withSignature(
     registrySyncSearchBuilder(results, request, correlationId)
   )) satisfies operations['post_reg_on-search']['requestBody']['content']['application/json']
+  const syncSearchResponse = {
+    ...unencryptedResponse,
+    message: request.header.is_msg_encrypted
+      ? encryptPayload(
+          `${request.header.sender_id}/.well-known/jwks.json`,
+          unencryptedResponse.message
+        )
+      : unencryptedResponse.message
+  }
   const response = await fetch(request.header.sender_uri, {
     method: 'POST',
     body: JSON.stringify(syncSearchResponse)
