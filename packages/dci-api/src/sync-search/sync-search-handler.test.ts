@@ -8,8 +8,15 @@ import { OPENCRVS_GATEWAY_URL } from 'opencrvs-api'
 import testPayload from './test-payload.json'
 import testFetchRegistrationResponse from './test-fetchregistration-response.json'
 import testSearchEventsResponse from './test-searchevents-response.json'
-import { CompactSign, FlattenedEncrypt, exportJWK, generateKeyPair } from 'jose'
+import {
+  CompactSign,
+  FlattenedEncrypt,
+  calculateJwkThumbprint,
+  exportJWK,
+  generateKeyPair
+} from 'jose'
 import { getEncryptionKeys } from '../crypto/keys'
+import { getJwk } from '../jwks/handler'
 
 describe('POST /registry/sync/search', async () => {
   let server: Hapi.Server
@@ -63,9 +70,8 @@ describe('POST /registry/sync/search', async () => {
         http.get(
           'https://integrating-server.com/.well-known/jwks.json',
           async () => {
-            return new Response(
-              JSON.stringify({ keys: [await exportJWK(publicKey)] })
-            )
+            const jwk = await getJwk(publicKey, 'sig', 'RS256')
+            return new Response(JSON.stringify({ keys: [jwk] }))
           }
         )
       ],
@@ -82,7 +88,10 @@ describe('POST /registry/sync/search', async () => {
                 })
               )
             )
-              .setProtectedHeader({ alg: 'RS256' })
+              .setProtectedHeader({
+                alg: 'RS256',
+                kid: await calculateJwkThumbprint(await exportJWK(publicKey))
+              })
               .sign(privateKey),
             ...testPayload
           },
@@ -110,10 +119,7 @@ describe('POST /registry/sync/search', async () => {
           'https://integrating-server.com/.well-known/jwks.json',
           async () => {
             const { publicKey } = await generateKeyPair('RSA-OAEP-256')
-            const jwk = await exportJWK(publicKey)
-            jwk.use = 'enc'
-            jwk.kid = 'unique_kid'
-            jwk.alg = 'RSA-OAEP-256'
+            const jwk = await getJwk(publicKey, 'enc', 'RSA-OAEP-256')
             return new Response(JSON.stringify({ keys: [jwk] }))
           }
         )

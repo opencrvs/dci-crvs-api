@@ -57,6 +57,9 @@ export async function encryptPayload(
     throw new ValidationError(fromZodError(result.error).message)
   }
   const jwks = result.data
+  // we are only checking against the "use" parameter
+  // for now but should be made stricter with the "kid"
+  // in the future
   const jwk = jwks.keys.find((jwk) => jwk.use === 'enc')
   if (jwk === undefined) {
     throw new Error('No jwk found for encryption')
