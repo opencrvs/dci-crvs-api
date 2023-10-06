@@ -1,7 +1,6 @@
-import { type TypeOf } from 'zod'
 import {
-  type maybeEncryptedSyncSearchRequestSchema,
-  type maybeEncryptedAsyncSearchRequestSchema,
+  type MaybeEncryptedSyncSearchRequest,
+  type MaybeEncryptedAsyncSearchRequest,
   type AsyncSearchRequest,
   type SyncSearchRequest,
   searchRequestSchema
@@ -12,24 +11,22 @@ import { ValidationError, fromZodError } from 'zod-validation-error'
 
 function notEncrypted(
   maybeEncryptedPayload:
-    | TypeOf<typeof maybeEncryptedSyncSearchRequestSchema>
-    | TypeOf<typeof maybeEncryptedAsyncSearchRequestSchema>
+    | MaybeEncryptedSyncSearchRequest
+    | MaybeEncryptedAsyncSearchRequest
 ): maybeEncryptedPayload is SyncSearchRequest | AsyncSearchRequest {
   return !maybeEncryptedPayload.header.is_msg_encrypted
 }
 
 export async function decryptPayload(
-  maybeEncryptedPayload: TypeOf<typeof maybeEncryptedAsyncSearchRequestSchema>
+  maybeEncryptedPayload: MaybeEncryptedAsyncSearchRequest
 ): Promise<AsyncSearchRequest>
 export async function decryptPayload(
-  maybeEncryptedSyncPayload: TypeOf<
-    typeof maybeEncryptedSyncSearchRequestSchema
-  >
+  maybeEncryptedSyncPayload: MaybeEncryptedSyncSearchRequest
 ): Promise<SyncSearchRequest>
 export async function decryptPayload(
   maybeEncryptedPayload:
-    | TypeOf<typeof maybeEncryptedSyncSearchRequestSchema>
-    | TypeOf<typeof maybeEncryptedAsyncSearchRequestSchema>
+    | MaybeEncryptedSyncSearchRequest
+    | MaybeEncryptedAsyncSearchRequest
 ): Promise<SyncSearchRequest | AsyncSearchRequest> {
   if (notEncrypted(maybeEncryptedPayload)) {
     return maybeEncryptedPayload
