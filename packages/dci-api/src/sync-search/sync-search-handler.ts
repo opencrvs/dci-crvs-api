@@ -8,7 +8,6 @@ import {
 import { compact } from 'lodash/fp'
 import {
   type SyncSearchRequest,
-  syncSearchRequestSchema,
   maybeEncryptedSyncSearchRequestSchema
 } from '../validations'
 import { fromZodError } from 'zod-validation-error'
@@ -70,22 +69,23 @@ export async function syncSearchHandler(
   if (!result.success) {
     throw new ValidationError(fromZodError(result.error).message)
   }
+  await verifySignature(result.data, maybeEncryptedSyncSearchRequestSchema)
+
   const payload = await decryptPayload(result.data)
 
-  await verifySignature(payload, syncSearchRequestSchema)
-
   const results = await search(token, payload.message)
-  const unencryptedResponse = (await withSignature(
-    registrySyncSearchBuilder(results, payload)
-  )) satisfies operations['post_reg_sync_search']['responses']['default']['content']['application/json']
+  const unencryptedResponse = registrySyncSearchBuilder(
+    results,
+    payload
+  ) satisfies operations['post_reg_sync_search']['responses']['default']['content']['application/json']
   if (payload.header.is_msg_encrypted) {
-    return {
+    return await withSignature({
       ...unencryptedResponse,
       message: await encryptPayload(
         `${payload.header.sender_id}/.well-known/jwks.json`,
         unencryptedResponse.message
       )
-    }
+    })
   }
-  return unencryptedResponse
+  return await withSignature(unencryptedResponse)
 }

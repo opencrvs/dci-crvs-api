@@ -164,7 +164,7 @@ const encryptedMessage = z.object({
   iv: z.string()
 })
 
-export const syncSearchRequestSchema = z.object({
+const syncSearchRequest = z.object({
   signature: z.string().optional(),
   header: syncHeader,
   message: searchRequestSchema
@@ -176,7 +176,7 @@ const encryptedSyncSearchRequest = z.object({
   message: encryptedMessage
 })
 
-export const asyncSearchRequestSchema = z.object({
+const asyncSearchRequest = z.object({
   signature: z.string().optional(),
   header: asyncHeader,
   message: searchRequestSchema
@@ -188,16 +188,23 @@ const encryptedAsyncSearchRequest = z.object({
   message: encryptedMessage
 })
 
-export const maybeEncryptedSyncSearchRequestSchema = syncSearchRequestSchema.or(
+export const maybeEncryptedSyncSearchRequestSchema = syncSearchRequest.or(
   encryptedSyncSearchRequest
 )
 
-export const maybeEncryptedAsyncSearchRequestSchema =
-  asyncSearchRequestSchema.or(encryptedAsyncSearchRequest)
+export const maybeEncryptedAsyncSearchRequestSchema = asyncSearchRequest.or(
+  encryptedAsyncSearchRequest
+)
 
-export type SyncSearchRequest = TypeOf<typeof syncSearchRequestSchema>
+export type MaybeEncryptedSyncSearchRequest = TypeOf<
+  typeof maybeEncryptedSyncSearchRequestSchema
+>
+export type MaybeEncryptedAsyncSearchRequest = TypeOf<
+  typeof maybeEncryptedAsyncSearchRequestSchema
+>
+export type SyncSearchRequest = TypeOf<typeof syncSearchRequest>
 export type EventType = TypeOf<typeof eventTypes>
-export type AsyncSearchRequest = TypeOf<typeof asyncSearchRequestSchema>
+export type AsyncSearchRequest = TypeOf<typeof asyncSearchRequest>
 export type SearchCriteria = TypeOf<typeof searchCriteria>
 export type PredicateQuery = TypeOf<typeof predicateQuery>
 export type IdentifierTypeQuery = TypeOf<typeof identifierTypeQuery>
