@@ -1,5 +1,4 @@
 {
-  "signature": "Signature:  namespace=\"dci\", kidId=\"{sender_id}|{unique_key_id}|{algorithm}\", algorithm=\"ed25519\", created=\"1606970629\", expires=\"1607030629\", headers=\"(created) (expires) digest\", signature=\"Base64(signing content)",
   "header": {
     "version": "1.0.0",
     "message_id": "123456789020211216223812",
