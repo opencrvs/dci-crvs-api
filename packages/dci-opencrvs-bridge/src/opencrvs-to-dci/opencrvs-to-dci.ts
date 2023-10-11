@@ -6,7 +6,7 @@ import {
   type IdentityType,
   Event
 } from 'opencrvs-api'
-import type { operations, components, SyncSearchRequest } from 'dci-api'
+import type { operations, components, SyncSearchRequest } from 'http-api'
 import type { SearchResponseWithMetadata } from '../types'
 import { ParseError } from '../error'
 import { compact, isNil } from 'lodash/fp'

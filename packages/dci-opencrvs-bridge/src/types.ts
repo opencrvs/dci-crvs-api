@@ -1,4 +1,4 @@
-import type { SyncSearchRequest } from 'dci-api'
+import type { SyncSearchRequest } from 'http-api'
 import type { Registration } from 'opencrvs-api'
 
 export interface SearchResponseWithMetadata {
