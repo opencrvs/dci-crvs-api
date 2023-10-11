@@ -3,7 +3,7 @@ import {
   type SyncSearchRequest,
   type SearchCriteria,
   type IdentifierTypeQuery
-} from 'dci-api'
+} from 'http-api'
 import { subDays, formatISOWithOptions, addDays } from 'date-fns/fp'
 
 const formatDate = formatISOWithOptions({ representation: 'date' })

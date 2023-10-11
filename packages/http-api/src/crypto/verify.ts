@@ -1,5 +1,8 @@
 import { compactVerify, createRemoteJWKSet } from 'jose'
-import { type AsyncSearchRequest, type SyncSearchRequest } from '../validations'
+import {
+  type MaybeEncryptedAsyncSearchRequest,
+  type MaybeEncryptedSyncSearchRequest
+} from '../validations'
 import { type ZodSchema } from 'zod'
 import { isEqual } from 'lodash/fp'
 import { ValidationError } from 'zod-validation-error'
@@ -11,7 +14,10 @@ async function verifyJws(jws: string, jwksUrl: string): Promise<unknown> {
 }
 
 export async function verifySignature(
-  { signature, ...payload }: SyncSearchRequest | AsyncSearchRequest,
+  {
+    signature,
+    ...payload
+  }: MaybeEncryptedSyncSearchRequest | MaybeEncryptedAsyncSearchRequest,
   validationSchema: ZodSchema
 ) {
   if (signature === undefined) {

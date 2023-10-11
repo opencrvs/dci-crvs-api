@@ -2,7 +2,7 @@ import type * as Hapi from '@hapi/hapi'
 import { type operations } from '../registry-core-api'
 import {
   type AsyncSearchRequest,
-  asyncSearchRequestSchema
+  maybeEncryptedAsyncSearchRequestSchema
 } from '../validations'
 import { fromZodError } from 'zod-validation-error'
 import { ValidationError } from '../error'
@@ -17,6 +17,8 @@ import { randomUUID } from 'node:crypto'
 import { type ReqResWithAuthorization } from '../server'
 import { withSignature } from '../crypto/sign'
 import { verifySignature } from '../crypto/verify'
+import { decryptPayload } from '../crypto/decrypt'
+import { encryptPayload } from '../crypto/encrypt'
 
 async function asyncSearch(
   token: string,
@@ -24,12 +26,23 @@ async function asyncSearch(
   correlationId: ReturnType<typeof randomUUID>
 ) {
   const results = await search(token, request.message)
-  const syncSearchResponse = (await withSignature(
-    registrySyncSearchBuilder(results, request, correlationId)
-  )) satisfies operations['post_reg_on-search']['requestBody']['content']['application/json']
+  const unencryptedResponse = registrySyncSearchBuilder(
+    results,
+    request,
+    correlationId
+  ) satisfies operations['post_reg_on-search']['requestBody']['content']['application/json']
+  const syncSearchResponse = {
+    ...unencryptedResponse,
+    message: request.header.is_msg_encrypted
+      ? encryptPayload(
+          `${request.header.sender_id}/.well-known/jwks.json`,
+          unencryptedResponse.message
+        )
+      : unencryptedResponse.message
+  }
   const response = await fetch(request.header.sender_uri, {
     method: 'POST',
-    body: JSON.stringify(syncSearchResponse)
+    body: JSON.stringify(await withSignature(syncSearchResponse))
   })
   if (!response.ok) {
     throw new Error(
@@ -48,13 +61,15 @@ export async function asyncSearchHandler(
   }
   const token = parseToken(header)
   await validateToken(token)
-  const result = asyncSearchRequestSchema.safeParse(request.payload)
+  const result = maybeEncryptedAsyncSearchRequestSchema.safeParse(
+    request.payload
+  )
   if (!result.success) {
     throw new ValidationError(fromZodError(result.error).message)
   }
-  const payload = result.data
+  await verifySignature(result.data, maybeEncryptedAsyncSearchRequestSchema)
 
-  await verifySignature(payload, asyncSearchRequestSchema)
+  const payload = await decryptPayload(result.data)
 
   const correlationId = randomUUID()
   // We are not awaiting for this promise to resolve

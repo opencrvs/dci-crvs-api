@@ -140,7 +140,7 @@ const predicateQuery = commonSearchCriteria.and(
 
 const searchCriteria = predicateQuery.or(identifierTypeQuery)
 
-const searchRequest = z.object({
+export const searchRequestSchema = z.object({
   transaction_id: z.string().max(99),
   search_request: z.array(
     z.object({
@@ -152,21 +152,59 @@ const searchRequest = z.object({
   )
 })
 
-export const syncSearchRequestSchema = z.object({
+const encryptedMessage = z.object({
+  header: z.object({
+    alg: z.string(),
+    enc: z.string(),
+    kid: z.string()
+  }),
+  ciphertext: z.string(),
+  encrypted_key: z.string(),
+  tag: z.string(),
+  iv: z.string()
+})
+
+const syncSearchRequest = z.object({
   signature: z.string().optional(),
   header: syncHeader,
-  message: searchRequest
+  message: searchRequestSchema
 })
 
-export const asyncSearchRequestSchema = z.object({
+const encryptedSyncSearchRequest = z.object({
+  signature: z.string().optional(),
+  header: syncHeader,
+  message: encryptedMessage
+})
+
+const asyncSearchRequest = z.object({
   signature: z.string().optional(),
   header: asyncHeader,
-  message: searchRequest
+  message: searchRequestSchema
 })
 
-export type SyncSearchRequest = TypeOf<typeof syncSearchRequestSchema>
+const encryptedAsyncSearchRequest = z.object({
+  signature: z.string().optional(),
+  header: asyncHeader,
+  message: encryptedMessage
+})
+
+export const maybeEncryptedSyncSearchRequestSchema = syncSearchRequest.or(
+  encryptedSyncSearchRequest
+)
+
+export const maybeEncryptedAsyncSearchRequestSchema = asyncSearchRequest.or(
+  encryptedAsyncSearchRequest
+)
+
+export type MaybeEncryptedSyncSearchRequest = TypeOf<
+  typeof maybeEncryptedSyncSearchRequestSchema
+>
+export type MaybeEncryptedAsyncSearchRequest = TypeOf<
+  typeof maybeEncryptedAsyncSearchRequestSchema
+>
+export type SyncSearchRequest = TypeOf<typeof syncSearchRequest>
 export type EventType = TypeOf<typeof eventTypes>
-export type AsyncSearchRequest = TypeOf<typeof asyncSearchRequestSchema>
+export type AsyncSearchRequest = TypeOf<typeof asyncSearchRequest>
 export type SearchCriteria = TypeOf<typeof searchCriteria>
 export type PredicateQuery = TypeOf<typeof predicateQuery>
 export type IdentifierTypeQuery = TypeOf<typeof identifierTypeQuery>

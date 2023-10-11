@@ -1,5 +1,5 @@
 {
-  "name": "dci-api",
+  "name": "http-api",
   "version": "0.1",
   "description": "Public facing REST API providing a DCI-CRVS standard interface",
   "main": "src/index.ts",

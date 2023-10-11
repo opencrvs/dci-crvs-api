@@ -6,7 +6,10 @@ import {
   searchRequestToAdvancedSearchParameters
 } from 'dci-opencrvs-bridge'
 import { compact } from 'lodash/fp'
-import { type SyncSearchRequest, syncSearchRequestSchema } from '../validations'
+import {
+  type SyncSearchRequest,
+  maybeEncryptedSyncSearchRequestSchema
+} from '../validations'
 import { fromZodError } from 'zod-validation-error'
 import { ValidationError } from '../error'
 import { parseToken } from '../auth'
@@ -14,6 +17,8 @@ import { type ReqResWithAuthorization } from '../server'
 import { withSignature } from '../crypto/sign'
 import { type operations } from '../registry-core-api'
 import { verifySignature } from '../crypto/verify'
+import { decryptPayload } from '../crypto/decrypt'
+import { encryptPayload } from '../crypto/encrypt'
 
 async function fetchRegistrations(token: string, ids: string[]) {
   return await Promise.all(
@@ -53,21 +58,34 @@ export async function syncSearchHandler(
   request: Hapi.Request<ReqResWithAuthorization>,
   _h: Hapi.ResponseToolkit
 ) {
-  const result = syncSearchRequestSchema.safeParse(request.payload)
-  if (!result.success) {
-    throw new ValidationError(fromZodError(result.error).message)
-  }
   const header = request.headers.authorization
   if (header === undefined) {
     throw new AuthorizationError('Authorization header is missing')
   }
   const token = parseToken(header)
-  const payload = result.data
+  const result = maybeEncryptedSyncSearchRequestSchema.safeParse(
+    request.payload
+  )
+  if (!result.success) {
+    throw new ValidationError(fromZodError(result.error).message)
+  }
+  await verifySignature(result.data, maybeEncryptedSyncSearchRequestSchema)
 
-  await verifySignature(payload, syncSearchRequestSchema)
+  const payload = await decryptPayload(result.data)
 
   const results = await search(token, payload.message)
-  return (await withSignature(
-    registrySyncSearchBuilder(results, payload)
-  )) satisfies operations['post_reg_sync_search']['responses']['default']['content']['application/json']
+  const unencryptedResponse = registrySyncSearchBuilder(
+    results,
+    payload
+  ) satisfies operations['post_reg_sync_search']['responses']['default']['content']['application/json']
+  if (payload.header.is_msg_encrypted) {
+    return await withSignature({
+      ...unencryptedResponse,
+      message: await encryptPayload(
+        `${payload.header.sender_id}/.well-known/jwks.json`,
+        unencryptedResponse.message
+      )
+    })
+  }
+  return await withSignature(unencryptedResponse)
 }

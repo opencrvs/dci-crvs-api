@@ -6,7 +6,7 @@ import {
   type IdentityType,
   Event
 } from 'opencrvs-api'
-import type { operations, components, SyncSearchRequest } from 'dci-api'
+import type { operations, components, SyncSearchRequest } from 'http-api'
 import type { SearchResponseWithMetadata } from '../types'
 import { ParseError } from '../error'
 import { compact, isNil } from 'lodash/fp'
@@ -205,14 +205,8 @@ export function searchResponseBuilder(
     timestamp,
     status: 'succ',
     data: {
-      reg_record_type: {
-        namespace: 'person-v1',
-        value: 'person'
-      },
-      reg_event_type: {
-        namespace: 'ns:dci:vital-events:v1',
-        value: eventType(event)
-      },
+      reg_record_type: 'person',
+      reg_event_type: eventType(event),
       reg_records: paginatedRegistrations.map((registration) =>
         isBirthEventSearchSet(registration)
           ? birthPersonRecord(registration)

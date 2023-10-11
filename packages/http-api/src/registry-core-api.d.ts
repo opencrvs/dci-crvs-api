@@ -100,7 +100,102 @@ export interface components {
      *
      * @example vid:54321@nid
      */
-    cdpi_PersonId: Record<string, never>
+    cdpi_PersonId: string
+    /**
+     * @description @context: "https://example.org/schema/CRVSPerson" <br>
+     * @type: "Consent"
+     *
+     * @example {
+     *   "@context": "https://example.org/schema/CRVSPerson",
+     *   "@type": "CRVSPerson",
+     *   "@vocab": "https://spdci.org/",
+     *   "schema": "http://schema.org/",
+     *   "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+     *   "xsd": "http://www.w3.org/2001/XMLSchema#",
+     *   "CRVSPerson": {
+     *     "@id": "https://spdci.org/CRVSPerson",
+     *     "@type": "rdfs:Class",
+     *     "@context": {
+     *       "name": {
+     *         "@id": "schema:name",
+     *         "@type": "xsd:string"
+     *       },
+     *       "givenName": {
+     *         "@id": "schema:givenName",
+     *         "@type": "xsd:string"
+     *       },
+     *       "familyName": {
+     *         "@id": "schema:familyName",
+     *         "@type": "xsd:string"
+     *       },
+     *       "additionalName": {
+     *         "@id": "schema:additionalName",
+     *         "@type": "xsd:string"
+     *       },
+     *       "gender": {
+     *         "@id": "schema:gender",
+     *         "@type": "xsd:string"
+     *       },
+     *       "birthDate": {
+     *         "@id": "schema:birthDate",
+     *         "@type": "xsd:date"
+     *       },
+     *       "birthPlace": {
+     *         "@id": "schema:birthPlace",
+     *         "@type": "schema:GeoCoordinates"
+     *       },
+     *       "deathDate": {
+     *         "@id": "schema:deathDate",
+     *         "@type": "xsd:date"
+     *       },
+     *       "deathPlace": {
+     *         "@id": "schema:deathPlace",
+     *         "@type": "schema:GeoCoordinates"
+     *       },
+     *       "maritalStatus": {
+     *         "@id": "schema:maritalStatus",
+     *         "@type": "xsd:string"
+     *       },
+     *       "honorificPrefix": {
+     *         "@id": "schema:honorificPrefix",
+     *         "@type": "xsd:string"
+     *       },
+     *       "honorificSuffix": {
+     *         "@id": "schema:honorificSuffix",
+     *         "@type": "xsd:string"
+     *       },
+     *       "emails": {
+     *         "@container": "@set",
+     *         "@id": "schema:email",
+     *         "@type": "xsd:string"
+     *       },
+     *       "telephones": {
+     *         "@container": "@set",
+     *         "@id": "schema:telephone",
+     *         "@type": "xsd:string"
+     *       },
+     *       "address": {
+     *         "@id": "schema:address",
+     *         "@type": "schema:GeoCoordinates"
+     *       },
+     *       "marriageDate": {
+     *         "@id": "https://spdci.org/marriageDate",
+     *         "@type": "xsd:date"
+     *       },
+     *       "divorceDate": {
+     *         "@id": "https://spdci.org/divorceDate",
+     *         "@type": "xsd:date"
+     *       },
+     *       "parents": {
+     *         "@id": "schema:parents",
+     *         "@type": "https://spdci.org/CRVSPerson"
+     *       }
+     *     }
+     *   },
+     *   "@id": "https://spdci.org/CRVSPerson"
+     * }
+     */
+    dci_CRVSPerson: Record<string, never>
     /**
      * @description An identifier type includes unique numbers legally assigned to individuals. <br>
      * Reference: [Types of ID](https://id4d.worldbank.org/guide/types-id-systems)
@@ -197,7 +292,7 @@ export interface components {
     dci_RecordType: 'person' | 'other'
     /**
      * @description Standardized codes/values representing diverse Sex categories.
-     * Reference: [ISO/IEC 5218:2022](https://www.iso.org/standard/81682.html)
+     * Reference: [FHIR Administrative Gender](https://build.fhir.org/valueset-administrative-gender.html)
      * 1 : Male
      * 2 : Female
      * 3 : Others
@@ -612,16 +707,16 @@ export interface components {
       }
     }
     /**
-     * @description 1. Pre defined query objects injected by each country/org/system to query a registry
-     * 2. Implementing systems may create pre-defined query objects based on use cases and inject as custom extensions
+     * @description 1. Implementing systems can define schemas.
+     * 2. Based on context, pre defined named queries can also help as part of ExpTemplate construct.
      * 3. ExpressionWithConditionList is simple generic search query construct to solve for majority of search conditons. few examples: <br>
      *   - search or subscribe to update events; e.g any updates in postal_code 12345 between 1/jan/2020 and 31/dec/2020
      *   - search or subscribe to birth, death events; e.g any new birth in postal_code 12345 after 1/jan/2023
      *   - search all farmers with land area less than 2 acers in district code 504
      */
     RegistryQueries:
-      | components['schemas']['IdentifierTypeValue']
       | components['schemas']['ExpTemplate']
+      | components['schemas']['IdentifierTypeValue']
       | components['schemas']['ExpPredicateWithConditionList']
     /** @description Registry to notify a event to subscrbiers */
     NotifyEventRequest: {
@@ -634,119 +729,64 @@ export interface components {
           /** @default 1.0.0 */
           version?: string
           reg_type?: components['schemas']['RegistryType']
-          reg_event_type: components['schemas']['RegistryEventType']
+          reg_event_type?: components['schemas']['RegistryEventType']
           reg_record_type: components['schemas']['RegistryRecordType']
-          reg_records: unknown
+          reg_records: components['schemas']['RegistryRecord']
         }
         locale?: components['schemas']['LanguageCode']
       }[]
     }
-    /** @description Registry supported event types */
-    RegistryEventType: {
-      /**
-       * @description namespace to refer to registry event types; e.g, ns:dci:vital-events:v1
-       * @example ns:dci:vital-events:v1
-       */
-      namespace?: string
-      /**
-       * @description refUri to reference schema of registry event types.
-       * @example https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.2-code-directory#cd.04-vital_events
-       */
-      refUri?: string
-      /**
-       * @description Registry event type value.
-       * @example 1
-       */
-      value: string
-    }
     /**
-     * @description Registy record object based on record_type attribute.
+     * @description @context: "https://example.org/schema/RegistryEventType" <br>
+     * @type: "VitalEvent" <br>
+     *
+     * **Notes:**
+     *   1. Registry event type values defined as per implementation context.
+     *   2. Usually a list of **enum** values of all possible queryable identifiers.
+     *   3. example: "ns:org:RegistryEventType:LiveBirth"
+     *
+     * @example ns:org:RegistryEventType:LiveBirth
+     */
+    RegistryEventType: string
+    /**
+     * @description @context: "https://example.org/schema/RecordType" <br>
+     * @type: "CRVSPerson" <br>
+     * @container: "@set" <br>
+     *
+     * **Notes:**
+     *   1. Record type values defined as per implementation context.
+     *   2. Usually a list of **enum** values of all possible queryable identifiers.
+     *
      * @example {
-     *   "$ref": "components[\"schemas\"][\"dci_PersonRecord\"]"
+     *   "$ref": "components[\"schemas\"][\"dci_CRVSPerson\"]"
      * }
      */
-    RegistryRecord: Record<string, never>
+    RegistryRecord: Record<string, unkown>
     /**
-     * @description Record type to represent in
-     * 1. Search request to request search result record type to return
-     * 2. Notify event to represent record type being returned based on subscription to registry event type
+     * @description @context: "https://example.org/schema/RegistryRecordType" <br>
+     * @type: "RegistryRecordType" <br>
+     *
+     * **Notes:**
+     *   1. Registry record type values defined as per implementation context.
+     *   2. Usually a list of **enum** values of all possible queryable result sets
+     *   3. Referenced in search_request and notify events
+     *   4. example: "ns:dci:RegistryRecordType:CRVSPerson"
+     *
+     * @example ns:dci:RegistryRecordType:CRVSPerson
      */
-    RegistryRecordType: {
-      /**
-       * @description namespace to refer to registry record types; e.g, ns:dci:record-type:PersonRecord:v1
-       * @example [
-       *   "ns:dci:record-type:PersonRecord:v1",
-       *   "ns:openid:record-type:PersonRecord:v1"
-       * ]
-       */
-      namespace?: string
-      /**
-       * @description refUri to reference schema of registry record types.
-       * @example [
-       *   "https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.1-data-elements#do.01-person",
-       *   "https://openid.net/specs/openid-connect-core-1_0.html#Claims"
-       * ]
-       */
-      refUri?: string
-      /**
-       * @description registry record type value. <br>
-       * e.g,: civil, population, national-id, family, household, social, beneficiary, disability, student, farmer, land, utiltiy, other
-       *
-       * @example [
-       *   "person",
-       *   "vc-person",
-       *   "vc-brith-certificate",
-       *   "vc-marriage-certificate",
-       *   "vc-death-certificate",
-       *   "social",
-       *   "disability",
-       *   "student",
-       *   "farmer",
-       *   "land",
-       *   "utility",
-       *   "other"
-       * ]
-       */
-      value: string
-    }
+    RegistryRecordType: string
     /**
-     * @description 1. Country specific implementations should publish /.well-known files or refUris
-     * 2. In most scenarios, receiver i.e receipient of search/subsribe request determine which registry to search
-     * 3. Example: civil, population, national-id, family, household, social, beneficiary, disability, student, farmer, land, utiltiy, other
+     * @description @context: "https://example.org/schema/RegistryType" <br>
+     * @type: "RegistryType" <br>
+     *
+     * **Notes:**
+     *   1. Registry type values defined as per implementation context.
+     *   2. Usually a list of **enum** values of all possible queryable functional registries
+     *   3. example: "ns:org:RegistryType:Civil"
+     *
+     * @example ns:org:RegistryType:Civil
      */
-    RegistryType: {
-      /**
-       * @description namespace to refer to registry types; e.g, ns:dci:registry-type:v1
-       * @example ns:dci:registry-type:v1
-       */
-      namespace?: string
-      /**
-       * @description refUri to reference schema of registry types.
-       * @example https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.2-code-directory
-       */
-      refUri?: string
-      /**
-       * @description registry type value. <br>
-       * e.g,: civil, population, national-id, family, household, social, beneficiary, disability, student, farmer, land, utiltiy, other
-       *
-       * @example [
-       *   "civil",
-       *   "population",
-       *   "national-id",
-       *   "family",
-       *   "household",
-       *   "social",
-       *   "beneficiary",
-       *   "disability",
-       *   "student",
-       *   "farmer",
-       *   "land",
-       *   "utility",
-       *   "other"
-       * ]
-       */
-      value: string
-    }
+    RegistryType: string
     /**
      * @description 1. Functional registry specific extension to search.
      * 2. Additional checks using conditioanl expressions is possible.
@@ -765,7 +805,6 @@ export interface components {
           reg_event_type?: components['schemas']['RegistryEventType']
           query_type: components['schemas']['QueryType']
           query: components['schemas']['RegistryQueries']
-          result_record_type: components['schemas']['RegistryRecordType']
           sort?: components['schemas']['SearchSortList']
           pagination?: components['schemas']['PaginationRequest']
           consent?: components['schemas']['Consent']
@@ -798,7 +837,7 @@ export interface components {
           reg_type?: components['schemas']['RegistryType']
           reg_event_type?: components['schemas']['RegistryEventType']
           reg_record_type: components['schemas']['RegistryRecordType']
-          reg_records: unknown
+          reg_records: components['schemas']['RegistryRecord']
         }
         pagination?: components['schemas']['Pagination']
         locale?: components['schemas']['LanguageCode']
@@ -978,52 +1017,78 @@ export interface components {
     AdditionalInfo: Record<string, never>
     /** @description Attribute name value object */
     AttributeNameValue: {
-      /** @example phone_number */
+      /**
+       * @description @context: "https://example.org/schema/Attribute" <br>
+       * @type: "Attribute" <br>
+       *
+       * **Notes:**
+       *   1. Attribute names defined as per implementation context.
+       *   2. Usually a list of **enum** values of all possible attribute names.
+       *   3. e.g: UIN, YOB, DOB, age, mobile, area-code, pin-code, etc.,
+       *
+       * @example YOB
+       */
       name: string
       value: components['schemas']['AttributeValue']
     }
     /** @description List of attribute Name/Value */
     AttributeNameValueList: components['schemas']['AttributeNameValue'][]
-    /** @example +11 1111111111 */
+    /** @example 1980 */
     AttributeValue: string | number | boolean | Record<string, never>
-    /** @description Authorize artefact. TODO - review and update! */
-    Authorize: {
-      /**
-       * Format: uri or did
-       * @description authorize-id
-       */
-      id?: string
-      ts?: components['schemas']['DateTime']
-      purpose?: {
-        text?: string
-        /** @description From a fixed set, documented at refUri */
-        code?: string
-        /**
-         * Format: uri
-         * @description Uri to provide more info on authorize codes
-         */
-        refUri?: string
-      }
-    }
-    /** @description Consent artefact. TODO - enrich consent object! */
-    Consent: {
-      /**
-       * Format: uri or did
-       * @description consent id
-       */
-      id?: string
-      ts?: components['schemas']['DateTime']
-      purpose?: {
-        text?: string
-        /** @description From a fixed set, documented at refUri */
-        code?: string
-        /**
-         * Format: uri
-         * @description Uri to provide more info on consent codes
-         */
-        refUri?: string
-      }
-    }
+    /**
+     * @description @context: "https://example.org/schema/Authorize" <br>
+     * @type: "Authorize"
+     *
+     * @example {
+     *   "@context": "https://example.org/schema/Authorize",
+     *   "@type": "Authorize",
+     *   "ts": {
+     *     "$ref": "components[\"schemas\"][\"DateTime\"]"
+     *   },
+     *   "purpose": {
+     *     "text": {
+     *       "type": "string"
+     *     },
+     *     "code": {
+     *       "type": "string",
+     *       "description": "From a fixed set, documented at refUri"
+     *     },
+     *     "refUri": {
+     *       "type": "string",
+     *       "format": "uri",
+     *       "description": "Uri to provide more info on authorize codes"
+     *     }
+     *   }
+     * }
+     */
+    Authorize: Record<string, never>
+    /**
+     * @description @context: "https://example.org/schema/Consent" <br>
+     * @type: "Consent"
+     *
+     * @example {
+     *   "@context": "https://example.org/schema/Consent",
+     *   "@type": "Consent",
+     *   "ts": {
+     *     "$ref": "components[\"schemas\"][\"DateTime\"]"
+     *   },
+     *   "purpose": {
+     *     "text": {
+     *       "type": "string"
+     *     },
+     *     "code": {
+     *       "type": "string",
+     *       "description": "From a fixed set, documented at refUri"
+     *     },
+     *     "refUri": {
+     *       "type": "string",
+     *       "format": "uri",
+     *       "description": "Uri to provide more info on consent codes"
+     *     }
+     *   }
+     * }
+     */
+    Consent: Record<string, never>
     /**
      * Format: date-time
      * @description 1. All dates and timestamps are represented in [ISO 8601](https://www.iso.org/standard/40874.html) format including timezone - e.g 2022-12-04T17:20:07-04:00.
@@ -1042,11 +1107,11 @@ export interface components {
         kid: string
       }
       /** @description This is the result of encrypting the plaintext using the CEK and the IV. It's Base64Url-encoded. */
-      data: string
+      ciphertext: string
       /** @description The base64-url encoded encrypted key */
       encrypted_key: string
       /** @description This is a Base64Url-encoded value that provides evidence of the integrity and authenticity of the ciphertext, Initialization Vector, and Additional Authenticated Data */
-      auth_tag: string
+      tag: string
       /** @description This is a Base64Url-encoded random bit string to be used as the Initialization Vector (IV) when encrypting the plaintext to produce the ciphertext. The size of the IV depends on the encryption algorithm used. */
       iv: string
     }
@@ -1107,7 +1172,17 @@ export interface components {
     ExpOperator: 'gt' | 'lt' | 'eq' | 'ge' | 'le' | 'in'
     /** @description Expression */
     ExpPredicate: {
-      /** @description attribute name */
+      /**
+       * @description @context: "https://example.org/schema/QueryAttributes" <br>
+       * @type: "QueryAttributes" <br>
+       *
+       * **Notes:**
+       *   1. Query attribute names defined as per implementation context.
+       *   2. Usually a list of **enum** values of all possible queryable attribute names.
+       *   3. e.g: UIN, YOB, DOB, age, mobile, area-code, pin-code, etc.,
+       *
+       * @example YOB
+       */
       attribute_name: string
       operator: components['schemas']['ExpOperator']
       attribute_value: components['schemas']['AttributeValue']
@@ -1125,26 +1200,32 @@ export interface components {
       expression2?: components['schemas']['ExpPredicate']
     }
     ExpPredicateWithConditionList: components['schemas']['ExpPredicateWithCondition'][]
-    /**
-     * @description 1. Query expression's syntax / format is determined based on query-type.
-     * 2. Query expression as a template with placeholder to pass conditional search values
-     */
+    /** @description Identifier type and value object */
     ExpTemplate: {
       /**
-       * Format: uri
-       * @description Reference to query expression template being used
+       * @description @context: "https://example.org/schema/QueryType" <br>
+       * @type: "Queryype" <br>
+       *
+       * **Notes:**
+       *   1. Query types that helps decode query expressions
+       *   2. Sample query type enums: "GraphQl", "Sql", "NoSql"
+       *
+       * @example ns:org:QueryType:GraphQl
        */
-      namespace?: string
-      /** @enum {string} */
-      type: 'graph-ql' | 'sql' | 'mongoDB' | 'cassandra' | 'other'
-      /** @description If not defined type, custom value to define other types */
-      other_value?: string
+      type?: string
       /**
-       * Format: byte
-       * @description Query expression with placeholder to pass conditional search values as base64 bytes
+       * @description @context: "https://example.org/schema/QueryExpression" <br>
+       * @type: "QueryExpression" <br>
+       *
+       * **Notes:**
+       *   1. Query expression's syntax / format is determined based on query-type.
+       *   2. Query expression as a template with placeholder to pass conditional search parameters
+       *
+       * @example {
+       *   "expression": " query GeBirthRecordById: { person: (UIN: \"1\") { BRN, name, gender, birthDate, birthPlace, parents } }"
+       * }
        */
-      expression: string
-      expression_values: components['schemas']['AttributeNameValueList']
+      value?: Record<string, never>
     }
     /** @description File info. Used in file upload feature using HTTPS */
     FileInfo: {
@@ -1162,28 +1243,34 @@ export interface components {
        */
       fileFormat?: string
     }
-    /** @description Identifier type */
-    IdentifierType: {
+    /**
+     * @description @context: "https://example.org/schema/IdType" <br>
+     * @type: "IdType" <br>
+     *
+     * **Notes:**
+     *   1. Identifier type values defined as per implementation context.
+     *   2. Usually a list of **enum** values of all possible queryable identifiers.
+     *   3. e.g: UIN, MOBILE, BRN, MRN, DRN, etc.,
+     *
+     * @example UIN
+     */
+    IdentifierType: string
+    /** @description Identifier type and value object */
+    IdentifierTypeValue: {
       /**
-       * @description namespace to refer to identifier type; e.g, ns:dci:id-types:v1
-       * @example ns:dci:id-types:v1
-       */
-      namespace?: string
-      /**
-       * @description refUri to reference identifier type schema
-       * @example https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.2-code-directory#cd.01-identifier_type
-       */
-      refUri?: string
-      /**
-       * @description Identifier type
+       * @description @context: "https://example.org/schema/IdType" <br>
+       * @type: "IdType" <br>
+       *
+       * **Notes:**
+       *   1. Identifier type values defined as per implementation context.
+       *   2. Usually a list of **enum** values of all possible queryable identifiers.
+       *   3. e.g: UIN, MOBILE, BRN, MRN, DRN, etc.,
+       *
        * @example UIN
        */
-      value: string
-    }
-    IdentifierTypeValue: {
-      identifier_type?: components['schemas']['IdentifierType']
+      type?: string
       /** @example 12314567890 */
-      identifier_value?: components['schemas']['AttributeValue']
+      value?: components['schemas']['AttributeValue']
     }
     /**
      * @description indicates language code. G2P Connect supports country codes as per ISO 639.3 standard
@@ -1196,6 +1283,16 @@ export interface components {
       /** @example 88°50'26.5"E */
       longitude?: string
     }
+    /**
+     * @description @context: "https://example.org/schema/Meta" <br>
+     * @type: "@context" <br>
+     *
+     * **Notes:**
+     *   1. Additional meta info defined as per implementation context.
+     *   2. Usually unencrypted list of name/value, tags, etc., to provide additional info to intermediary entities.
+     *   3. The information SHOULD be privacy preserving
+     */
+    Meta: Record<string, never>
     /** @description Message header */
     'MsgCallbackHeader_V1.0.0': {
       /**
@@ -1245,6 +1342,7 @@ export interface components {
        * @default false
        */
       is_msg_encrypted?: boolean
+      meta?: components['schemas']['Meta']
     }
     /** @description Message header */
     'MsgHeader_V1.0.0': {
@@ -1295,6 +1393,7 @@ export interface components {
        * @default false
        */
       is_msg_encrypted?: boolean
+      meta?: components['schemas']['Meta']
     }
     /**
      * @description Message header related common status reason codes
@@ -1367,7 +1466,17 @@ export interface components {
     RequestStatus: 'rcvd' | 'pdng' | 'succ' | 'rjct'
     /** @description Sorting definition */
     SearchSort: {
-      /** @description attribute name */
+      /**
+       * @description @context: "https://example.org/schema/Attribute" <br>
+       * @type: "Attribute" <br>
+       *
+       * **Notes:**
+       *   1. Attribute names defined as per implementation context.
+       *   2. Usually a list of **enum** values of all possible attribute names.
+       *   3. e.g: UIN, YOB, DOB, age, mobile, area-code, pin-code, etc.,
+       *
+       * @example YOB
+       */
       attribute_name?: string
       /** @enum {string} */
       sort_order?: 'asc' | 'desc'
@@ -1430,8 +1539,9 @@ export interface operations {
             action?: 'search'
           }
           /** @description The search data using which registry search to be performed */
-          message: components['schemas']['SearchRequest']
-          // | components["schemas"]["EncryptedMessage"];
+          message:
+            | components['schemas']['SearchRequest']
+            | components['schemas']['EncryptedMessage']
         }
         'multipart/form-data': components['schemas']['FileInfo'] & {
           /** @enum {unknown} */
@@ -1459,8 +1569,9 @@ export interface operations {
             /** @enum {unknown} */
             action?: 'on-search'
           }
-          message?: components['schemas']['SearchResponse']
-          // | components["schemas"]["EncryptedMessage"];
+          message?:
+            | components['schemas']['SearchResponse']
+            | components['schemas']['EncryptedMessage']
         }
         'multipart/form-data': components['schemas']['FileInfo'] & {
           /** @enum {unknown} */
@@ -1489,8 +1600,9 @@ export interface operations {
             action?: 'subscribe'
           }
           /** @description Subscription request which contaion query with frequency and other info on which notification to be sent by registry to subscriber */
-          message: components['schemas']['SubscribeRequest']
-          // | components["schemas"]["EncryptedMessage"];
+          message:
+            | components['schemas']['SubscribeRequest']
+            | components['schemas']['EncryptedMessage']
         }
         'multipart/form-data': components['schemas']['FileInfo'] & {
           /** @enum {unknown} */
@@ -1519,8 +1631,9 @@ export interface operations {
             action?: 'on-subscribe'
           }
           /** @description Subscription information */
-          message: components['schemas']['SubscribeResponse']
-          // | components["schemas"]["EncryptedMessage"];
+          message:
+            | components['schemas']['SubscribeResponse']
+            | components['schemas']['EncryptedMessage']
         }
         'multipart/form-data': components['schemas']['FileInfo'] & {
           /** @enum {unknown} */
@@ -1548,8 +1661,9 @@ export interface operations {
             /** @enum {unknown} */
             action?: 'notify'
           }
-          message?: components['schemas']['NotifyEventRequest']
-          // | components["schemas"]["EncryptedMessage"];
+          message?:
+            | components['schemas']['NotifyEventRequest']
+            | components['schemas']['EncryptedMessage']
         }
         'multipart/form-data': components['schemas']['FileInfo'] & {
           /** @enum {unknown} */
@@ -1578,8 +1692,9 @@ export interface operations {
             action?: 'unsubscribe'
           }
           /** @description The unsubscribe request that contain subscription ids which to be removed from subscription list */
-          message: components['schemas']['UnSubscribeRequest']
-          // | components["schemas"]["EncryptedMessage"];
+          message:
+            | components['schemas']['UnSubscribeRequest']
+            | components['schemas']['EncryptedMessage']
         }
         'multipart/form-data': components['schemas']['FileInfo'] & {
           /** @enum {unknown} */
@@ -1607,8 +1722,9 @@ export interface operations {
             /** @enum {unknown} */
             action?: 'on-unsubscribe'
           }
-          message: components['schemas']['UnSubscribeResponse']
-          // | components["schemas"]["EncryptedMessage"];
+          message:
+            | components['schemas']['UnSubscribeResponse']
+            | components['schemas']['EncryptedMessage']
         }
         'multipart/form-data': components['schemas']['FileInfo'] & {
           /** @enum {unknown} */
@@ -1636,8 +1752,9 @@ export interface operations {
             /** @enum {unknown} */
             action?: 'txn-status'
           }
-          message: components['schemas']['TxnStatusRequest']
-          // | components["schemas"]["EncryptedMessage"];
+          message:
+            | components['schemas']['TxnStatusRequest']
+            | components['schemas']['EncryptedMessage']
         }
         'multipart/form-data': components['schemas']['FileInfo'] & {
           /** @enum {unknown} */
@@ -1665,8 +1782,9 @@ export interface operations {
             /** @enum {unknown} */
             action?: 'txn-on-status'
           }
-          message?: components['schemas']['TxnStatusResponse']
-          // | components["schemas"]["EncryptedMessage"];
+          message?:
+            | components['schemas']['TxnStatusResponse']
+            | components['schemas']['EncryptedMessage']
         }
         'multipart/form-data': components['schemas']['FileInfo'] & {
           /** @enum {unknown} */
@@ -1695,8 +1813,9 @@ export interface operations {
             action?: 'search'
           }
           /** @description The search data using which registry search to be performed */
-          message: components['schemas']['SearchRequest']
-          // | components["schemas"]["EncryptedMessage"];
+          message:
+            | components['schemas']['SearchRequest']
+            | components['schemas']['EncryptedMessage']
         }
       }
     }
@@ -1713,8 +1832,9 @@ export interface operations {
               /** @enum {unknown} */
               action?: 'on-search'
             }
-            message?: components['schemas']['SearchResponse']
-            // | components["schemas"]["EncryptedMessage"];
+            message?:
+              | components['schemas']['SearchResponse']
+              | components['schemas']['EncryptedMessage']
           }
         }
       }
@@ -1733,8 +1853,9 @@ export interface operations {
             /** @enum {unknown} */
             action?: 'txn-status'
           }
-          message: components['schemas']['TxnStatusRequest']
-          // | components["schemas"]["EncryptedMessage"];
+          message:
+            | components['schemas']['TxnStatusRequest']
+            | components['schemas']['EncryptedMessage']
         }
       }
     }
@@ -1751,8 +1872,9 @@ export interface operations {
               /** @enum {unknown} */
               action?: 'txn-on-status'
             }
-            message?: components['schemas']['TxnStatusResponse']
-            // | components["schemas"]["EncryptedMessage"];
+            message?:
+              | components['schemas']['TxnStatusResponse']
+              | components['schemas']['EncryptedMessage']
           }
         }
       }

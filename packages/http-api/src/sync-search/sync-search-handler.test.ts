@@ -8,7 +8,15 @@ import { OPENCRVS_GATEWAY_URL } from 'opencrvs-api'
 import testPayload from './test-payload.json'
 import testFetchRegistrationResponse from './test-fetchregistration-response.json'
 import testSearchEventsResponse from './test-searchevents-response.json'
-import { CompactSign, exportJWK, generateKeyPair } from 'jose'
+import {
+  CompactSign,
+  FlattenedEncrypt,
+  calculateJwkThumbprint,
+  exportJWK,
+  generateKeyPair
+} from 'jose'
+import { getEncryptionKeys } from '../crypto/keys'
+import { getJwk } from '../jwks/handler'
 
 describe('POST /registry/sync/search', async () => {
   let server: Hapi.Server
@@ -115,9 +123,8 @@ describe('POST /registry/sync/search', async () => {
         http.get(
           'https://integrating-server.com/.well-known/jwks.json',
           async () => {
-            return new Response(
-              JSON.stringify({ keys: [await exportJWK(publicKey)] })
-            )
+            const jwk = await getJwk(publicKey, 'sig', 'RS256')
+            return new Response(JSON.stringify({ keys: [jwk] }))
           }
         )
       ],
@@ -134,9 +141,59 @@ describe('POST /registry/sync/search', async () => {
                 })
               )
             )
-              .setProtectedHeader({ alg: 'RS256' })
+              .setProtectedHeader({
+                alg: 'RS256',
+                kid: await calculateJwkThumbprint(await exportJWK(publicKey))
+              })
               .sign(privateKey),
             ...testPayload
+          },
+          headers: {
+            Authorization: 'Bearer test-token'
+          }
+        })
+
+        assert.strictEqual(res.statusCode, 200)
+        assert.strictEqual(JSON.parse(res.payload).header.version, '1.0.0')
+      }
+    )
+  )
+  it(
+    'decrypts encrypted payload',
+    withRequestInterception(
+      [
+        http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
+          return new Response(JSON.stringify(testSearchEventsResponse))
+        }),
+        http.post(OPENCRVS_GATEWAY_URL.toString(), () => {
+          return new Response(JSON.stringify(testFetchRegistrationResponse))
+        }),
+        http.get(
+          'https://integrating-server.com/.well-known/jwks.json',
+          async () => {
+            const { publicKey } = await generateKeyPair('RSA-OAEP-256')
+            const jwk = await getJwk(publicKey, 'enc', 'RSA-OAEP-256')
+            return new Response(JSON.stringify({ keys: [jwk] }))
+          }
+        )
+      ],
+      async () => {
+        const { publicKey } = await getEncryptionKeys()
+        const res = await server.inject({
+          method: 'POST',
+          url: '/registry/sync/search',
+          payload: {
+            ...testPayload,
+            header: { ...testPayload.header, is_msg_encrypted: true },
+            message: await new FlattenedEncrypt(
+              new TextEncoder().encode(JSON.stringify(testPayload.message))
+            )
+              .setUnprotectedHeader({
+                alg: 'RSA-OAEP-256',
+                enc: 'A256GCM',
+                kid: 'unique_kid'
+              })
+              .encrypt(publicKey)
           },
           headers: {
             Authorization: 'Bearer test-token'
