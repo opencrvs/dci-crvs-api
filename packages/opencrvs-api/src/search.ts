@@ -6,6 +6,7 @@ import {
 import { print } from 'graphql'
 import gql from 'graphql-tag'
 import type { Registration } from './types'
+import { AuthorizationError } from 'dci-opencrvs-bridge'
 
 export const SEARCH_EVENTS = gql`
   query searchEvents(
@@ -28,6 +29,25 @@ export const SEARCH_EVENTS = gql`
   }
 `
 
+interface Success {
+  data: {
+    searchEvents: SearchEventsQuery['searchEvents']
+  }
+  errors: undefined
+}
+
+interface Error {
+  errors: Array<{ message: string }>
+}
+
+function isError(response: Success | Error): response is Error {
+  return (response?.errors?.length ?? 0) > 0
+}
+
+function isUnauthenticated(error: Error) {
+  return error.errors.some((error) => error.message === 'Unauthorized')
+}
+
 export async function advancedRecordSearch(
   token: string,
   variables: SearchEventsQueryVariables,
@@ -48,8 +68,21 @@ export async function advancedRecordSearch(
       query: print(SEARCH_EVENTS)
     })
   })
-  const response = await request.json()
-  return response.data.searchEvents as SearchEventsQuery['searchEvents']
+  const response = (await request.json()) as Success | Error
+
+  if (isError(response) && isUnauthenticated(response)) {
+    throw new AuthorizationError('Unauthorized in gateway')
+  }
+
+  if (isError(response)) {
+    throw new Error(
+      `Gateway returned errors: ${response.errors
+        .map((error) => error.message)
+        .join(', ')}`
+    )
+  }
+
+  return response.data.searchEvents
 }
 
 export const FETCH_REGISTRATION = gql`
