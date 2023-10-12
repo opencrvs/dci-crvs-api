@@ -5,6 +5,7 @@ import {
   type MarriageRegistration as MarriageRegistrationWithOptionals,
   type Scalars,
   type Address,
+  type Location as LocationWithOptionals,
   type HumanName as HumanNameWithOptionals
 } from './gateway'
 
@@ -29,8 +30,13 @@ interface Child extends Person {
   name: [HumanName, ...HumanName[]]
 }
 
+interface Location extends LocationWithOptionals {
+  partOf: `Location/${string}`
+}
+
 export interface BirthRegistration extends BirthRegistrationWithOptionals {
   child: Child
+  eventLocation: Location
 }
 
 interface Deceased extends Person {
@@ -41,6 +47,7 @@ interface Deceased extends Person {
 
 export interface DeathRegistration extends DeathRegistrationWithOptionals {
   deceased: Deceased
+  eventLocation: Location
 }
 
 interface MarriedPerson extends Person {
@@ -51,6 +58,7 @@ export interface MarriageRegistration
   extends MarriageRegistrationWithOptionals {
   groom: MarriedPerson
   bride: MarriedPerson
+  eventLocation: Location
 }
 
 export type Registration =

@@ -11,6 +11,7 @@ import type { SearchResponseWithMetadata } from '../types'
 import { ParseError } from '../error'
 import { compact, isNil } from 'lodash/fp'
 import { randomUUID } from 'node:crypto'
+import { place } from './json-ld'
 
 const name = ({
   firstNames,
@@ -23,6 +24,8 @@ const name = ({
   middle_name: firstNames?.split(' ')[1] ?? null,
   family_name: familyName
 })
+
+const parsePartOf = (partOf: string) => partOf.split('/')[1]
 
 const sex = (value: string) => {
   switch (value) {
@@ -74,7 +77,7 @@ function birthPersonRecord(registration: BirthRegistration) {
       registration.child.identifier?.map((identity) =>
         identity !== null ? identifier(identity) : null
       )
-    ) as any, // TODO: Change this to a proper identity type after the typing gets updated to support multiple identifiers?
+    ),
     birthdate: registration.child.birthDate,
     ...name({
       firstNames: registration.child.name[0].firstNames,
@@ -82,8 +85,14 @@ function birthPersonRecord(registration: BirthRegistration) {
     }),
     sex: sex(registration.child.gender),
     parent1_identifier: motherIdentifier,
-    parent2_identifier: fatherIdentifier
-  } satisfies components['schemas']['dci_PersonRecord']
+    parent2_identifier: fatherIdentifier,
+    deathplace: place({
+      identifier: `ocrvs:${registration.eventLocation.id}`,
+      containedInPlace: place({
+        identifier: `ocrvs:${parsePartOf(registration.eventLocation.partOf)}`
+      })
+    })
+  }
 }
 
 function deathPersonRecord(registration: DeathRegistration) {
@@ -108,7 +117,7 @@ function deathPersonRecord(registration: DeathRegistration) {
       registration.deceased.identifier?.map((identity) =>
         identity !== null ? identifier(identity) : null
       )
-    ) as any, // TODO: Change this to a proper identity type
+    ),
     birthdate: registration.deceased?.birthDate ?? undefined,
     deathdate: registration.deceased?.deceased?.deathDate ?? undefined,
     ...name({
@@ -118,19 +127,22 @@ function deathPersonRecord(registration: DeathRegistration) {
     sex: sex(registration.deceased.gender),
     parent1_identifier: motherIdentifier,
     parent2_identifier: fatherIdentifier,
-    deathplace: undefined // TODO: Add deathplace after we've figured addresses with MOSIP?
-  } satisfies components['schemas']['dci_PersonRecord']
+    deathplace: place({
+      identifier: `ocrvs:${registration.eventLocation.id}`,
+      containedInPlace: place({
+        identifier: `ocrvs:${registration.eventLocation.partOf}`
+      })
+    })
+  }
 }
 
-function marriagePersonRecord(
-  registration: MarriageRegistration
-): components['schemas']['dci_PersonRecord'] {
+function marriagePersonRecord(registration: MarriageRegistration) {
   return {
     identifier: compact(
       registration.bride?.identifier?.map((identity) =>
         identity !== null ? identifier(identity) : null
       )
-    ) as any, // TODO: Change this to a proper identity type
+    ),
     ...name({
       firstNames: registration.bride.name[0].firstNames,
       familyName: registration.bride.name[0].familyName
@@ -142,14 +154,20 @@ function marriagePersonRecord(
           registration.groom?.identifier?.map((identity) =>
             identity !== null ? identifier(identity) : null
           )
-        ) as any, // TODO: Change this to a proper identity type
+        ),
         ...name({
           firstNames: registration.groom.name[0].firstNames,
           familyName: registration.groom.name[0].familyName
         })
       }
-    ]
-  } as any // TODO: How do we inform about the related persons? GitBook and typing don't match
+    ],
+    marriageplace: place({
+      identifier: `ocrvs:${registration.eventLocation.id}`,
+      containedInPlace: place({
+        identifier: `ocrvs:${registration.eventLocation.partOf}`
+      })
+    })
+  }
 }
 
 function eventType(event: Event) {
