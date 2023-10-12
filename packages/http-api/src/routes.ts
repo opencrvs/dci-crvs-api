@@ -4,7 +4,7 @@ import { syncSearchHandler } from './sync-search/sync-search-handler'
 import { healthcheckHandler } from './healthcheck/healthcheck-handler'
 import { type ReqResWithAuthorization } from './server'
 import { OPENCRVS_TOKEN_URL } from 'opencrvs-api'
-import { getJwksHandler } from './jwks/handler'
+import { getJwksHandler } from './jwks/jwks-handler'
 
 export const routes = [
   {
