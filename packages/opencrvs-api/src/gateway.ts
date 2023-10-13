@@ -2525,6 +2525,16 @@ export type FetchRegistrationQuery = {
             system?: string | null
             value?: string | null
           }> | null
+          address?: {
+            __typename?: 'Address'
+            type?: string | null
+            line?: Array<string | null> | null
+            district?: string | null
+            state?: string | null
+            city?: string | null
+            postalCode?: string | null
+            country?: string | null
+          } | null
         } | null
         registration?: {
           __typename?: 'Registration'

@@ -131,6 +131,15 @@ export const FETCH_REGISTRATION = gql`
           alias
           partOf
           type
+          address {
+            type
+            line
+            district
+            state
+            city
+            postalCode
+            country
+          }
         }
       }
       ... on DeathRegistration {

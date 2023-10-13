@@ -4,6 +4,7 @@ import {
   type DeathRegistration,
   type MarriageRegistration,
   type IdentityType,
+  type Location,
   Event
 } from 'opencrvs-api'
 import type { operations, components, SyncSearchRequest } from 'http-api'
@@ -11,7 +12,7 @@ import type { SearchResponseWithMetadata } from '../types'
 import { ParseError } from '../error'
 import { compact, isNil } from 'lodash/fp'
 import { randomUUID } from 'node:crypto'
-import { place } from './json-ld'
+import * as spdci from './json-ld'
 
 const name = ({
   firstNames,
@@ -24,8 +25,6 @@ const name = ({
   middle_name: firstNames?.split(' ')[1] ?? null,
   family_name: familyName
 })
-
-const parsePartOf = (partOf: string) => partOf.split('/')[1]
 
 const sex = (value: string) => {
   switch (value) {
@@ -55,6 +54,17 @@ const identifier = ({ id: value, type }: IdentityType) => {
   }
 }
 
+function locationToSpdciPlace(location: Location) {
+  return spdci.place({
+    identifier: `ocrvs:${location.id}`,
+    containedInPlace: spdci.place({
+      identifier: `ocrvs:${
+        location.partOf?.split('/')[1] ?? location.address?.state
+      }`
+    })
+  })
+}
+
 function birthPersonRecord(registration: BirthRegistration) {
   /* eslint-disable @typescript-eslint/no-non-null-assertion */
   const motherIdentifier = !isNil(registration.mother?.identifier?.[0]?.id)
@@ -78,7 +88,7 @@ function birthPersonRecord(registration: BirthRegistration) {
         identity !== null ? identifier(identity) : null
       )
     ),
-    birthdate: registration.child.birthDate,
+    birthDate: registration.child.birthDate,
     ...name({
       firstNames: registration.child.name[0].firstNames,
       familyName: registration.child.name[0].familyName
@@ -86,12 +96,7 @@ function birthPersonRecord(registration: BirthRegistration) {
     sex: sex(registration.child.gender),
     parent1_identifier: motherIdentifier,
     parent2_identifier: fatherIdentifier,
-    deathplace: place({
-      identifier: `ocrvs:${registration.eventLocation.id}`,
-      containedInPlace: place({
-        identifier: `ocrvs:${parsePartOf(registration.eventLocation.partOf)}`
-      })
-    })
+    birthPlace: locationToSpdciPlace(registration.eventLocation)
   }
 }
 
@@ -127,12 +132,7 @@ function deathPersonRecord(registration: DeathRegistration) {
     sex: sex(registration.deceased.gender),
     parent1_identifier: motherIdentifier,
     parent2_identifier: fatherIdentifier,
-    deathplace: place({
-      identifier: `ocrvs:${registration.eventLocation.id}`,
-      containedInPlace: place({
-        identifier: `ocrvs:${registration.eventLocation.partOf}`
-      })
-    })
+    deathPlace: locationToSpdciPlace(registration.eventLocation)
   }
 }
 
@@ -161,12 +161,7 @@ function marriagePersonRecord(registration: MarriageRegistration) {
         })
       }
     ],
-    marriageplace: place({
-      identifier: `ocrvs:${registration.eventLocation.id}`,
-      containedInPlace: place({
-        identifier: `ocrvs:${registration.eventLocation.partOf}`
-      })
-    })
+    marriagePlace: locationToSpdciPlace(registration.eventLocation)
   }
 }
 
