@@ -24,13 +24,15 @@ In local development you are able to get a local registrar's token with [OpenCRV
 
 ## Roadmap
 
-| Endpoint                | Description                                                                              | Implementation status               |
-| ----------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------- |
-| `/health`               | Health check endpoint                                                                    | 🚧 In progress for dci-crvs-api@1.0 |
-| `/oauth2/client/token`  | Get a JWT token with OpenCRVS National System Admin supplied client_id and client_secret | 🚧 In progress for dci-crvs-api@1.0 |
-| `/registry/search`      | Search person(s) in registry using an identifier or custom attributes (async, callback)  | 🚧 In progress for dci-crvs-api@1.0 |
-| `/registry/sync/search` | Search person(s) in registry using an identifier or custom attributes (sync)             | 🚧 In progress for dci-crvs-api@1.0 |
-| `/registry/subscribe`   | Notify a social protection system with webhooks about deaths                             | ⏩ Upcoming for dci-crvs-api@2.0    |
+| Endpoint                      | Description                                                                              | Implementation status               |
+| ----------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------- |
+| `/health`                     | Health check endpoint                                                                    | 🚧 In progress for dci-crvs-api@1.0 |
+| `/oauth2/client/token`        | Get a JWT token with OpenCRVS National System Admin supplied client_id and client_secret | 🚧 In progress for dci-crvs-api@1.0 |
+| `/registry/search`            | Search person(s) in registry using an identifier or custom attributes (async, callback)  | 🚧 In progress for dci-crvs-api@1.0 |
+| `/registry/sync/search`       | Search person(s) in registry using an identifier or custom attributes (sync)             | 🚧 In progress for dci-crvs-api@1.0 |
+| `/.well-known/jwks.json`      | Exports a JSON Web Key Set containing CRVS public keys                                   | 🚧 In progress for dci-crvs-api@1.0 |
+| `/.well-known/locations.json` | Contains the location tree of a CRVS using SPDCI `Place`                                 | 🚧 In progress for dci-crvs-api@1.0 |
+| `/registry/subscribe`         | Notify a social protection system with webhooks about deaths                             | ⏩ Upcoming for dci-crvs-api@2.0    |
 
 ## Monorepo structure
 
