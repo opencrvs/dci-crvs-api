@@ -11,17 +11,26 @@ export function withContext<T extends Record<string, any>>(json: T) {
 
 interface Place {
   identifier?: `ocrvs:${string}`
+  name?: string
   address?: string
   containedInPlace?: Place
+  type?: string
 }
 
-export function place({ identifier, address, containedInPlace }: Place): {
-  '@type': 'spdci:Place'
+export function place({
+  identifier,
+  address,
+  containedInPlace,
+  name,
+  type
+}: Place): {
+  '@type': `spdci:Place${`#${string}` | ''}`
 } & Place {
   return {
-    '@type': 'spdci:Place',
+    '@type': `spdci:Place${type === undefined ? '' : (`#${type}` as const)}`,
     identifier,
     address,
+    name,
     containedInPlace: containedInPlace && place(containedInPlace)
   }
 }

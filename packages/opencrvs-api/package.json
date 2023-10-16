@@ -8,6 +8,7 @@
     "generate-gateway-types": "graphql-codegen --config codegen.yml && npx prettier --write src/gateway.ts"
   },
   "dependencies": {
+    "@opencrvs/commons": "https://gitpkg.now.sh/opencrvs/opencrvs-core/packages/commons",
     "@types/jsonwebtoken": "^9.0.3",
     "graphql": "^16.8.0",
     "graphql-tag": "^2.12.6",
