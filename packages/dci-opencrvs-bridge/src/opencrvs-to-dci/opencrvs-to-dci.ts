@@ -55,13 +55,21 @@ const identifier = ({ id: value, type }: IdentityType) => {
 }
 
 function locationToSpdciPlace(location: Location) {
+  if (location.type === 'PRIVATE_HOME') {
+    return spdci.place({
+      address: `${location.address?.line?.[1]} ${location.address?.line?.[0]}
+${location.address?.line?.[2]}
+${location.address?.postalCode}
+${location.address?.city}`,
+      containedInPlace: `ocrvs:${location.address?.district}`
+    })
+  }
+
   return spdci.place({
     identifier: `ocrvs:${location.id}`,
-    containedInPlace: spdci.place({
-      identifier: `ocrvs:${
-        location.partOf?.split('/')[1] ?? location.address?.state
-      }`
-    })
+    containedInPlace: `ocrvs:${
+      location.partOf?.split('/')[1] ?? location.address?.state
+    }`
   })
 }
 

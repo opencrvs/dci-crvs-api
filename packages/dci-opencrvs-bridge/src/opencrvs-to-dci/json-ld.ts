@@ -13,7 +13,7 @@ interface Place {
   identifier?: `ocrvs:${string}`
   name?: string
   address?: string
-  containedInPlace?: Place
+  containedInPlace?: Place | `ocrvs:${string}`
   type?: string
 }
 
@@ -31,6 +31,6 @@ export function place({
     identifier,
     address,
     name,
-    containedInPlace: containedInPlace && place(containedInPlace)
+    containedInPlace
   }
 }

@@ -1,4 +1,4 @@
-import { SavedLocation } from 'opencrvs-api'
+import { type SavedLocation } from 'opencrvs-api'
 import { place } from './json-ld'
 
 export function fhirLocationsToJsonLd(locations: SavedLocation[]) {
@@ -7,9 +7,7 @@ export function fhirLocationsToJsonLd(locations: SavedLocation[]) {
       identifier: `ocrvs:${location.id}`,
       name: location.name,
       type: location.type?.coding?.[0].code,
-      containedInPlace: place({
-        identifier: `ocrvs:${location.partOf?.reference.split('/')[1]}`
-      })
+      containedInPlace: `ocrvs:${location.partOf?.reference.split('/')[1]}`
     })
   )
 }
