@@ -68,9 +68,6 @@ ${location.address?.city}`,
 
   return spdci.place({
     identifier: `ocrvs:${location.id}`,
-    containedInPlace: `ocrvs:${
-      location.partOf?.split('/')[1] ?? location.address?.state
-    }`,
     additionalType: location.type ?? undefined
   })
 }

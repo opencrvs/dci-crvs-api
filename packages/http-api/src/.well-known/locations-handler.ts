@@ -6,5 +6,13 @@ const memoizedFetchFHIRLocations = memoize(fetchFHIRLocations)
 
 export async function getLocationsHandler() {
   const locations = await memoizedFetchFHIRLocations()
-  return fhirLocationsToJsonLd(locations.entry.map((entry) => entry.resource))
+
+  if (locations.meta?.lastUpdated === undefined) {
+    throw new Error("FHIR API didn't have a lastUpdated field")
+  }
+
+  return fhirLocationsToJsonLd(
+    locations.entry.map((entry) => entry.resource),
+    { lastUpdated: locations.meta?.lastUpdated }
+  )
 }

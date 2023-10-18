@@ -9,11 +9,16 @@ export function withContext<T extends Record<string, any>>(json: T) {
   }
 }
 
+interface IdentifierPropertyValue {
+  name: string
+  identifier: string
+}
+
 interface Place {
-  identifier?: `ocrvs:${string}`
+  identifier?: string | IdentifierPropertyValue[]
   name?: string
   address?: string
-  containedInPlace?: Place | `ocrvs:${string}`
+  containedInPlace?: Place | string | null
   additionalType?: string
   type?: string
 }
