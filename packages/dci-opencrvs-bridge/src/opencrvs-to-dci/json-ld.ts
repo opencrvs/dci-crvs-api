@@ -14,6 +14,7 @@ interface Place {
   name?: string
   address?: string
   containedInPlace?: Place | `ocrvs:${string}`
+  additionalType?: string
   type?: string
 }
 
@@ -22,12 +23,13 @@ export function place({
   address,
   containedInPlace,
   name,
-  type
+  additionalType
 }: Place): {
-  '@type': `spdci:Place${`#${string}` | ''}`
+  '@type': `Place`
 } & Place {
   return {
-    '@type': `spdci:Place${type === undefined ? '' : (`#${type}` as const)}`,
+    '@type': `Place`,
+    additionalType,
     identifier,
     address,
     name,

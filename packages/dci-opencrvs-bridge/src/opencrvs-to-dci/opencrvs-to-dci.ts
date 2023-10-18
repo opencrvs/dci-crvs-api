@@ -61,7 +61,8 @@ function locationToSpdciPlace(location: Location) {
 ${location.address?.line?.[2]}
 ${location.address?.postalCode}
 ${location.address?.city}`,
-      containedInPlace: `ocrvs:${location.address?.district}`
+      containedInPlace: `ocrvs:${location.address?.district}`,
+      additionalType: location.type ?? undefined
     })
   }
 
@@ -69,7 +70,8 @@ ${location.address?.city}`,
     identifier: `ocrvs:${location.id}`,
     containedInPlace: `ocrvs:${
       location.partOf?.split('/')[1] ?? location.address?.state
-    }`
+    }`,
+    additionalType: location.type ?? undefined
   })
 }
 
