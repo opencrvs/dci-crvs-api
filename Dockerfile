@@ -1,4 +1,4 @@
-FROM node:20.8.0-alpine3.17
+FROM node:20.8.1-alpine3.17
 WORKDIR /usr/src/app
 
 # Override the base log level (info).
