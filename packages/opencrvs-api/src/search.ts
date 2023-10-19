@@ -251,30 +251,5 @@ export async function fetchRegistration(
     })
   })
   const response = await request.json()
-  console.log(JSON.stringify(response, null, 4))
-  /**
-   *   "eventLocation": {
-                "id": "0dffad78-623a-4b02-9144-e138382467c9",
-                "_fhirID": null,
-                "identifier": [
-                    {
-                        "system": "http://opencrvs.org/specs/id/internal-id",
-                        "value": "HEALTH_FACILITY_pXhz0PLiYZX"
-                    }
-                ],
-                "status": "active",
-                "name": "Chamakubi Health Post",
-                "alias": [
-                    "Chamakubi Health Post"
-                ],
-                "description": null,
-                "partOf": "Location/904bd0fa-5f4e-4684-a23e-e5efe9752153",
-                "type": "HEALTH_FACILITY",
-                "address": null,
-                "longitude": null,
-                "latitude": null,
-                "altitude": null,
-                "geoData": null
-   */
   return response.data.fetchRegistration as Registration
 }
