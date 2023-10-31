@@ -8,13 +8,13 @@ export class ValidationError extends Error {
 }
 
 export function error(
-  req: Hapi.Request<Hapi.ReqRefDefaults>,
   res: Hapi.ResponseToolkit<Hapi.ReqRefDefaults>,
+  message: string,
   code: number
 ) {
   return res
     .response({
-      error: { code, message: req.response.message }
+      error: { code, message }
     })
     .code(code)
 }

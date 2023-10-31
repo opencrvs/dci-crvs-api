@@ -29,10 +29,8 @@ export const SEARCH_EVENTS = gql`
   }
 `
 
-interface Success {
-  data: {
-    searchEvents: SearchEventsQuery['searchEvents']
-  }
+interface Success<T = any> {
+  data: T
   errors: undefined
 }
 
@@ -40,7 +38,7 @@ interface Error {
   errors: Array<{ message: string }>
 }
 
-function isError(response: Success | Error): response is Error {
+function isError<T>(response: Success<T> | Error): response is Error {
   return (response?.errors?.length ?? 0) > 0
 }
 
@@ -68,7 +66,9 @@ export async function advancedRecordSearch(
       query: print(SEARCH_EVENTS)
     })
   })
-  const response = (await request.json()) as Success | Error
+  const response = (await request.json()) as
+    | Success<{ searchEvents: SearchEventsQuery['searchEvents'] }>
+    | Error
 
   if (isError(response) && isUnauthenticated(response)) {
     throw new AuthorizationError('Unauthorized in gateway')
@@ -120,6 +120,27 @@ export const FETCH_REGISTRATION = gql`
           }
           gender
         }
+        eventLocation {
+          id
+          identifier {
+            system
+            value
+          }
+          status
+          name
+          alias
+          partOf
+          type
+          address {
+            type
+            line
+            district
+            state
+            city
+            postalCode
+            country
+          }
+        }
       }
       ... on DeathRegistration {
         __typename
@@ -137,8 +158,15 @@ export const FETCH_REGISTRATION = gql`
           }
         }
         eventLocation {
-          __typename
           id
+          identifier {
+            system
+            value
+          }
+          status
+          name
+          alias
+          partOf
           type
           address {
             type
@@ -179,6 +207,27 @@ export const FETCH_REGISTRATION = gql`
             type
           }
         }
+        eventLocation {
+          id
+          identifier {
+            system
+            value
+          }
+          status
+          name
+          alias
+          partOf
+          type
+          address {
+            type
+            line
+            district
+            state
+            city
+            postalCode
+            country
+          }
+        }
       }
     }
   }
@@ -201,6 +250,19 @@ export async function fetchRegistration(
       query: print(FETCH_REGISTRATION)
     })
   })
-  const response = await request.json()
-  return response.data.fetchRegistration as Registration
+  const response = (await request.json()) as
+    | Success<{ fetchRegistration: Registration }>
+    | Error
+
+  if (isError(response)) {
+    throw new Error(
+      `Gateway returned errors: ${response.errors
+        .map((error) => error.message)
+        .join(', ')}`
+    )
+  }
+
+  console.log(JSON.stringify(response, null, 4))
+
+  return response.data.fetchRegistration
 }

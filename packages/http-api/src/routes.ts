@@ -4,7 +4,8 @@ import { syncSearchHandler } from './sync-search/sync-search-handler'
 import { healthcheckHandler } from './healthcheck/healthcheck-handler'
 import { type ReqResWithAuthorization } from './server'
 import { OPENCRVS_TOKEN_URL } from 'opencrvs-api'
-import { getJwksHandler } from './jwks/handler'
+import { getJwksHandler } from './.well-known/jwks-handler'
+import { getLocationsHandler } from './.well-known/locations-handler'
 
 export const routes = [
   {
@@ -16,6 +17,11 @@ export const routes = [
     method: 'GET',
     path: '/.well-known/jwks.json',
     handler: getJwksHandler
+  },
+  {
+    method: 'GET',
+    path: '/.well-known/locations.json',
+    handler: getLocationsHandler
   },
   {
     method: 'POST',

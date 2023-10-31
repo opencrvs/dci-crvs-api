@@ -5,7 +5,9 @@ import {
   type MarriageRegistration as MarriageRegistrationWithOptionals,
   type Scalars,
   type Address,
-  type HumanName as HumanNameWithOptionals
+  type Location as LocationWithOptionals,
+  type HumanName as HumanNameWithOptionals,
+  type Identifier
 } from './gateway'
 
 type RequireKeys<T extends object, K extends keyof T> = Required<Pick<T, K>> &
@@ -29,8 +31,28 @@ interface Child extends Person {
   name: [HumanName, ...HumanName[]]
 }
 
+interface AddressWithDistrictAndState extends Address {
+  district: string
+  state: string
+}
+
+interface AddressLocation extends LocationWithOptionals {
+  identifier: null
+  partOf: null
+  address: AddressWithDistrictAndState
+}
+
+interface KnownLocation extends LocationWithOptionals {
+  partOf: string
+  identifier: Identifier[]
+  address: null
+}
+
+export type Location = AddressLocation | KnownLocation
+
 export interface BirthRegistration extends BirthRegistrationWithOptionals {
   child: Child
+  eventLocation: Location
 }
 
 interface Deceased extends Person {
@@ -41,6 +63,7 @@ interface Deceased extends Person {
 
 export interface DeathRegistration extends DeathRegistrationWithOptionals {
   deceased: Deceased
+  eventLocation: Location
 }
 
 interface MarriedPerson extends Person {
@@ -51,6 +74,7 @@ export interface MarriageRegistration
   extends MarriageRegistrationWithOptionals {
   groom: MarriedPerson
   bride: MarriedPerson
+  eventLocation: Location
 }
 
 export type Registration =

@@ -16,7 +16,7 @@ import {
   generateKeyPair
 } from 'jose'
 import { getEncryptionKeys } from '../crypto/keys'
-import { getJwk } from '../jwks/handler'
+import { getJwk } from '../.well-known/jwks-handler'
 
 describe('POST /registry/sync/search', async () => {
   let server: Hapi.Server

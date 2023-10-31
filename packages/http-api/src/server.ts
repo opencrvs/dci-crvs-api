@@ -39,15 +39,16 @@ export async function createServer() {
       request.response instanceof ParseError ||
       request.response instanceof ValidationError
     ) {
-      return error(request, reply, 400)
+      return error(reply, request.response.message, 400)
     }
 
     if (request.response instanceof AuthorizationError) {
-      return error(request, reply, 401)
+      return error(reply, request.response.message, 401)
     }
 
     if ('isBoom' in request.response) {
-      return error(request, reply, 500)
+      console.error(request.response)
+      return error(reply, 'Internal Server Error', 500)
     }
 
     return reply.continue

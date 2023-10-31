@@ -4,6 +4,7 @@ import {
   type DeathRegistration,
   type MarriageRegistration,
   type IdentityType,
+  type Location,
   Event
 } from 'opencrvs-api'
 import type { operations, components, SyncSearchRequest } from 'http-api'
@@ -11,6 +12,7 @@ import type { SearchResponseWithMetadata } from '../types'
 import { ParseError } from '../error'
 import { compact, isNil } from 'lodash/fp'
 import { randomUUID } from 'node:crypto'
+import * as spdci from './json-ld'
 
 const name = ({
   firstNames,
@@ -52,6 +54,24 @@ const identifier = ({ id: value, type }: IdentityType) => {
   }
 }
 
+function locationToSpdciPlace(location: Location) {
+  if (location.type === 'PRIVATE_HOME') {
+    return spdci.place({
+      address: `${location.address?.line?.[1]} ${location.address?.line?.[0]}
+${location.address?.line?.[2]}
+${location.address?.postalCode}
+${location.address?.city}`,
+      containedInPlace: `ocrvs:${location.address?.district}`,
+      additionalType: location.type ?? undefined
+    })
+  }
+
+  return spdci.place({
+    identifier: `ocrvs:${location.id}`,
+    additionalType: location.type ?? undefined
+  })
+}
+
 function birthPersonRecord(registration: BirthRegistration) {
   /* eslint-disable @typescript-eslint/no-non-null-assertion */
   const motherIdentifier = !isNil(registration.mother?.identifier?.[0]?.id)
@@ -74,16 +94,17 @@ function birthPersonRecord(registration: BirthRegistration) {
       registration.child.identifier?.map((identity) =>
         identity !== null ? identifier(identity) : null
       )
-    ) as any, // TODO: Change this to a proper identity type after the typing gets updated to support multiple identifiers?
-    birthdate: registration.child.birthDate,
+    ),
+    birthDate: registration.child.birthDate,
     ...name({
       firstNames: registration.child.name[0].firstNames,
       familyName: registration.child.name[0].familyName
     }),
     sex: sex(registration.child.gender),
     parent1_identifier: motherIdentifier,
-    parent2_identifier: fatherIdentifier
-  } satisfies components['schemas']['dci_PersonRecord']
+    parent2_identifier: fatherIdentifier,
+    birthPlace: locationToSpdciPlace(registration.eventLocation)
+  }
 }
 
 function deathPersonRecord(registration: DeathRegistration) {
@@ -108,7 +129,7 @@ function deathPersonRecord(registration: DeathRegistration) {
       registration.deceased.identifier?.map((identity) =>
         identity !== null ? identifier(identity) : null
       )
-    ) as any, // TODO: Change this to a proper identity type
+    ),
     birthdate: registration.deceased?.birthDate ?? undefined,
     deathdate: registration.deceased?.deceased?.deathDate ?? undefined,
     ...name({
@@ -118,19 +139,17 @@ function deathPersonRecord(registration: DeathRegistration) {
     sex: sex(registration.deceased.gender),
     parent1_identifier: motherIdentifier,
     parent2_identifier: fatherIdentifier,
-    deathplace: undefined // TODO: Add deathplace after we've figured addresses with MOSIP?
-  } satisfies components['schemas']['dci_PersonRecord']
+    deathPlace: locationToSpdciPlace(registration.eventLocation)
+  }
 }
 
-function marriagePersonRecord(
-  registration: MarriageRegistration
-): components['schemas']['dci_PersonRecord'] {
+function marriagePersonRecord(registration: MarriageRegistration) {
   return {
     identifier: compact(
       registration.bride?.identifier?.map((identity) =>
         identity !== null ? identifier(identity) : null
       )
-    ) as any, // TODO: Change this to a proper identity type
+    ),
     ...name({
       firstNames: registration.bride.name[0].firstNames,
       familyName: registration.bride.name[0].familyName
@@ -142,14 +161,15 @@ function marriagePersonRecord(
           registration.groom?.identifier?.map((identity) =>
             identity !== null ? identifier(identity) : null
           )
-        ) as any, // TODO: Change this to a proper identity type
+        ),
         ...name({
           firstNames: registration.groom.name[0].firstNames,
           familyName: registration.groom.name[0].familyName
         })
       }
-    ]
-  } as any // TODO: How do we inform about the related persons? GitBook and typing don't match
+    ],
+    marriagePlace: locationToSpdciPlace(registration.eventLocation)
+  }
 }
 
 function eventType(event: Event) {
