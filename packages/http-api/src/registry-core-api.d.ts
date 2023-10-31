@@ -761,7 +761,7 @@ export interface components {
      *   "$ref": "components[\"schemas\"][\"dci_CRVSPerson\"]"
      * }
      */
-    RegistryRecord: Record<string, unkown>
+    RegistryRecord: Record<string, any>
     /**
      * @description @context: "https://example.org/schema/RegistryRecordType" <br>
      * @type: "RegistryRecordType" <br>
