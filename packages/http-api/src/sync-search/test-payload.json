@@ -14,24 +14,14 @@
     "transaction_id": "123456789020211216223812",
     "search_request": [
       {
-        "version": "1.0.0",
         "reference_id": "123456789020211216223812",
         "timestamp": "2022-12-04T17:20:07-04:00",
-        "registry_type": "civil",
         "search_criteria": {
-          "reg_event_type": {
-            "namespace": "?",
-            "value": "1"
-          },
-          "query_type": "idtype-value",
+          "reg_type": "ocrvs:registry_type:birth",
+          "query_type": "idtype",
           "query": {
-            "identifier_type": {
-              "value": "BRN"
-            },
-            "identifier_value": "2023BIYCGRT"
-          },
-          "result_record_type": {
-            "value": "person"
+            "type": "BRN",
+            "value": "BRN"
           },
           "sort": [
             {

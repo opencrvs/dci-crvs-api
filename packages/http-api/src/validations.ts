@@ -1,5 +1,5 @@
-import { type TypeOf, z, type ZodType } from 'zod'
-import { Event } from 'opencrvs-api'
+import { type TypeOf, z } from 'zod'
+import { type components } from './registry-core-api'
 
 const dateTime = z.string().datetime({ offset: true })
 
@@ -65,49 +65,29 @@ const asyncHeader = z.object({
   is_msg_encrypted: z.boolean().optional().default(false)
 })
 
-/**
- * https://digital-convergence-initiative-d.gitbook.io/dci-standards-1/standards/1.-crvs/6.5-data-standards/6.5.2-code-directory#cd.04-vital_events
- * OpenCRVS only supports [1 = Live Birth] [2 = Death] [4 = Marriage]
- */
-const eventTypes = z.enum(['1', '2', '4']).transform((number) => {
-  switch (number) {
-    case '1':
-      return Event.Birth
-    case '2':
-      return Event.Death
-    case '4':
-      return Event.Marriage
-  }
-})
-
-const reference = (value: ZodType = z.string()) =>
-  z.object({
-    namespace: z.string().optional(),
-    refUri: z.string().optional(),
-    value
-  })
+const regType = z.enum([
+  'ocrvs:registry_type:birth',
+  'ocrvs:registry_type:death',
+  'ocrvs:registry_type:marriage'
+])
 
 const commonSearchCriteria = z.object({
   version: version.optional(),
-  reg_type: reference().optional(),
-  reg_event_type: reference(eventTypes),
-  result_record_type: reference(),
+  reg_type: regType,
   sort: z.array(searchSort).optional(),
   pagination: paginationRequest.optional(),
   consent: consent.optional(),
   authorize: authorize.optional()
 })
 
-const identifier = z.enum(['BRN', 'DRN', 'MRN', 'OPENCRVS_RECORD_ID', 'NID'])
-
 const identifierTypeValue = z.object({
-  identifier_type: reference(identifier),
-  identifier_value: z.string()
+  type: z.enum(['BRN', 'DRN', 'MRN', 'OPENCRVS_RECORD_ID', 'NID']),
+  value: z.string()
 })
 
 const identifierTypeQuery = commonSearchCriteria.and(
   z.object({
-    query_type: z.literal('idtype-value'),
+    query_type: z.literal('idtype'),
     query: identifierTypeValue
   })
 )
@@ -121,7 +101,7 @@ const expressionSupportedFields = z.enum(['birthdate'])
 const expressionPredicate = z.object({
   attribute_name: expressionSupportedFields,
   operator: expression,
-  attribute_value: z.coerce.date()
+  attribute_value: z.string()
 })
 
 const predicateQuery = commonSearchCriteria.and(
@@ -150,7 +130,7 @@ export const searchRequestSchema = z.object({
       locale: languageCode.optional().default('eng')
     })
   )
-})
+}) satisfies z.Schema<components['schemas']['SearchRequest']>
 
 const encryptedMessage = z.object({
   header: z.object({
@@ -203,8 +183,8 @@ export type MaybeEncryptedAsyncSearchRequest = TypeOf<
   typeof maybeEncryptedAsyncSearchRequestSchema
 >
 export type SyncSearchRequest = TypeOf<typeof syncSearchRequest>
-export type EventType = TypeOf<typeof eventTypes>
 export type AsyncSearchRequest = TypeOf<typeof asyncSearchRequest>
 export type SearchCriteria = TypeOf<typeof searchCriteria>
 export type PredicateQuery = TypeOf<typeof predicateQuery>
 export type IdentifierTypeQuery = TypeOf<typeof identifierTypeQuery>
+export type EventType = TypeOf<typeof regType>
