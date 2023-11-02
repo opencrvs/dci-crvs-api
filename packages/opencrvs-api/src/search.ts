@@ -119,6 +119,10 @@ export const FETCH_REGISTRATION = gql`
             familyName
           }
           gender
+          identifier {
+            id
+            type
+          }
         }
         eventLocation {
           id

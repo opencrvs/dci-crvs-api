@@ -13,7 +13,6 @@ import type {
   EventType
 } from 'http-api'
 import type { SearchResponseWithMetadata } from '../types'
-import { ParseError } from '../error'
 import { compact, isNil } from 'lodash/fp'
 import { randomUUID } from 'node:crypto'
 import * as spdci from './json-ld'
@@ -53,9 +52,10 @@ const identifier = ({ id: value, type }: IdentityType) => {
       return { type: 'MRN', value }
     case 'NATIONAL_ID':
       return { type: 'NID', value }
-    default:
-      throw new ParseError('Unimplemented identifier type')
   }
+
+  // Unidentified identifier type
+  return null
 }
 
 function locationToSpdciPlace(location: Location) {
