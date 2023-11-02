@@ -130,8 +130,8 @@ function deathPersonRecord(registration: DeathRegistration) {
         identity !== null ? identifier(identity) : null
       )
     ),
-    birthdate: registration.deceased?.birthDate ?? undefined,
-    deathdate: registration.deceased?.deceased?.deathDate ?? undefined,
+    birthDate: registration.deceased?.birthDate ?? undefined,
+    deathDate: registration.deceased?.deceased?.deathDate ?? undefined,
     ...name({
       firstNames: registration.deceased.name[0].firstNames,
       familyName: registration.deceased.name[0].familyName
@@ -175,11 +175,11 @@ function marriagePersonRecord(registration: MarriageRegistration) {
 function eventType(event: Event) {
   switch (event) {
     case Event.Birth:
-      return 'live_birth'
+      return 'ocrvs:registry_type:birth'
     case Event.Death:
-      return 'death'
+      return 'ocrvs:registry_type:death'
     case Event.Marriage:
-      return 'marriage'
+      return 'ocrvs:registry_type:marriage'
   }
 }
 
@@ -212,7 +212,7 @@ export function searchResponseBuilder(
     locale: string
     event: Event
   }
-): components['schemas']['SearchResponse']['search_response'][number] {
+) {
   pageSize ??= registrations.length // Return all records in one page if page size isn't defined
 
   const paginatedRegistrations = registrations.slice(
@@ -226,7 +226,7 @@ export function searchResponseBuilder(
     status: 'succ',
     data: {
       reg_record_type: 'person',
-      reg_event_type: eventType(event),
+      reg_type: eventType(event),
       reg_records: paginatedRegistrations.map((registration) =>
         isBirthEventSearchSet(registration)
           ? birthPersonRecord(registration)
@@ -242,7 +242,7 @@ export function searchResponseBuilder(
     },
     // TODO: Handle locale, return a localized response? Currently this is just being passed directly from the request
     locale
-  }
+  } satisfies components['schemas']['SearchResponse']['search_response'][number]
 }
 
 export function registrySyncSearchBuilder(

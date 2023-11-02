@@ -1,5 +1,6 @@
 import { type TypeOf, z, type ZodType } from 'zod'
 import { Event } from 'opencrvs-api'
+import { type components } from './registry-core-api'
 
 const dateTime = z.string().datetime({ offset: true })
 
@@ -89,7 +90,7 @@ const reference = (value: ZodType = z.string()) =>
 
 const commonSearchCriteria = z.object({
   version: version.optional(),
-  reg_type: reference().optional(),
+  reg_type: z.literal('ocrvs:registry_type:birth'),
   reg_event_type: reference(eventTypes),
   result_record_type: reference(),
   sort: z.array(searchSort).optional(),
@@ -98,16 +99,14 @@ const commonSearchCriteria = z.object({
   authorize: authorize.optional()
 })
 
-const identifier = z.enum(['BRN', 'DRN', 'MRN', 'OPENCRVS_RECORD_ID', 'NID'])
-
 const identifierTypeValue = z.object({
-  identifier_type: reference(identifier),
-  identifier_value: z.string()
+  type: z.enum(['BRN', 'DRN', 'MRN', 'OPENCRVS_RECORD_ID', 'NID']),
+  value: z.string()
 })
 
 const identifierTypeQuery = commonSearchCriteria.and(
   z.object({
-    query_type: z.literal('idtype-value'),
+    query_type: z.literal('idtype'),
     query: identifierTypeValue
   })
 )
@@ -121,7 +120,7 @@ const expressionSupportedFields = z.enum(['birthdate'])
 const expressionPredicate = z.object({
   attribute_name: expressionSupportedFields,
   operator: expression,
-  attribute_value: z.coerce.date()
+  attribute_value: z.string()
 })
 
 const predicateQuery = commonSearchCriteria.and(
@@ -150,7 +149,7 @@ export const searchRequestSchema = z.object({
       locale: languageCode.optional().default('eng')
     })
   )
-})
+}) satisfies z.Schema<components['schemas']['SearchRequest']>
 
 const encryptedMessage = z.object({
   header: z.object({

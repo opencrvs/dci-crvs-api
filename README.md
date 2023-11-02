@@ -1,5 +1,17 @@
 # DCI CRVS API
 
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Integrating client (e.g. G2P)
+    Integrating client (e.g. G2P)->>DCI-CRVS-API: Fetch records in DCI-CRVS standard format
+    Note over DCI-CRVS-API: Validates DCI-CRVS standards through Zod
+    Note over DCI-CRVS-API: Converts Zod objects to OpenCRVS queries
+    DCI-CRVS-API->>OpenCRVS: Fetch records in OpenCRVS format
+    Note over DCI-CRVS-API: Converts OpenCRVS GraphQL response to DCI-CRVS standard
+    DCI-CRVS-API->>Integrating client (e.g. G2P): Responds synchronously or asynchronously<br>in DCI CRVS standards format
+```
+
 This repository provides [DCI standards](https://github.com/spdci/standards) compliant API for CRVS systems. It communicates between OpenCRVS and any other system that can communicate using the DCI standard.
 
 DCI API standards reference can be found [here](https://spdci.github.io/standards/release/html/registry_core_api_v1_0.0.0.html).

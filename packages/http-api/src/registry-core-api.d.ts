@@ -1059,7 +1059,7 @@ export interface components {
      *   }
      * }
      */
-    Authorize: Record<string, never>
+    Authorize: Record<string, unknown> // @TODO: Fix this in DCI
     /**
      * @description @context: "https://example.org/schema/Consent" <br>
      * @type: "Consent"
@@ -1086,7 +1086,7 @@ export interface components {
      *   }
      * }
      */
-    Consent: Record<string, never>
+    Consent: Record<string, unknown> // @TODO: Fix this in DCI
     /**
      * Format: date-time
      * @description 1. All dates and timestamps are represented in [ISO 8601](https://www.iso.org/standard/40874.html) format including timezone - e.g 2022-12-04T17:20:07-04:00.
@@ -1375,7 +1375,7 @@ export interface components {
        *   "area_code": "123"
        * }
        */
-      query_params?: Record<string, never>
+      query_params?: Record<string, unknown> // @TODO: Fix this in DCI
     }
     /** @description Pagination definition, count starts with 1 */
     Pagination: {
@@ -1435,7 +1435,7 @@ export interface components {
        */
       seq_num?: number
       expression1: components['schemas']['Predicate']
-      condition?: components['schemas']['Predicate']
+      condition?: 'and' // @TODO: Fix this in DCI
       expression2?: components['schemas']['Predicate']
     }
     PredicateQuery: components['schemas']['PredicateWithCondition'][]
