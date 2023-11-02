@@ -17,7 +17,11 @@ function isIdentifierTypeQuery(
 function parameters(criteria: SearchCriteria) {
   const parameters: SearchEventsQueryVariables['advancedSearchParameters'] = {}
 
-  parameters.event = criteria.reg_event_type?.value
+  parameters.event = {
+    'ocrvs:registry_type:birth': Event.Birth,
+    'ocrvs:registry_type:death': Event.Death,
+    'ocrvs:registry_type:marriage': Event.Marriage
+  }[criteria.reg_type]
 
   if (isIdentifierTypeQuery(criteria)) {
     if (criteria.query.type === 'BRN') {
@@ -33,7 +37,7 @@ function parameters(criteria: SearchCriteria) {
     }
   } else {
     for (const criterion of criteria.query) {
-      if (criteria.reg_event_type.value === Event.Birth) {
+      if (criteria.reg_type === 'ocrvs:registry_type:birth') {
         if (criterion.expression1.operator === 'ge') {
           parameters.childDoBStart = formatDate(
             parseISO(criterion.expression1.attribute_value)
@@ -63,7 +67,7 @@ function parameters(criteria: SearchCriteria) {
             parseISO(criterion.expression1.attribute_value)
           )
         }
-      } else if (criteria.reg_event_type.value === Event.Death) {
+      } else if (criteria.reg_type === 'ocrvs:registry_type:death') {
         if (criterion.expression1.operator === 'ge') {
           parameters.deceasedDoBStart = formatDate(
             parseISO(criterion.expression1.attribute_value)

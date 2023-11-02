@@ -4,10 +4,14 @@ import {
   type DeathRegistration,
   type MarriageRegistration,
   type IdentityType,
-  type Location,
-  Event
+  type Location
 } from 'opencrvs-api'
-import type { operations, components, SyncSearchRequest } from 'http-api'
+import type {
+  operations,
+  components,
+  SyncSearchRequest,
+  EventType
+} from 'http-api'
 import type { SearchResponseWithMetadata } from '../types'
 import { ParseError } from '../error'
 import { compact, isNil } from 'lodash/fp'
@@ -172,17 +176,6 @@ function marriagePersonRecord(registration: MarriageRegistration) {
   }
 }
 
-function eventType(event: Event) {
-  switch (event) {
-    case Event.Birth:
-      return 'ocrvs:registry_type:birth'
-    case Event.Death:
-      return 'ocrvs:registry_type:death'
-    case Event.Marriage:
-      return 'ocrvs:registry_type:marriage'
-  }
-}
-
 function isBirthEventSearchSet(
   registration: BirthRegistration | DeathRegistration | MarriageRegistration
 ): registration is BirthRegistration {
@@ -210,7 +203,7 @@ export function searchResponseBuilder(
     pageSize?: number
     pageNumber?: number
     locale: string
-    event: Event
+    event: EventType
   }
 ) {
   pageSize ??= registrations.length // Return all records in one page if page size isn't defined
@@ -226,7 +219,7 @@ export function searchResponseBuilder(
     status: 'succ',
     data: {
       reg_record_type: 'person',
-      reg_type: eventType(event),
+      reg_type: event,
       reg_records: paginatedRegistrations.map((registration) =>
         isBirthEventSearchSet(registration)
           ? birthPersonRecord(registration)
@@ -278,7 +271,7 @@ export function registrySyncSearchBuilder(
                 pageNumber:
                   originalRequest.search_criteria.pagination?.page_number,
                 locale: originalRequest.locale,
-                event: originalRequest.search_criteria.reg_event_type.value
+                event: originalRequest.search_criteria.reg_type
               })
             : []
       )
