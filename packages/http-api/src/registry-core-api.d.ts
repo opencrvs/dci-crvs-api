@@ -706,18 +706,6 @@ export interface components {
         jurisdiction?: string
       }
     }
-    /**
-     * @description 1. Implementing systems can define schemas.
-     * 2. Based on context, pre defined named queries can also help as part of ExpTemplate construct.
-     * 3. ExpressionWithConditionList is simple generic search query construct to solve for majority of search conditons. few examples: <br>
-     *   - search or subscribe to update events; e.g any updates in postal_code 12345 between 1/jan/2020 and 31/dec/2020
-     *   - search or subscribe to birth, death events; e.g any new birth in postal_code 12345 after 1/jan/2023
-     *   - search all farmers with land area less than 2 acers in district code 504
-     */
-    RegistryQueries:
-      | components['schemas']['ExpTemplate']
-      | components['schemas']['IdentifierTypeValue']
-      | components['schemas']['ExpPredicateWithConditionList']
     /** @description Registry to notify a event to subscrbiers */
     NotifyEventRequest: {
       transaction_id: components['schemas']['TransactionId']
@@ -728,8 +716,8 @@ export interface components {
         data: {
           /** @default 1.0.0 */
           version?: string
-          reg_type?: components['schemas']['RegistryType']
-          reg_event_type?: components['schemas']['RegistryEventType']
+          reg_type: components['schemas']['RegistryType']
+          reg_sub_type?: components['schemas']['RegistrySubType']
           reg_record_type: components['schemas']['RegistryRecordType']
           reg_records: components['schemas']['RegistryRecord']
         }
@@ -737,17 +725,19 @@ export interface components {
       }[]
     }
     /**
-     * @description @context: "https://example.org/schema/RegistryEventType" <br>
-     * @type: "VitalEvent" <br>
-     *
-     * **Notes:**
-     *   1. Registry event type values defined as per implementation context.
-     *   2. Usually a list of **enum** values of all possible queryable identifiers.
-     *   3. example: "ns:org:RegistryEventType:LiveBirth"
-     *
-     * @example ns:org:RegistryEventType:LiveBirth
+     * @description 1. Implementing systems can define schemas for each query types
+     * 2. IdType Query is simple direct ID based lookup
+     * 2. Pre Defined Named Query helps data provider to allow data access in a control manner and additional enforce RBAC policies
+     * 3. PredicateQuery helps data consumer to access using defined context.
+     * 4. Below are few examples that are possbile both in NamedQuery and PredicateQuery types: <br>
+     *   - search or subscribe to update events; e.g any updates in postal_code 12345 between 1/jan/2020 and 31/dec/2020
+     *   - search or subscribe to birth, death events; e.g any new birth in postal_code 12345 after 1/jan/2023
+     *   - search all farmers with land area less than 2 acers in district code 504
      */
-    RegistryEventType: string
+    RegistryQueries:
+      | components['schemas']['NamedQuery']
+      | components['schemas']['IdTypeQuery']
+      | components['schemas']['PredicateQuery']
     /**
      * @description @context: "https://example.org/schema/RecordType" <br>
      * @type: "CRVSPerson" <br>
@@ -761,7 +751,7 @@ export interface components {
      *   "$ref": "components[\"schemas\"][\"dci_CRVSPerson\"]"
      * }
      */
-    RegistryRecord: Record<string, any>
+    RegistryRecord: Record<string, never> | Array<Record<string, unknown>>
     /**
      * @description @context: "https://example.org/schema/RegistryRecordType" <br>
      * @type: "RegistryRecordType" <br>
@@ -776,15 +766,23 @@ export interface components {
      */
     RegistryRecordType: string
     /**
-     * @description @context: "https://example.org/schema/RegistryType" <br>
-     * @type: "RegistryType" <br>
+     * @description @context: "https://example.org/schema/RegistrySubType" <br>
+     * @type: "VitalEvent" <br>
      *
      * **Notes:**
-     *   1. Registry type values defined as per implementation context.
-     *   2. Usually a list of **enum** values of all possible queryable functional registries
-     *   3. example: "ns:org:RegistryType:Civil"
+     *   1. Registry event type values defined as per implementation context.
+     *   2. Usually a list of **enum** values of all possible queryable identifiers.
+     *   3. example: "DCI:RegistrySubType:LiveBirth"
      *
-     * @example ns:org:RegistryType:Civil
+     * @example DCI:RegistrySubType:LiveBirth
+     */
+    RegistrySubType: string
+    /**
+     * @description 1. Registry type defined as enum values by data provider
+     * 2. This can also be a fully qualified namespace enum values
+     * 3. example: "DCI:RegistryType:brith"
+     *
+     * @example DCI:RegistryType:brith
      */
     RegistryType: string
     /**
@@ -801,8 +799,8 @@ export interface components {
         search_criteria: {
           /** @default 1.0.0 */
           version?: string
-          reg_type?: components['schemas']['RegistryType']
-          reg_event_type?: components['schemas']['RegistryEventType']
+          reg_type: components['schemas']['RegistryType']
+          reg_sub_type?: components['schemas']['RegistrySubType']
           query_type: components['schemas']['QueryType']
           query: components['schemas']['RegistryQueries']
           sort?: components['schemas']['SearchSortList']
@@ -834,8 +832,8 @@ export interface components {
         data?: {
           /** @default 1.0.0 */
           version?: string
-          reg_type?: components['schemas']['RegistryType']
-          reg_event_type?: components['schemas']['RegistryEventType']
+          reg_type: components['schemas']['RegistryType']
+          reg_sub_type?: components['schemas']['RegistrySubType']
           reg_record_type: components['schemas']['RegistryRecordType']
           reg_records: components['schemas']['RegistryRecord']
         }
@@ -865,8 +863,8 @@ export interface components {
         subscribe_criteria: {
           /** @default 1.0.0 */
           version?: string
-          reg_type?: components['schemas']['RegistryType']
-          reg_event_type: components['schemas']['RegistryEventType']
+          reg_type: components['schemas']['RegistryType']
+          reg_sub_type?: components['schemas']['RegistrySubType']
           frequency?: components['schemas']['EventFrequency']
           filter_type?: components['schemas']['QueryType']
           filter: components['schemas']['RegistryQueries']
@@ -917,7 +915,7 @@ export interface components {
       status?: components['schemas']['SubscriptionStatus']
       timestamp: components['schemas']['DateTime']
       reg_type?: components['schemas']['RegistryType']
-      reg_event_type?: components['schemas']['RegistryEventType']
+      reg_sub_type?: components['schemas']['RegistrySubType']
       frequency?: components['schemas']['EventFrequency']
       filter_type?: components['schemas']['QueryType']
       filter?: components['schemas']['RegistryQueries']
@@ -1170,63 +1168,6 @@ export interface components {
      * @enum {string}
      */
     ExpOperator: 'gt' | 'lt' | 'eq' | 'ge' | 'le' | 'in'
-    /** @description Expression */
-    ExpPredicate: {
-      /**
-       * @description @context: "https://example.org/schema/QueryAttributes" <br>
-       * @type: "QueryAttributes" <br>
-       *
-       * **Notes:**
-       *   1. Query attribute names defined as per implementation context.
-       *   2. Usually a list of **enum** values of all possible queryable attribute names.
-       *   3. e.g: UIN, YOB, DOB, age, mobile, area-code, pin-code, etc.,
-       *
-       * @example YOB
-       */
-      attribute_name: string
-      operator: components['schemas']['ExpOperator']
-      attribute_value: components['schemas']['AttributeValue']
-    }
-    /** @description list of attributes with matching conditions */
-    ExpPredicateList: components['schemas']['ExpPredicate'][]
-    ExpPredicateWithCondition: {
-      /**
-       * @description Sequence number to help define precedence for evaluating a list of expression Predicates
-       * @example 1
-       */
-      seq_num?: number
-      expression1: components['schemas']['ExpPredicate']
-      condition?: components['schemas']['ExpCondition']
-      expression2?: components['schemas']['ExpPredicate']
-    }
-    ExpPredicateWithConditionList: components['schemas']['ExpPredicateWithCondition'][]
-    /** @description Identifier type and value object */
-    ExpTemplate: {
-      /**
-       * @description @context: "https://example.org/schema/QueryType" <br>
-       * @type: "Queryype" <br>
-       *
-       * **Notes:**
-       *   1. Query types that helps decode query expressions
-       *   2. Sample query type enums: "GraphQl", "Sql", "NoSql"
-       *
-       * @example ns:org:QueryType:GraphQl
-       */
-      type?: string
-      /**
-       * @description @context: "https://example.org/schema/QueryExpression" <br>
-       * @type: "QueryExpression" <br>
-       *
-       * **Notes:**
-       *   1. Query expression's syntax / format is determined based on query-type.
-       *   2. Query expression as a template with placeholder to pass conditional search parameters
-       *
-       * @example {
-       *   "expression": " query GeBirthRecordById: { person: (UIN: \"1\") { BRN, name, gender, birthDate, birthPlace, parents } }"
-       * }
-       */
-      value?: Record<string, never>
-    }
     /** @description File info. Used in file upload feature using HTTPS */
     FileInfo: {
       /** @description G2P Connect specific actions. Usually verb from the URI should go here to help store and fwd kind of processing requirements. */
@@ -1256,7 +1197,7 @@ export interface components {
      */
     IdentifierType: string
     /** @description Identifier type and value object */
-    IdentifierTypeValue: {
+    IdTypeQuery: {
       /**
        * @description @context: "https://example.org/schema/IdType" <br>
        * @type: "IdType" <br>
@@ -1413,6 +1354,29 @@ export interface components {
      * @example Signature:  namespace="g2p", kidId="{sender_id}|{unique_key_id}|{algorithm}", algorithm="ed25519", created="1606970629", expires="1607030629", headers="(created) (expires) digest", signature="Base64(signing content)
      */
     MsgSignature: string
+    /** @description Identifier type and value object */
+    NamedQuery: {
+      /**
+       * @description 1. Predefined NamedQuery that assumes all conditions as a template
+       * 2. The required parameters defined in the template are passed in queryParams
+       * 3. List of named queries are documented and made available by data providers to all authorised data consumers
+       * 4. Named Queries can also be uniquely identfied by data providers to implement RBAC policies
+       * 5. Return result record set is defined as part of Named Queries by data providers
+       *
+       * @example DCI:NamedQuery:getBirthByBRNandAreaCode
+       */
+      query_name?: string
+      /**
+       * @description @context: "https://example.org/schema/QueryParam" <br>
+       * @type: "QueryParam" <br>
+       *
+       * @example {
+       *   "BRN": "1111",
+       *   "area_code": "123"
+       * }
+       */
+      query_params?: Record<string, never>
+    }
     /** @description Pagination definition, count starts with 1 */
     Pagination: {
       /**
@@ -1445,14 +1409,44 @@ export interface components {
        */
       page_number?: number
     }
+    /** @description Expression */
+    Predicate: {
+      /**
+       * @description @context: "https://example.org/schema/QueryAttributes" <br>
+       * @type: "QueryAttributes" <br>
+       *
+       * **Notes:**
+       *   1. Query attribute names defined as per implementation context.
+       *   2. Usually a list of **enum** values of all possible queryable attribute names.
+       *   3. e.g: UIN, YOB, DOB, age, mobile, area-code, pin-code, etc.,
+       *
+       * @example YOB
+       */
+      attribute_name: string
+      operator: components['schemas']['ExpOperator']
+      attribute_value: components['schemas']['AttributeValue']
+    }
+    /** @description list of attributes with matching conditions */
+    PredicateList: components['schemas']['Predicate'][]
+    PredicateWithCondition: {
+      /**
+       * @description Sequence number to help define precedence for evaluating a list of expression Predicates
+       * @example 1
+       */
+      seq_num?: number
+      expression1: components['schemas']['Predicate']
+      condition?: components['schemas']['Predicate']
+      expression2?: components['schemas']['Predicate']
+    }
+    PredicateQuery: components['schemas']['PredicateWithCondition'][]
     /**
      * @description 1. Query format allow multiple ways to search registry
      * 2. Templatized query expressions with placeholder for conditional values
      *
-     * @example idtype-value
+     * @example namedQuery
      * @enum {string}
      */
-    QueryType: 'idtype-value' | 'expression' | 'predicate'
+    QueryType: 'namedQuery' | 'idtype' | 'predicate'
     /**
      * @description Unique reference_id set by txn initiating system for each request in a batch
      * @example 12345678901234567890
