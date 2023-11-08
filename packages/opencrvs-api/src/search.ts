@@ -124,6 +124,34 @@ export const FETCH_REGISTRATION = gql`
             type
           }
         }
+        father {
+          id
+          birthDate
+          name {
+            use
+            firstNames
+            familyName
+          }
+          gender
+          identifier {
+            id
+            type
+          }
+        }
+        mother {
+          id
+          birthDate
+          name {
+            use
+            firstNames
+            familyName
+          }
+          gender
+          identifier {
+            id
+            type
+          }
+        }
         eventLocation {
           id
           identifier {

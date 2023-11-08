@@ -61,6 +61,7 @@ export type AddressInput = {
   district?: InputMaybe<Scalars['String']['input']>
   from?: InputMaybe<Scalars['Date']['input']>
   line?: InputMaybe<Array<Scalars['String']['input']>>
+  partOf?: InputMaybe<Scalars['String']['input']>
   postalCode?: InputMaybe<Scalars['String']['input']>
   state?: InputMaybe<Scalars['String']['input']>
   text?: InputMaybe<Scalars['String']['input']>
@@ -2510,6 +2511,45 @@ export type FetchRegistrationQuery = {
             use?: string | null
             firstNames?: string | null
             familyName?: string | null
+          } | null> | null
+          identifier?: Array<{
+            __typename?: 'IdentityType'
+            id?: string | null
+            type?: string | null
+          } | null> | null
+        } | null
+        father?: {
+          __typename?: 'Person'
+          id?: string | null
+          birthDate?: string | null
+          gender?: string | null
+          name?: Array<{
+            __typename?: 'HumanName'
+            use?: string | null
+            firstNames?: string | null
+            familyName?: string | null
+          } | null> | null
+          identifier?: Array<{
+            __typename?: 'IdentityType'
+            id?: string | null
+            type?: string | null
+          } | null> | null
+        } | null
+        mother?: {
+          __typename?: 'Person'
+          id?: string | null
+          birthDate?: string | null
+          gender?: string | null
+          name?: Array<{
+            __typename?: 'HumanName'
+            use?: string | null
+            firstNames?: string | null
+            familyName?: string | null
+          } | null> | null
+          identifier?: Array<{
+            __typename?: 'IdentityType'
+            id?: string | null
+            type?: string | null
           } | null> | null
         } | null
         eventLocation?: {
