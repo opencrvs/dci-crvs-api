@@ -123,6 +123,7 @@ export const FETCH_REGISTRATION = gql`
             id
             type
           }
+          detailsExist
         }
         father {
           id
@@ -137,6 +138,7 @@ export const FETCH_REGISTRATION = gql`
             id
             type
           }
+          detailsExist
         }
         mother {
           id
@@ -151,6 +153,7 @@ export const FETCH_REGISTRATION = gql`
             id
             type
           }
+          detailsExist
         }
         eventLocation {
           id
