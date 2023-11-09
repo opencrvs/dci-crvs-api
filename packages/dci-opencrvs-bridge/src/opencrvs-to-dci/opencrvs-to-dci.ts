@@ -24,9 +24,8 @@ const name = ({
   firstNames: string | null // The names cannot be undefined, but they should be able to be null, to mark as it being intentionally empty
   familyName: string | null // ^
 }) => ({
-  given_name: firstNames?.split(' ')[0] ?? null,
-  middle_name: firstNames?.split(' ')[1] ?? null,
-  family_name: familyName
+  givenName: firstNames,
+  familyName
 })
 
 const sex = (value: string) => {
@@ -42,16 +41,18 @@ const sex = (value: string) => {
   }
 }
 
-const identifier = ({ id: value, type }: IdentityType) => {
+const identifier = ({ id, type }: IdentityType) => {
+  if (id === undefined || id === null) return null
+
   switch (type) {
     case 'DEATH_REGISTRATION_NUMBER':
-      return { type: 'DRN', value }
+      return { name: 'DRN', identifier: id }
     case 'BIRTH_REGISTRATION_NUMBER':
-      return { type: 'BRN', value }
+      return { name: 'BRN', identifier: id }
     case 'MARRIAGE_REGISTRATION_NUMBER':
-      return { type: 'MRN', value }
+      return { name: 'MRN', identifier: id }
     case 'NATIONAL_ID':
-      return { type: 'NID', value }
+      return { name: 'NID', identifier: id }
   }
 
   // Unidentified identifier type
@@ -77,20 +78,23 @@ ${location.address?.city}`,
 }
 
 function birthPersonRecord(registration: BirthRegistration) {
-  /* eslint-disable @typescript-eslint/no-non-null-assertion */
-  const motherIdentifier = !isNil(registration.mother?.identifier?.[0]?.id)
-    ? {
-        identifier_type: registration.mother!.identifier![0]!.type! as 'UIN',
-        identifier: registration.mother!.identifier![0]!.id
-      }
-    : undefined
+  const father =
+    registration.father?.detailsExist === true ? registration.father : undefined
+  const mother =
+    registration.mother?.detailsExist === true ? registration.mother : undefined
 
-  const fatherIdentifier = !isNil(registration.father?.identifier?.[0]?.id)
-    ? {
-        identifier_type: registration.father!.identifier![0]!.type! as 'UIN',
-        identifier: registration.father!.identifier![0]!.id
-      }
-    : undefined
+  /* eslint-disable @typescript-eslint/no-non-null-assertion */
+  const motherIdentifier = compact(
+    mother?.identifier?.map((identity) =>
+      identity != null ? identifier(identity) : undefined
+    )
+  )
+
+  const fatherIdentifier = compact(
+    father?.identifier?.map((identity) =>
+      identity != null ? identifier(identity) : undefined
+    )
+  )
   /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
   return {
@@ -105,9 +109,23 @@ function birthPersonRecord(registration: BirthRegistration) {
       familyName: registration.child.name[0].familyName
     }),
     sex: sex(registration.child.gender),
-    parent1_identifier: motherIdentifier,
-    parent2_identifier: fatherIdentifier,
-    birthPlace: locationToSpdciPlace(registration.eventLocation)
+    birthPlace: locationToSpdciPlace(registration.eventLocation),
+    relations: compact([
+      mother !== undefined
+        ? spdci.mother({
+            identifier: motherIdentifier,
+            givenName: mother.name?.[0]?.firstNames ?? undefined,
+            familyName: mother.name?.[0]?.familyName ?? undefined
+          })
+        : null,
+      father !== undefined
+        ? spdci.father({
+            identifier: fatherIdentifier,
+            givenName: father.name?.[0]?.firstNames ?? undefined,
+            familyName: father.name?.[0]?.familyName ?? undefined
+          })
+        : null
+    ])
   }
 }
 

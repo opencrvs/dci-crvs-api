@@ -2506,6 +2506,7 @@ export type FetchRegistrationQuery = {
           id?: string | null
           birthDate?: string | null
           gender?: string | null
+          detailsExist?: boolean | null
           name?: Array<{
             __typename?: 'HumanName'
             use?: string | null
@@ -2523,6 +2524,7 @@ export type FetchRegistrationQuery = {
           id?: string | null
           birthDate?: string | null
           gender?: string | null
+          detailsExist?: boolean | null
           name?: Array<{
             __typename?: 'HumanName'
             use?: string | null
@@ -2540,6 +2542,7 @@ export type FetchRegistrationQuery = {
           id?: string | null
           birthDate?: string | null
           gender?: string | null
+          detailsExist?: boolean | null
           name?: Array<{
             __typename?: 'HumanName'
             use?: string | null

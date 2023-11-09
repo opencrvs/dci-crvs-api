@@ -41,3 +41,49 @@ export function place({
     containedInPlace
   }
 }
+
+export function mother({
+  identifier,
+  givenName,
+  additionalName,
+  familyName,
+  gender
+}: {
+  identifier?: string | IdentifierPropertyValue[]
+  gender?: string
+  givenName?: string
+  additionalName?: string
+  familyName?: string
+}) {
+  return {
+    '@type': `spdci:Mother`,
+    identifier,
+    givenName,
+    additionalName,
+    familyName,
+    gender
+  }
+}
+
+export function father({
+  identifier,
+  givenName,
+  additionalName,
+  familyName,
+  gender
+}: {
+  identifier?: string | IdentifierPropertyValue[]
+  gender?: string
+  givenName?: string
+  additionalName?: string
+  familyName?: string
+}) {
+  return {
+    '@type': `spdci:Father`,
+    identifier,
+    givenName,
+    additionalName,
+    familyName,
+    gender
+  }
+}
