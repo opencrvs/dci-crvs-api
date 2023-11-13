@@ -66,13 +66,13 @@ function locationToSpdciPlace(location: Location) {
 ${location.address?.line?.[2]}
 ${location.address?.postalCode}
 ${location.address?.city}`,
-      containedInPlace: `ocrvs:${location.address?.district}`,
+      containedInPlace: location.address?.district,
       additionalType: location.type ?? undefined
     })
   }
 
   return spdci.place({
-    identifier: `ocrvs:${location.id}`,
+    identifier: location.id,
     additionalType: location.type ?? undefined
   })
 }

@@ -96,7 +96,7 @@ const expressionCondition = z.enum(['and'])
 
 const expression = z.enum(['gt', 'lt', 'eq', 'ge', 'le'])
 
-const expressionSupportedFields = z.enum(['birthdate'])
+const expressionSupportedFields = z.enum(['birthdate', 'birthplace'])
 
 const expressionPredicate = z.object({
   attribute_name: expressionSupportedFields,
@@ -111,8 +111,8 @@ const predicateQuery = commonSearchCriteria.and(
       z.object({
         seq_num: z.number().optional(),
         expression1: expressionPredicate,
-        condition: expressionCondition,
-        expression2: expressionPredicate
+        condition: expressionCondition.optional(),
+        expression2: expressionPredicate.optional()
       })
     )
   })

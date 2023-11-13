@@ -38,64 +38,77 @@ function parameters(criteria: SearchCriteria) {
   } else {
     for (const criterion of criteria.query) {
       if (criteria.reg_type === 'ocrvs:registry_type:birth') {
-        if (criterion.expression1.operator === 'ge') {
-          parameters.childDoBStart = formatDate(
-            parseISO(criterion.expression1.attribute_value)
-          )
-        }
+        if (
+          criterion.expression1.attribute_name === 'birthdate' &&
+          criterion.expression2 !== undefined
+        ) {
+          if (criterion.expression1.operator === 'ge') {
+            parameters.childDoBStart = formatDate(
+              parseISO(criterion.expression1.attribute_value)
+            )
+          }
 
-        if (criterion.expression1.operator === 'gt') {
-          parameters.childDoBStart = formatDate(
-            addDays(1)(parseISO(criterion.expression1.attribute_value))
-          )
-        }
+          if (criterion.expression1.operator === 'gt') {
+            parameters.childDoBStart = formatDate(
+              addDays(1)(parseISO(criterion.expression1.attribute_value))
+            )
+          }
 
-        if (criterion.expression2.operator === 'le') {
-          parameters.childDoBEnd = formatDate(
-            parseISO(criterion.expression2.attribute_value)
-          )
-        }
+          if (criterion.expression2.operator === 'le') {
+            parameters.childDoBEnd = formatDate(
+              parseISO(criterion.expression2.attribute_value)
+            )
+          }
 
-        if (criterion.expression2.operator === 'lt') {
-          parameters.childDoBEnd = formatDate(
-            subDays(1)(parseISO(criterion.expression2.attribute_value))
-          )
-        }
+          if (criterion.expression2.operator === 'lt') {
+            parameters.childDoBEnd = formatDate(
+              subDays(1)(parseISO(criterion.expression2.attribute_value))
+            )
+          }
 
-        if (criterion.expression1.operator === 'eq') {
-          parameters.childDoB = formatDate(
-            parseISO(criterion.expression1.attribute_value)
-          )
+          if (criterion.expression1.operator === 'eq') {
+            parameters.childDoB = formatDate(
+              parseISO(criterion.expression1.attribute_value)
+            )
+          }
+        } else if (criterion.expression1.attribute_name === 'birthplace') {
+          parameters.declarationJurisdictionId =
+            criterion.expression1.attribute_value
         }
       } else if (criteria.reg_type === 'ocrvs:registry_type:death') {
-        if (criterion.expression1.operator === 'ge') {
-          parameters.deceasedDoBStart = formatDate(
-            parseISO(criterion.expression1.attribute_value)
-          )
-        }
+        if (criterion.expression1.attribute_name === 'birthdate') {
+          if (criterion.expression1.operator === 'ge') {
+            parameters.deceasedDoBStart = formatDate(
+              parseISO(criterion.expression1.attribute_value)
+            )
+          }
 
-        if (criterion.expression1.operator === 'gt') {
-          parameters.deceasedDoBStart = formatDate(
-            addDays(1)(parseISO(criterion.expression1.attribute_value))
-          )
-        }
+          if (criterion.expression1.operator === 'gt') {
+            parameters.deceasedDoBStart = formatDate(
+              addDays(1)(parseISO(criterion.expression1.attribute_value))
+            )
+          }
 
-        if (criterion.expression2?.operator === 'le') {
-          parameters.deceasedDoBEnd = formatDate(
-            parseISO(criterion.expression2.attribute_value)
-          )
-        }
+          if (criterion.expression2?.operator === 'le') {
+            parameters.deceasedDoBEnd = formatDate(
+              parseISO(criterion.expression2.attribute_value)
+            )
+          }
 
-        if (criterion.expression2?.operator === 'lt') {
-          parameters.deceasedDoBEnd = formatDate(
-            subDays(1)(parseISO(criterion.expression2.attribute_value))
-          )
-        }
+          if (criterion.expression2?.operator === 'lt') {
+            parameters.deceasedDoBEnd = formatDate(
+              subDays(1)(parseISO(criterion.expression2.attribute_value))
+            )
+          }
 
-        if (criterion.expression1.operator === 'eq') {
-          parameters.deceasedDoB = formatDate(
-            parseISO(criterion.expression1.attribute_value)
-          )
+          if (criterion.expression1.operator === 'eq') {
+            parameters.deceasedDoB = formatDate(
+              parseISO(criterion.expression1.attribute_value)
+            )
+          }
+        } else if (criterion.expression1.attribute_name === 'birthplace') {
+          parameters.declarationJurisdictionId =
+            criterion.expression1.attribute_value
         }
       }
     }
