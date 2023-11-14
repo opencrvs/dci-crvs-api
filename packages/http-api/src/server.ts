@@ -45,7 +45,11 @@ export async function createServer() {
 
     if ('isBoom' in request.response) {
       console.error(request.response)
-      return error(reply, 'Internal Server Error', 500)
+      return error(
+        reply,
+        request.response.output.payload.error,
+        request.response.output.statusCode
+      )
     }
 
     return reply.continue
