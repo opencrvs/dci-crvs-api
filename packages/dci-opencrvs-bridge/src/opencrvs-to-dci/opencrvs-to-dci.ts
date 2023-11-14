@@ -13,7 +13,7 @@ import type {
   EventType
 } from 'http-api'
 import type { SearchResponseWithMetadata } from '../types'
-import { compact, isNil } from 'lodash/fp'
+import { compact } from 'lodash/fp'
 import { randomUUID } from 'node:crypto'
 import * as spdci from './json-ld'
 
@@ -66,13 +66,13 @@ function locationToSpdciPlace(location: Location) {
 ${location.address?.line?.[2]}
 ${location.address?.postalCode}
 ${location.address?.city}`,
-      containedInPlace: `ocrvs:${location.address?.district}`,
+      containedInPlace: location.address?.district,
       additionalType: location.type ?? undefined
     })
   }
 
   return spdci.place({
-    identifier: `ocrvs:${location.id}`,
+    identifier: location.id,
     additionalType: location.type ?? undefined
   })
 }
@@ -130,20 +130,23 @@ function birthPersonRecord(registration: BirthRegistration) {
 }
 
 function deathPersonRecord(registration: DeathRegistration) {
-  /* eslint-disable @typescript-eslint/no-non-null-assertion */
-  const motherIdentifier = !isNil(registration.mother?.identifier?.[0]?.id)
-    ? {
-        identifier_type: registration.mother!.identifier![0]!.type! as 'UIN',
-        identifier: registration.mother!.identifier![0]!.id
-      }
-    : undefined
+  const father =
+    registration.father?.detailsExist === true ? registration.father : undefined
+  const mother =
+    registration.mother?.detailsExist === true ? registration.mother : undefined
 
-  const fatherIdentifier = !isNil(registration.father?.identifier?.[0]?.id)
-    ? {
-        identifier_type: registration.father!.identifier![0]!.type! as 'UIN',
-        identifier: registration.father!.identifier![0]!.id
-      }
-    : undefined
+  /* eslint-disable @typescript-eslint/no-non-null-assertion */
+  const motherIdentifier = compact(
+    mother?.identifier?.map((identity) =>
+      identity != null ? identifier(identity) : undefined
+    )
+  )
+
+  const fatherIdentifier = compact(
+    father?.identifier?.map((identity) =>
+      identity != null ? identifier(identity) : undefined
+    )
+  )
   /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
   return {
@@ -159,9 +162,23 @@ function deathPersonRecord(registration: DeathRegistration) {
       familyName: registration.deceased.name[0].familyName
     }),
     sex: sex(registration.deceased.gender),
-    parent1_identifier: motherIdentifier,
-    parent2_identifier: fatherIdentifier,
-    deathPlace: locationToSpdciPlace(registration.eventLocation)
+    deathPlace: locationToSpdciPlace(registration.eventLocation),
+    relations: compact([
+      mother !== undefined
+        ? spdci.mother({
+            identifier: motherIdentifier,
+            givenName: mother.name?.[0]?.firstNames ?? undefined,
+            familyName: mother.name?.[0]?.familyName ?? undefined
+          })
+        : null,
+      father !== undefined
+        ? spdci.father({
+            identifier: fatherIdentifier,
+            givenName: father.name?.[0]?.firstNames ?? undefined,
+            familyName: father.name?.[0]?.familyName ?? undefined
+          })
+        : null
+    ])
   }
 }
 
@@ -177,7 +194,7 @@ function marriagePersonRecord(registration: MarriageRegistration) {
       familyName: registration.bride.name[0].familyName
     }),
     marriagedate: registration.bride?.dateOfMarriage,
-    related_persons: [
+    relations: [
       {
         identifier: compact(
           registration.groom?.identifier?.map((identity) =>
