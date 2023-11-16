@@ -9,4 +9,4 @@ export const OPENCRVS_TOKEN_URL = new URL('token', OPENCRVS_AUTH_URL)
 /** FHIR Location API URL */
 export const OPENCRVS_FHIR_LOCATION_API =
   process.env.OPENCRVS_FHIR_LOCATION_API ??
-  'http://localhost:7070/location?_count=0&type=ADMIN_STRUCTURE'
+  'http://localhost:7070/location?_count=0'
