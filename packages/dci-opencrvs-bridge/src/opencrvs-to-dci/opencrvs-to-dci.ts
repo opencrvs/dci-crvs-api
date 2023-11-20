@@ -289,7 +289,7 @@ export function registrySyncSearchBuilder(
       version: '1.0.0',
       message_id: request.header.message_id,
       message_ts: new Date().toISOString(),
-      action: 'on-search',
+      action: 'search',
       status: 'succ',
       total_count: totalCount,
       sender_id: request.header.sender_id,
