@@ -9,7 +9,7 @@
     "dev": "nodemon --watch ../../packages --exec ts-node src/index.ts",
     "test": "node --require ts-node/register --test src/**/*.test.ts",
     "test:watch": "node --require ts-node/register --test --watch src/**/*.test.ts",
-    "generate-openapi-types": "openapi-typescript https://g2p-connect.github.io/specs/release/yaml/registry_core_api_v1.0.0.yaml -o ./src/registry-core-api.d.ts && npx prettier --write ./src/registry-core-api.d.ts"
+    "generate-openapi-types": "openapi-typescript https://spdci.github.io/standards/release/yaml/registry_core_api_v1.0.0.yaml -o ./src/registry-core-api.d.ts && npx prettier --write ./src/registry-core-api.d.ts"
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",

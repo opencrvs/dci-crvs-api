@@ -11,7 +11,7 @@ const formatDate = formatISOWithOptions({ representation: 'date' })
 function isIdentifierTypeQuery(
   criteria: SearchCriteria
 ): criteria is IdentifierTypeQuery {
-  return criteria.query_type === 'idtype'
+  return criteria.query_type === 'idtype-value'
 }
 
 function parameters(criteria: SearchCriteria) {
