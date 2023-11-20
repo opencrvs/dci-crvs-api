@@ -115,14 +115,16 @@ function birthPersonRecord(registration: BirthRegistration) {
         ? spdci.mother({
             identifier: motherIdentifier,
             givenName: mother.name?.[0]?.firstNames ?? undefined,
-            familyName: mother.name?.[0]?.familyName ?? undefined
+            familyName: mother.name?.[0]?.familyName ?? undefined,
+            homeLocation: mother.address?.[0]?.partOf ?? undefined
           })
         : null,
       father !== undefined
         ? spdci.father({
             identifier: fatherIdentifier,
             givenName: father.name?.[0]?.firstNames ?? undefined,
-            familyName: father.name?.[0]?.familyName ?? undefined
+            familyName: father.name?.[0]?.familyName ?? undefined,
+            homeLocation: father.address?.[0]?.partOf ?? undefined
           })
         : null
     ])
@@ -287,7 +289,7 @@ export function registrySyncSearchBuilder(
       version: '1.0.0',
       message_id: request.header.message_id,
       message_ts: new Date().toISOString(),
-      action: 'on-search',
+      action: 'search',
       status: 'succ',
       total_count: totalCount,
       sender_id: request.header.sender_id,

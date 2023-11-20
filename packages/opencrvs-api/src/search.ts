@@ -138,6 +138,16 @@ export const FETCH_REGISTRATION = gql`
             id
             type
           }
+          address {
+            type
+            line
+            district
+            state
+            city
+            postalCode
+            country
+            partOf
+          }
           detailsExist
         }
         mother {
@@ -152,6 +162,16 @@ export const FETCH_REGISTRATION = gql`
           identifier {
             id
             type
+          }
+          address {
+            type
+            line
+            district
+            state
+            city
+            postalCode
+            country
+            partOf
           }
           detailsExist
         }
@@ -211,6 +231,7 @@ export const FETCH_REGISTRATION = gql`
             city
             postalCode
             country
+            partOf
           }
         }
       }

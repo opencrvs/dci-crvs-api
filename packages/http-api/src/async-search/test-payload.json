@@ -18,7 +18,7 @@
         "timestamp": "2022-12-04T17:20:07-04:00",
         "search_criteria": {
           "reg_type": "ocrvs:registry_type:birth",
-          "query_type": "idtype",
+          "query_type": "idtype-value",
           "query": {
             "type": "BRN",
             "value": "2023BIYCGRT"

@@ -87,7 +87,7 @@ const identifierTypeValue = z.object({
 
 const identifierTypeQuery = commonSearchCriteria.and(
   z.object({
-    query_type: z.literal('idtype'),
+    query_type: z.literal('idtype-value'),
     query: identifierTypeValue
   })
 )
