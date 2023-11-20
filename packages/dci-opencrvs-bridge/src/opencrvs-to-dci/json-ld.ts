@@ -47,13 +47,15 @@ export function mother({
   givenName,
   additionalName,
   familyName,
-  gender
+  gender,
+  homeLocation
 }: {
   identifier?: string | IdentifierPropertyValue[]
   gender?: string
   givenName?: string
   additionalName?: string
   familyName?: string
+  homeLocation?: string
 }) {
   return {
     '@type': `spdci:Mother`,
@@ -61,7 +63,8 @@ export function mother({
     givenName,
     additionalName,
     familyName,
-    gender
+    gender,
+    homeLocation
   }
 }
 
@@ -70,13 +73,15 @@ export function father({
   givenName,
   additionalName,
   familyName,
-  gender
+  gender,
+  homeLocation
 }: {
   identifier?: string | IdentifierPropertyValue[]
   gender?: string
   givenName?: string
   additionalName?: string
   familyName?: string
+  homeLocation?: string
 }) {
   return {
     '@type': `spdci:Father`,
@@ -84,6 +89,7 @@ export function father({
     givenName,
     additionalName,
     familyName,
-    gender
+    gender,
+    homeLocation
   }
 }

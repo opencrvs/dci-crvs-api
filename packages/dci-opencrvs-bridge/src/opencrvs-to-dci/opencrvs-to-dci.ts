@@ -115,14 +115,16 @@ function birthPersonRecord(registration: BirthRegistration) {
         ? spdci.mother({
             identifier: motherIdentifier,
             givenName: mother.name?.[0]?.firstNames ?? undefined,
-            familyName: mother.name?.[0]?.familyName ?? undefined
+            familyName: mother.name?.[0]?.familyName ?? undefined,
+            homeLocation: mother.address?.[0]?.partOf ?? undefined
           })
         : null,
       father !== undefined
         ? spdci.father({
             identifier: fatherIdentifier,
             givenName: father.name?.[0]?.firstNames ?? undefined,
-            familyName: father.name?.[0]?.familyName ?? undefined
+            familyName: father.name?.[0]?.familyName ?? undefined,
+            homeLocation: father.address?.[0]?.partOf ?? undefined
           })
         : null
     ])

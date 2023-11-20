@@ -28,6 +28,7 @@ export type Scalars = {
   Int: { input: number; output: number }
   Float: { input: number; output: number }
   Date: { input: any; output: any }
+  FieldValue: { input: any; output: any }
   Map: { input: any; output: any }
 }
 
@@ -46,6 +47,7 @@ export type Address = {
   from?: Maybe<Scalars['Date']['output']>
   line?: Maybe<Array<Maybe<Scalars['String']['output']>>>
   lineName?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  partOf?: Maybe<Scalars['String']['output']>
   postalCode?: Maybe<Scalars['String']['output']>
   state?: Maybe<Scalars['String']['output']>
   stateName?: Maybe<Scalars['String']['output']>
@@ -95,6 +97,7 @@ export type AdvancedSeachParameters = {
   childIdentifier?: Maybe<Scalars['String']['output']>
   childLastName?: Maybe<Scalars['String']['output']>
   compositionType?: Maybe<Array<Maybe<Scalars['String']['output']>>>
+  contactEmail?: Maybe<Scalars['String']['output']>
   contactNumber?: Maybe<Scalars['String']['output']>
   dateOfEvent?: Maybe<Scalars['String']['output']>
   dateOfEventEnd?: Maybe<Scalars['String']['output']>
@@ -159,6 +162,7 @@ export type AdvancedSearchParametersInput = {
   childIdentifier?: InputMaybe<Scalars['String']['input']>
   childLastName?: InputMaybe<Scalars['String']['input']>
   compositionType?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>
+  contactEmail?: InputMaybe<Scalars['String']['input']>
   contactNumber?: InputMaybe<Scalars['String']['input']>
   dateOfEvent?: InputMaybe<Scalars['String']['input']>
   dateOfEventEnd?: InputMaybe<Scalars['String']['input']>
@@ -562,8 +566,8 @@ export type CorrectionRejectionInput = {
 
 export type CorrectionValueInput = {
   fieldName: Scalars['String']['input']
-  newValue: Scalars['String']['input']
-  oldValue: Scalars['String']['input']
+  newValue: Scalars['FieldValue']['input']
+  oldValue: Scalars['FieldValue']['input']
   section: Scalars['String']['input']
 }
 
@@ -711,11 +715,11 @@ export type DuplicatesInfo = {
 
 export type Estimation = {
   __typename?: 'Estimation'
-  femaleEstimation: Scalars['Int']['output']
+  femaleEstimation: Scalars['Float']['output']
   locationId: Scalars['String']['output']
   locationLevel: Scalars['String']['output']
-  maleEstimation: Scalars['Int']['output']
-  totalEstimation: Scalars['Int']['output']
+  maleEstimation: Scalars['Float']['output']
+  totalEstimation: Scalars['Float']['output']
 }
 
 export enum Event {
@@ -901,9 +905,9 @@ export enum ImageFit {
 
 export type InputOutput = {
   __typename?: 'InputOutput'
+  value: Scalars['FieldValue']['output']
   valueCode: Scalars['String']['output']
   valueId: Scalars['String']['output']
-  valueString: Scalars['String']['output']
 }
 
 export type IntegratedSystem = {
@@ -976,13 +980,13 @@ export type LocationStatisticsResponse = {
 
 export type LocationWiseEstimationMetric = {
   __typename?: 'LocationWiseEstimationMetric'
-  estimated: Scalars['Int']['output']
+  estimated: Scalars['Float']['output']
   locationId: Scalars['String']['output']
   locationName: Scalars['String']['output']
-  total: Scalars['Int']['output']
-  within1Year: Scalars['Int']['output']
-  within5Years: Scalars['Int']['output']
-  withinTarget: Scalars['Int']['output']
+  total: Scalars['Float']['output']
+  within1Year: Scalars['Float']['output']
+  within5Years: Scalars['Float']['output']
+  withinTarget: Scalars['Float']['output']
 }
 
 export type LoginBackground = {
@@ -1088,13 +1092,13 @@ export type MixedTotalMetricsResult =
 
 export type MonthWiseEstimationMetric = {
   __typename?: 'MonthWiseEstimationMetric'
-  estimated: Scalars['Int']['output']
-  month: Scalars['Int']['output']
-  total: Scalars['Int']['output']
-  within1Year: Scalars['Int']['output']
-  within5Years: Scalars['Int']['output']
-  withinTarget: Scalars['Int']['output']
-  year: Scalars['Int']['output']
+  estimated: Scalars['Float']['output']
+  month: Scalars['Float']['output']
+  total: Scalars['Float']['output']
+  within1Year: Scalars['Float']['output']
+  within5Years: Scalars['Float']['output']
+  withinTarget: Scalars['Float']['output']
+  year: Scalars['Float']['output']
 }
 
 export type Mutation = {
@@ -2037,6 +2041,7 @@ export type RegistrationSearchSet = {
   __typename?: 'RegistrationSearchSet'
   assignment?: Maybe<AssignmentData>
   comment?: Maybe<Scalars['String']['output']>
+  contactEmail?: Maybe<Scalars['String']['output']>
   contactNumber?: Maybe<Scalars['String']['output']>
   contactRelationship?: Maybe<Scalars['String']['output']>
   createdAt?: Maybe<Scalars['String']['output']>
@@ -2536,6 +2541,17 @@ export type FetchRegistrationQuery = {
             id?: string | null
             type?: string | null
           } | null> | null
+          address?: Array<{
+            __typename?: 'Address'
+            type?: string | null
+            line?: Array<string | null> | null
+            district?: string | null
+            state?: string | null
+            city?: string | null
+            postalCode?: string | null
+            country?: string | null
+            partOf?: string | null
+          } | null> | null
         } | null
         mother?: {
           __typename?: 'Person'
@@ -2553,6 +2569,17 @@ export type FetchRegistrationQuery = {
             __typename?: 'IdentityType'
             id?: string | null
             type?: string | null
+          } | null> | null
+          address?: Array<{
+            __typename?: 'Address'
+            type?: string | null
+            line?: Array<string | null> | null
+            district?: string | null
+            state?: string | null
+            city?: string | null
+            postalCode?: string | null
+            country?: string | null
+            partOf?: string | null
           } | null> | null
         } | null
         eventLocation?: {
@@ -2644,6 +2671,7 @@ export type FetchRegistrationQuery = {
             city?: string | null
             postalCode?: string | null
             country?: string | null
+            partOf?: string | null
           } | null
         } | null
         registration?: {
