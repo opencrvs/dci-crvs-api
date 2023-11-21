@@ -1567,7 +1567,7 @@ export interface operations {
           signature?: components['schemas']['MsgSignature']
           header: components['schemas']['MsgCallbackHeader_V1.0.0'] & {
             /** @enum {unknown} */
-            action?: 'on-search'
+            action?: 'on-search' | 'search' // @TODO: Fix this in DCI
           }
           message?:
             | components['schemas']['SearchResponse']
