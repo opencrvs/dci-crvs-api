@@ -231,25 +231,20 @@ export function searchResponseBuilder(
     referenceId,
     timestamp,
     pageSize,
-    pageNumber = 1,
+    pageNumber,
+    totalCount,
     locale,
     event
   }: {
     referenceId: string
     timestamp: components['schemas']['DateTime']
-    pageSize?: number
-    pageNumber?: number
+    pageSize: number
+    pageNumber: number
+    totalCount: number
     locale: string
     event: EventType
   }
 ) {
-  pageSize ??= registrations.length // Return all records in one page if page size isn't defined
-
-  const paginatedRegistrations = registrations.slice(
-    (pageNumber - 1) * pageSize,
-    pageNumber * pageSize
-  )
-
   return {
     reference_id: referenceId,
     timestamp,
@@ -257,7 +252,7 @@ export function searchResponseBuilder(
     data: {
       reg_record_type: 'person',
       reg_type: event,
-      reg_records: paginatedRegistrations.map((registration) =>
+      reg_records: registrations.map((registration) =>
         isBirthEventSearchSet(registration)
           ? birthPersonRecord(registration)
           : isMarriageEventSearchSet(registration)
@@ -268,7 +263,7 @@ export function searchResponseBuilder(
     pagination: {
       page_number: pageNumber,
       page_size: pageSize,
-      total_count: registrations.length
+      total_count: totalCount
     },
     // TODO: Handle locale, return a localized response? Currently this is just being passed directly from the request
     locale
@@ -299,14 +294,21 @@ export function registrySyncSearchBuilder(
       transaction_id: request.message.transaction_id,
       correlation_id: correlationId ?? randomUUID(),
       search_response: responses.flatMap(
-        ({ registrations, originalRequest, responseFinishedTimestamp }) =>
+        ({
+          registrations,
+          originalRequest,
+          responseFinishedTimestamp,
+          pageSize,
+          pageNumber,
+          totalItems
+        }) =>
           registrations.length > 0
             ? searchResponseBuilder(registrations, {
                 referenceId: originalRequest.reference_id,
                 timestamp: responseFinishedTimestamp.toISOString(),
-                pageSize: originalRequest.search_criteria.pagination?.page_size,
-                pageNumber:
-                  originalRequest.search_criteria.pagination?.page_number,
+                pageSize,
+                pageNumber,
+                totalCount: totalItems,
                 locale: originalRequest.locale,
                 event: originalRequest.search_criteria.reg_type
               })

@@ -3,6 +3,7 @@ import { advancedRecordSearch, fetchRegistration } from 'opencrvs-api'
 import {
   registrySyncSearchBuilder,
   AuthorizationError,
+  pagination,
   searchRequestToAdvancedSearchParameters
 } from 'dci-opencrvs-bridge'
 import { compact } from 'lodash/fp'
@@ -33,10 +34,16 @@ export async function search(
   const searchRequests = request.search_request
   const searchResults = await Promise.all(
     searchRequests.map(async (searchRequest) => {
-      const response = await advancedRecordSearch(
-        token,
-        searchRequestToAdvancedSearchParameters(searchRequest)
+      const { skip, count, pageNumber, pageSize } = pagination(
+        searchRequest.search_criteria.pagination?.page_size,
+        searchRequest.search_criteria.pagination?.page_number
       )
+      const params = searchRequestToAdvancedSearchParameters(
+        searchRequest,
+        skip,
+        count
+      )
+      const response = await advancedRecordSearch(token, params)
 
       const responseIds = compact(
         response?.results?.map((result) => result?.id)
@@ -46,7 +53,10 @@ export async function search(
       return {
         registrations: compact(registrations),
         responseFinishedTimestamp: new Date(),
-        originalRequest: searchRequest
+        originalRequest: searchRequest,
+        pageNumber,
+        pageSize,
+        totalItems: response?.totalItems ?? 0
       }
     })
   )
