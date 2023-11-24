@@ -14,7 +14,7 @@ sequenceDiagram
 
 This repository provides [DCI standards](https://github.com/spdci/standards) compliant API for CRVS systems. It communicates between OpenCRVS and any other system that can communicate using the DCI standard.
 
-DCI API standards reference can be found [here](https://spdci.github.io/standards/release/html/registry_core_api_v1_0.0.0.html).
+DCI API standards reference can be found [in SPDCI docs](https://spdci.github.io/standards/release/html/registry_core_api_v1.0.0.html).
 
 The package is a Node & TypeScript project and the API is built using [Hapi](https://hapi.dev/) as per OpenCRVS convention.
 
