@@ -8,32 +8,36 @@ describe('DCI standard to OpenCRVS', () => {
   // `lt` => date - 1 day
   // `le` => date
   it('converts gt and lt properly', () => {
-    const parameters = searchRequestToAdvancedSearchParameters({
-      reference_id: '123456789020211216223812',
-      timestamp: '2022-12-04T17:20:07-04:00',
-      search_criteria: {
-        reg_type: 'ocrvs:registry_type:birth',
-        sort: [{ attribute_name: 'dateOfDeclaration', sort_order: 'asc' }],
-        pagination: { page_size: 5, page_number: 1 },
-        query_type: 'predicate',
-        query: [
-          {
-            expression1: {
-              attribute_name: 'birthdate',
-              operator: 'gt',
-              attribute_value: '2010-05-04T00:00:00.000Z'
-            },
-            condition: 'and',
-            expression2: {
-              attribute_name: 'birthdate',
-              operator: 'lt',
-              attribute_value: '2022-05-04T00:00:00.000Z'
+    const parameters = searchRequestToAdvancedSearchParameters(
+      {
+        reference_id: '123456789020211216223812',
+        timestamp: '2022-12-04T17:20:07-04:00',
+        search_criteria: {
+          reg_type: 'ocrvs:registry_type:birth',
+          sort: [{ attribute_name: 'dateOfDeclaration', sort_order: 'asc' }],
+          pagination: { page_size: 5, page_number: 1 },
+          query_type: 'predicate',
+          query: [
+            {
+              expression1: {
+                attribute_name: 'birthdate',
+                operator: 'gt',
+                attribute_value: '2010-05-04T00:00:00.000Z'
+              },
+              condition: 'and',
+              expression2: {
+                attribute_name: 'birthdate',
+                operator: 'lt',
+                attribute_value: '2022-05-04T00:00:00.000Z'
+              }
             }
-          }
-        ]
+          ]
+        },
+        locale: 'eng'
       },
-      locale: 'eng'
-    })
+      0,
+      5
+    )
 
     assert.strictEqual(
       parameters.advancedSearchParameters.childDoBStart,
@@ -46,32 +50,36 @@ describe('DCI standard to OpenCRVS', () => {
   })
 
   it('converts ge and le properly', () => {
-    const parameters = searchRequestToAdvancedSearchParameters({
-      reference_id: '123456789020211216223812',
-      timestamp: '2022-12-04T17:20:07-04:00',
-      search_criteria: {
-        reg_type: 'ocrvs:registry_type:birth',
-        sort: [{ attribute_name: 'dateOfDeclaration', sort_order: 'asc' }],
-        pagination: { page_size: 5, page_number: 1 },
-        query_type: 'predicate',
-        query: [
-          {
-            expression1: {
-              attribute_name: 'birthdate',
-              operator: 'ge',
-              attribute_value: '2010-05-04'
-            },
-            condition: 'and',
-            expression2: {
-              attribute_name: 'birthdate',
-              operator: 'le',
-              attribute_value: '2022-05-04'
+    const parameters = searchRequestToAdvancedSearchParameters(
+      {
+        reference_id: '123456789020211216223812',
+        timestamp: '2022-12-04T17:20:07-04:00',
+        search_criteria: {
+          reg_type: 'ocrvs:registry_type:birth',
+          sort: [{ attribute_name: 'dateOfDeclaration', sort_order: 'asc' }],
+          pagination: { page_size: 5, page_number: 1 },
+          query_type: 'predicate',
+          query: [
+            {
+              expression1: {
+                attribute_name: 'birthdate',
+                operator: 'ge',
+                attribute_value: '2010-05-04'
+              },
+              condition: 'and',
+              expression2: {
+                attribute_name: 'birthdate',
+                operator: 'le',
+                attribute_value: '2022-05-04'
+              }
             }
-          }
-        ]
+          ]
+        },
+        locale: 'eng'
       },
-      locale: 'eng'
-    })
+      0,
+      5
+    )
 
     assert.strictEqual(
       parameters.advancedSearchParameters.childDoBStart,
