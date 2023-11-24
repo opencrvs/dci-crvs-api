@@ -1,6 +1,6 @@
 {
   "name": "http-api",
-  "version": "0.1",
+  "version": "1.0.0",
   "description": "Public facing REST API providing a DCI-CRVS standard interface",
   "main": "src/index.ts",
   "license": "MIT",
