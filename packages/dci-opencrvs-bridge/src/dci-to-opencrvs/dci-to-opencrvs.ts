@@ -118,7 +118,9 @@ function parameters(criteria: SearchCriteria) {
 }
 
 export function searchRequestToAdvancedSearchParameters(
-  request: SyncSearchRequest['message']['search_request'][number]
+  request: SyncSearchRequest['message']['search_request'][number],
+  skip: number,
+  count: number
 ): SearchEventsQueryVariables {
   const criteria = request.search_criteria
   const sort = request.search_criteria.sort
@@ -128,5 +130,11 @@ export function searchRequestToAdvancedSearchParameters(
       order
     })
   )
-  return { advancedSearchParameters: parameters(criteria), sortBy }
+
+  return {
+    advancedSearchParameters: parameters(criteria),
+    sortBy,
+    skip,
+    count
+  }
 }
