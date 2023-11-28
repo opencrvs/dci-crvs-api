@@ -82,6 +82,19 @@ export async function advancedRecordSearch(
     )
   }
 
+  console.log(
+    'searchEvents [params]:',
+    JSON.stringify({
+      operationName: 'searchEvents',
+      variables: {
+        registrationStatuses: ['REGISTERED'],
+        ...variables
+      },
+      query: print(SEARCH_EVENTS)
+    })
+  )
+  console.log('searchEvents [result]:', JSON.stringify(response, null, 4))
+
   return response.data.searchEvents
 }
 
@@ -318,7 +331,15 @@ export async function fetchRegistration(
     )
   }
 
-  console.log(JSON.stringify(response, null, 4))
+  console.log(
+    'fetchRegistration [params]:',
+    JSON.stringify({
+      operationName: 'fetchRegistration',
+      variables: { id },
+      query: print(FETCH_REGISTRATION)
+    })
+  )
+  console.log('fetchRegistration [result]:', JSON.stringify(response, null, 4))
 
   return response.data.fetchRegistration
 }
