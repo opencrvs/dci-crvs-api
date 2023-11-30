@@ -36,6 +36,8 @@ In local development you are able to get a local registrar's token with [OpenCRV
 
 ## Roadmap
 
+dci-crvs-api validates the requests using Zod in [http-api/validations](./packages/http-api/src/validations.ts) and the supported parameters can be figured out using `maybeEncryptedSyncSearchRequestSchema` and `maybeEncryptedAsyncSearchRequestSchema` schemas.
+
 | Endpoint                      | Description                                                                              | Implementation status            |
 | ----------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------- |
 | `/health`                     | Health check endpoint                                                                    | ✅ dci-crvs-api@1.0.0            |
