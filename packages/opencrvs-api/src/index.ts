@@ -7,3 +7,4 @@ export {
 export * from './auth'
 export * from './search'
 export * from './location'
+export * from './error'
