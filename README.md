@@ -21,7 +21,7 @@ The package is a Node & TypeScript project and the API is built using [Hapi](htt
 ## Prerequisites
 
 - Existing OpenCRVS installation
-- [Node.js](https://nodejs.org/en/) (specific version specified in [.nvmrc](./.nvmrc), recommend using [nvm](https://github.com/nvm-sh/nvm))
+- [Node.js](https://nodejs.org/en/) (specified in [.nvmrc](./.nvmrc), recommend using [nvm](https://github.com/nvm-sh/nvm))
 
 ## Local development
 
@@ -35,6 +35,8 @@ In local development you are able to get a local registrar's token with [OpenCRV
 5. Run `npm run dev` to start the server
 
 ## Roadmap
+
+dci-crvs-api validates the requests using Zod in [http-api/validations](./packages/http-api/src/validations.ts) and the supported parameters can be figured out using `maybeEncryptedSyncSearchRequestSchema` and `maybeEncryptedAsyncSearchRequestSchema` schemas.
 
 | Endpoint                      | Description                                                                              | Implementation status            |
 | ----------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------- |

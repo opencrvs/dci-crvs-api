@@ -6,7 +6,7 @@ import {
 import { print } from 'graphql'
 import gql from 'graphql-tag'
 import type { Registration } from './types'
-import { AuthorizationError } from 'dci-opencrvs-bridge'
+import { DailyQuotaExceededError, AuthorizationError } from './error'
 
 export const SEARCH_EVENTS = gql`
   query searchEvents(
@@ -35,7 +35,10 @@ interface Success<T = any> {
 }
 
 interface Error {
-  errors: Array<{ message: string }>
+  errors: Array<{
+    message: string
+    extensions: { code: 'DAILY_QUOTA_EXCEEDED' | 'INTERNAL_SERVER_ERROR' }
+  }>
 }
 
 function isError<T>(response: Success<T> | Error): response is Error {
@@ -44,6 +47,12 @@ function isError<T>(response: Success<T> | Error): response is Error {
 
 function isUnauthenticated(error: Error) {
   return error.errors.some((error) => error.message === 'Unauthorized')
+}
+
+function isDailyQuotaExceeded(error: Error) {
+  return error.errors.some(
+    (error) => error.extensions.code === 'DAILY_QUOTA_EXCEEDED'
+  )
 }
 
 export async function advancedRecordSearch(
@@ -74,6 +83,12 @@ export async function advancedRecordSearch(
     throw new AuthorizationError('Unauthorized in gateway')
   }
 
+  if (isError(response) && isDailyQuotaExceeded(response)) {
+    throw new DailyQuotaExceededError(
+      'OpenCRVS Search API daily quota exceeded'
+    )
+  }
+
   if (isError(response)) {
     throw new Error(
       `Gateway returned errors: ${response.errors
@@ -81,19 +96,6 @@ export async function advancedRecordSearch(
         .join(', ')}`
     )
   }
-
-  console.log(
-    'searchEvents [params]:',
-    JSON.stringify({
-      operationName: 'searchEvents',
-      variables: {
-        registrationStatuses: ['REGISTERED'],
-        ...variables
-      },
-      query: print(SEARCH_EVENTS)
-    })
-  )
-  console.log('searchEvents [result]:', JSON.stringify(response, null, 4))
 
   return response.data.searchEvents
 }
@@ -330,16 +332,6 @@ export async function fetchRegistration(
         .join(', ')}`
     )
   }
-
-  console.log(
-    'fetchRegistration [params]:',
-    JSON.stringify({
-      operationName: 'fetchRegistration',
-      variables: { id },
-      query: print(FETCH_REGISTRATION)
-    })
-  )
-  console.log('fetchRegistration [result]:', JSON.stringify(response, null, 4))
 
   return response.data.fetchRegistration
 }
