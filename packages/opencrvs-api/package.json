@@ -5,10 +5,11 @@
   "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
-    "generate-gateway-types": "graphql-codegen --config codegen.yml && npx prettier --write src/gateway.ts"
+    "generate-gateway-types": "graphql-codegen --config codegen.yml && npx prettier --write src/gateway.ts",
+    "test:compile": "tsc --noEmit"
   },
   "dependencies": {
-    "@opencrvs/commons": "https://gitpkg.now.sh/opencrvs/opencrvs-core/packages/commons?fca9766",
+    "@opencrvs/commons": "https://gitpkg.now.sh/opencrvs/opencrvs-core/packages/commons?bfc263f",
     "@types/jsonwebtoken": "^9.0.3",
     "graphql": "^16.8.0",
     "graphql-tag": "^2.12.6",

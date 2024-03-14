@@ -7,16 +7,28 @@ function jweToEncryptedMessage(
   jwe: FlattenedJWE
 ): components['schemas']['EncryptedMessage'] {
   if (jwe.header?.alg === undefined) {
-    throw new Error('Missing required header paramater "alg" after encrypting')
+    throw new Error(
+      'Missing required jwe.header paramater "alg" after encrypting'
+    )
   }
   if (jwe.header.enc === undefined) {
-    throw new Error('Missing required header paramater "enc" after encrypting')
+    throw new Error(
+      'Missing required jwe.header paramater "enc" after encrypting'
+    )
   }
   if (jwe.header.kid === undefined) {
-    throw new Error('Missing required header paramater "kid" after encrypting')
+    throw new Error(
+      'Missing required jwe.header paramater "kid" after encrypting'
+    )
   }
   if (jwe.encrypted_key === undefined) {
-    throw new Error('encrypted_key is required after encrypting')
+    throw new Error('jwe.encrypted_key is required after encrypting')
+  }
+  if (jwe.tag === undefined) {
+    throw new Error('jwe.tag is required after encrypting')
+  }
+  if (jwe.iv === undefined) {
+    throw new Error('jwe.iv is required after encrypting')
   }
   return {
     ...jwe,
@@ -26,6 +38,8 @@ function jweToEncryptedMessage(
       kid: jwe.header.kid,
       ...jwe.header
     },
+    tag: jwe.tag,
+    iv: jwe.iv,
     encrypted_key: jwe.encrypted_key
   }
 }
