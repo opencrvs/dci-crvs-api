@@ -9,7 +9,7 @@
     "test:compile": "tsc --noEmit"
   },
   "dependencies": {
-    "@opencrvs/commons": "https://gitpkg.now.sh/opencrvs/opencrvs-core/packages/commons?bfc263f",
+    "@opencrvs/commons": "https://gitpkg.now.sh/opencrvs/opencrvs-core/packages/commons?71badfc",
     "@types/jsonwebtoken": "^9.0.3",
     "graphql": "^16.8.0",
     "graphql-tag": "^2.12.6",
