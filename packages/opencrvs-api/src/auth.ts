@@ -1,5 +1,5 @@
 import jwt, { TokenExpiredError } from 'jsonwebtoken'
-import { AuthorizationError } from 'dci-opencrvs-bridge'
+import { AuthorizationError } from './error'
 import { OPENCRVS_AUTH_URL } from './constants'
 
 async function getPublicKey() {

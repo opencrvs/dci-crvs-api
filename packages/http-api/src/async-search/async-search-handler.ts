@@ -7,11 +7,8 @@ import {
 import { fromZodError } from 'zod-validation-error'
 import { ValidationError } from '../error'
 import { search } from '../sync-search/sync-search-handler'
-import { validateToken } from 'opencrvs-api'
-import {
-  registrySyncSearchBuilder,
-  AuthorizationError
-} from 'dci-opencrvs-bridge'
+import { validateToken, AuthorizationError } from 'opencrvs-api'
+import { registrySyncSearchBuilder } from 'dci-opencrvs-bridge'
 import { parseToken } from '../auth'
 import { randomUUID } from 'node:crypto'
 import { type ReqResWithAuthorization } from '../server'

@@ -1,10 +1,10 @@
 import * as Hapi from '@hapi/hapi'
 import { HOST, PORT, DEFAULT_TIMEOUT_MS, NODE_ENV } from './constants'
 import { routes } from './routes'
-import { AuthorizationError } from 'dci-opencrvs-bridge'
 import pino from 'hapi-pino'
 import { ValidationError, error } from './error'
 import H2o2 from '@hapi/h2o2'
+import { AuthorizationError, DailyQuotaExceededError } from 'opencrvs-api'
 
 export async function createServer() {
   const server = new Hapi.Server({
@@ -41,6 +41,10 @@ export async function createServer() {
 
     if (request.response instanceof AuthorizationError) {
       return error(reply, request.response.message, 401)
+    }
+
+    if (request.response instanceof DailyQuotaExceededError) {
+      return error(reply, request.response.message, 429)
     }
 
     if ('isBoom' in request.response) {

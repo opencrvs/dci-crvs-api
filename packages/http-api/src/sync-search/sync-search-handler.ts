@@ -1,8 +1,11 @@
 import type * as Hapi from '@hapi/hapi'
-import { advancedRecordSearch, fetchRegistration } from 'opencrvs-api'
+import {
+  advancedRecordSearch,
+  fetchRegistration,
+  AuthorizationError
+} from 'opencrvs-api'
 import {
   registrySyncSearchBuilder,
-  AuthorizationError,
   pagination,
   searchRequestToAdvancedSearchParameters
 } from 'dci-opencrvs-bridge'
