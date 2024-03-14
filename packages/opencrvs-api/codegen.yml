@@ -1,8 +1,6 @@
 overwrite: true
 schema:
-  - http://localhost:7070/graphql:
-      headers:
-        Authorization: 'Bearer ${TOKEN}'
+  - https://gateway.farajaland-qa.opencrvs.org/graphql
 documents:
   - 'src/search.ts'
   - '!src/gateway.ts'

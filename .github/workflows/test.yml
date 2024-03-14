@@ -21,3 +21,7 @@ jobs:
         run: npm ci --install-links
       - name: Run tests
         run: npm test
+      - name: Test compilation after getting Gateway types
+        run: |
+          npm run generate-gateway-types --workspace=opencrvs-api
+          npm run test:compile --workspace=opencrvs-api

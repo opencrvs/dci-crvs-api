@@ -230,14 +230,12 @@ export type ApplicationConfiguration = {
   CURRENCY?: Maybe<Currency>
   DATE_OF_BIRTH_UNKNOWN?: Maybe<Scalars['Boolean']['output']>
   DEATH?: Maybe<Death>
-  EXTERNAL_VALIDATION_WORKQUEUE?: Maybe<Scalars['Boolean']['output']>
+  FEATURES?: Maybe<Features>
   FIELD_AGENT_AUDIT_LOCATIONS?: Maybe<Scalars['String']['output']>
   INFORMANT_NOTIFICATION_DELIVERY_METHOD?: Maybe<Scalars['String']['output']>
-  INFORMANT_SIGNATURE?: Maybe<Scalars['Boolean']['output']>
   INFORMANT_SIGNATURE_REQUIRED?: Maybe<Scalars['Boolean']['output']>
   LOGIN_BACKGROUND?: Maybe<LoginBackground>
   MARRIAGE?: Maybe<Marriage>
-  MARRIAGE_REGISTRATION?: Maybe<Scalars['Boolean']['output']>
   NID_NUMBER_PATTERN?: Maybe<Scalars['String']['output']>
   PHONE_NUMBER_PATTERN?: Maybe<Scalars['String']['output']>
   USER_NOTIFICATION_DELIVERY_METHOD?: Maybe<Scalars['String']['output']>
@@ -250,12 +248,11 @@ export type ApplicationConfigurationInput = {
   CURRENCY?: InputMaybe<CurrencyInput>
   DATE_OF_BIRTH_UNKNOWN?: InputMaybe<Scalars['Boolean']['input']>
   DEATH?: InputMaybe<DeathInput>
-  EXTERNAL_VALIDATION_WORKQUEUE?: InputMaybe<Scalars['Boolean']['input']>
+  FEATURES?: InputMaybe<FeaturesInput>
   FIELD_AGENT_AUDIT_LOCATIONS?: InputMaybe<Scalars['String']['input']>
   INFORMANT_NOTIFICATION_DELIVERY_METHOD?: InputMaybe<
     Scalars['String']['input']
   >
-  INFORMANT_SIGNATURE?: InputMaybe<Scalars['Boolean']['input']>
   INFORMANT_SIGNATURE_REQUIRED?: InputMaybe<Scalars['Boolean']['input']>
   LOGIN_BACKGROUND?: InputMaybe<LoginBackgroundInput>
   MARRIAGE?: InputMaybe<MarriageInput>
@@ -567,7 +564,7 @@ export type CorrectionRejectionInput = {
 export type CorrectionValueInput = {
   fieldName: Scalars['String']['input']
   newValue: Scalars['FieldValue']['input']
-  oldValue: Scalars['FieldValue']['input']
+  oldValue?: InputMaybe<Scalars['FieldValue']['input']>
   section: Scalars['String']['input']
 }
 
@@ -823,6 +820,23 @@ export type FhiridMap = {
   questionnaireResponse?: InputMaybe<Scalars['String']['input']>
 }
 
+export type Features = {
+  __typename?: 'Features'
+  DEATH_REGISTRATION?: Maybe<Scalars['Boolean']['output']>
+  EXTERNAL_VALIDATION_WORKQUEUE?: Maybe<Scalars['Boolean']['output']>
+  INFORMANT_SIGNATURE?: Maybe<Scalars['Boolean']['output']>
+  MARRIAGE_REGISTRATION?: Maybe<Scalars['Boolean']['output']>
+  PRINT_DECLARATION?: Maybe<Scalars['Boolean']['output']>
+}
+
+export type FeaturesInput = {
+  DEATH_REGISTRATION?: InputMaybe<Scalars['Boolean']['input']>
+  EXTERNAL_VALIDATION_WORKQUEUE?: InputMaybe<Scalars['Boolean']['input']>
+  INFORMANT_SIGNATURE?: InputMaybe<Scalars['Boolean']['input']>
+  MARRIAGE_REGISTRATION?: InputMaybe<Scalars['Boolean']['input']>
+  PRINT_DECLARATION?: InputMaybe<Scalars['Boolean']['input']>
+}
+
 export enum Gender {
   Female = 'female',
   Male = 'male',
@@ -865,6 +879,7 @@ export type HumanName = {
   familyName?: Maybe<Scalars['String']['output']>
   firstNames?: Maybe<Scalars['String']['output']>
   marriedLastName?: Maybe<Scalars['String']['output']>
+  middleName?: Maybe<Scalars['String']['output']>
   use?: Maybe<Scalars['String']['output']>
 }
 
@@ -872,6 +887,7 @@ export type HumanNameInput = {
   familyName?: InputMaybe<Scalars['String']['input']>
   firstNames?: InputMaybe<Scalars['String']['input']>
   marriedLastName?: InputMaybe<Scalars['String']['input']>
+  middleName?: InputMaybe<Scalars['String']['input']>
   use?: InputMaybe<Scalars['String']['input']>
 }
 
@@ -919,7 +935,6 @@ export type IntegratedSystem = {
 
 export enum IntegratingSystemType {
   Mosip = 'MOSIP',
-  Osia = 'OSIA',
   Other = 'OTHER'
 }
 
@@ -1126,12 +1141,12 @@ export type Mutation = {
   deleteSystem?: Maybe<System>
   markBirthAsCertified: Scalars['ID']['output']
   markBirthAsIssued: Scalars['ID']['output']
-  markBirthAsRegistered: BirthRegistration
+  markBirthAsRegistered: Scalars['ID']['output']
   markBirthAsValidated?: Maybe<Scalars['ID']['output']>
   markBirthAsVerified?: Maybe<BirthRegistration>
   markDeathAsCertified: Scalars['ID']['output']
   markDeathAsIssued: Scalars['ID']['output']
-  markDeathAsRegistered: DeathRegistration
+  markDeathAsRegistered: Scalars['ID']['output']
   markDeathAsValidated?: Maybe<Scalars['ID']['output']>
   markDeathAsVerified?: Maybe<DeathRegistration>
   markEventAsArchived: Scalars['ID']['output']
@@ -1142,7 +1157,7 @@ export type Mutation = {
   markEventAsVoided: Scalars['ID']['output']
   markMarriageAsCertified: Scalars['ID']['output']
   markMarriageAsIssued: Scalars['ID']['output']
-  markMarriageAsRegistered: MarriageRegistration
+  markMarriageAsRegistered: Scalars['ID']['output']
   markMarriageAsValidated?: Maybe<Scalars['ID']['output']>
   reactivateSystem?: Maybe<System>
   refreshSystemSecret?: Maybe<SystemSecret>
@@ -1343,7 +1358,7 @@ export type MutationMarkEventAsUnassignedArgs = {
 }
 
 export type MutationMarkEventAsVoidedArgs = {
-  comment?: InputMaybe<Scalars['String']['input']>
+  comment: Scalars['String']['input']
   id: Scalars['String']['input']
   reason: Scalars['String']['input']
 }
@@ -1540,7 +1555,6 @@ export type PaymentInput = {
   date?: InputMaybe<Scalars['Date']['input']>
   outcome?: InputMaybe<PaymentOutcomeType>
   paymentId?: InputMaybe<Scalars['ID']['input']>
-  total?: InputMaybe<Scalars['Float']['input']>
   type?: InputMaybe<PaymentType>
 }
 
@@ -2016,6 +2030,7 @@ export type RegistrationInput = {
   book?: InputMaybe<Scalars['String']['input']>
   brideSignature?: InputMaybe<Scalars['String']['input']>
   certificates?: InputMaybe<Array<InputMaybe<CertificateInput>>>
+  changedValues?: InputMaybe<Array<CorrectionValueInput>>
   contactEmail?: InputMaybe<Scalars['String']['input']>
   contactPhoneNumber?: InputMaybe<Scalars['String']['input']>
   correction?: InputMaybe<CorrectionInput>
