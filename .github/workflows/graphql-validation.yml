@@ -14,6 +14,6 @@ jobs:
       matrix:
         # 1.5.0 is the only supported version for dci-crvs-api at the current time
         supported-core-version: [develop, release-v1.5.0]
-    uses: naftis/opencrvs-actions/.github/workflows/validate-graphql-queries.yml@91cf8b75a8761ac0bca763626c8820d18f2d752f
+    uses: naftis/opencrvs-actions/.github/workflows/validate-graphql-queries.yml@da28e90e55322f19b7accd83b7cd2e042fc78595
     with:
       schema: https://raw.githubusercontent.com/opencrvs/opencrvs-core/refs/heads/${{ matrix.supported-core-version }}/packages/gateway/src/graphql/schema.graphql
