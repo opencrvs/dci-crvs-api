@@ -10,6 +10,7 @@ on:
 jobs:
   validate:
     strategy:
+      fail-fast: false
       matrix:
         # 1.5.0 is the only supported version for dci-crvs-api at the current time
         supported-core-version: [develop, release-v1.5.0]
