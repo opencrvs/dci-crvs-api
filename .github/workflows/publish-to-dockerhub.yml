@@ -34,4 +34,4 @@ jobs:
         run: |
           export VERSION=`git rev-parse --short=7 HEAD`
           echo "Publishing a Docker image with a tag $VERSION"
-          docker-compose build && docker-compose push && unset VERSION
+          docker compose build && docker compose push && unset VERSION
