@@ -4,7 +4,6 @@ export {
   OPENCRVS_GATEWAY_URL,
   OPENCRVS_TOKEN_URL
 } from './constants'
-export * from './auth'
 export * from './search'
 export * from './location'
 export * from './error'
