@@ -1,5 +1,6 @@
 import jwt, { TokenExpiredError } from 'jsonwebtoken'
-import { AuthorizationError, OPENCRVS_AUTH_URL } from 'opencrvs-api'
+import { OPENCRVS_AUTH_URL } from './constants'
+import { AuthorizationError } from './error'
 
 export function parseToken(header: string) {
   if (!header.startsWith('Bearer')) {

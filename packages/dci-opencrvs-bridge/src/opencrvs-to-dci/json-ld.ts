@@ -1,3 +1,5 @@
+import { NameFieldValue } from '@opencrvs/toolkit/events'
+
 export function withContext<T extends Record<string, any>>(json: T) {
   return {
     '@context': {
@@ -15,30 +17,19 @@ interface IdentifierPropertyValue {
 }
 
 interface Place {
-  identifier?: string | IdentifierPropertyValue[]
   name?: string
-  address?: string
-  containedInPlace?: Place | string | null
-  additionalType?: string
-  type?: string
+  contained_in_place?: Place | string | null
+  address_line?: string
 }
 
-export function place({
-  identifier,
-  address,
-  containedInPlace,
-  name,
-  additionalType
-}: Place): {
+export function place({ address_line, contained_in_place, name }: Place): {
   '@type': `Place`
 } & Place {
   return {
     '@type': `Place`,
-    additionalType,
-    identifier,
-    address,
+    address_line,
     name,
-    containedInPlace
+    contained_in_place
   }
 }
 
@@ -91,5 +82,23 @@ export function father({
     familyName,
     gender,
     homeLocation
+  }
+}
+
+export function identifier({ type, value }: { type: string; value: string }) {
+  return {
+    '@id': 'Identifier',
+    '@type': 'Identifier',
+    identifier_type: type,
+    identifier_value: value
+  }
+}
+
+export function name(name: NameFieldValue) {
+  return {
+    '@type': 'Name',
+    given_name: name.firstname,
+    second_name: name.middlename,
+    surname: name.surname
   }
 }

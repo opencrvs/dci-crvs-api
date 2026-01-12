@@ -10,3 +10,10 @@ export const OPENCRVS_TOKEN_URL = new URL('token', OPENCRVS_AUTH_URL)
 
 /** Tests */
 export const NO_RESPONSE_MOCK = Boolean(process.env.NO_RESPONSE_MOCK)
+
+/** Used for record search */
+export const OPENCRVS_GATEWAY_URL =
+  process.env.OPENCRVS_GATEWAY_URL ?? 'http://localhost:7070'
+export const OPENCRVS_EVENTS_URL =
+  process.env.OPENCRVS_EVENTS_URL ??
+  new URL('events', OPENCRVS_GATEWAY_URL).toString()

@@ -1,11 +1,4 @@
-import {
-  type Registration,
-  type BirthRegistration,
-  type DeathRegistration,
-  type MarriageRegistration,
-  type IdentityType,
-  type Location
-} from 'opencrvs-api'
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import type {
   operations,
   components,
@@ -16,6 +9,7 @@ import type { SearchResponseWithMetadata } from '../types'
 import { compact } from 'lodash/fp'
 import { randomUUID } from 'node:crypto'
 import * as spdci from './json-ld'
+import { EventIndex, NameFieldValue } from '@opencrvs/toolkit/events'
 
 const name = ({
   firstNames,
@@ -41,7 +35,7 @@ const sex = (value: string) => {
   }
 }
 
-const identifier = ({ id, type }: IdentityType) => {
+const identifier = ({ id, type }: any) => {
   if (id === undefined || id === null) return null
 
   switch (type) {
@@ -59,174 +53,50 @@ const identifier = ({ id, type }: IdentityType) => {
   return null
 }
 
-function locationToSpdciPlace(location: Location) {
-  if (location.type === 'PRIVATE_HOME') {
-    return spdci.place({
-      address: `${location.address?.line?.[1]} ${location.address?.line?.[0]}
-${location.address?.line?.[2]}
-${location.address?.postalCode}
-${location.address?.city}`,
-      containedInPlace: location.address?.district,
-      additionalType: location.type ?? undefined
+const context = {
+  '@vocab': 'https://schema.spdci.org/common/v1',
+  xsd: 'http://www.w3.org/2001/XMLSchema#',
+  schema: 'http://schema.org/',
+  rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+  owl: 'http://www.w3.org/2002/07/owl#'
+}
+
+function locationToSpdciPlace(location: any) {
+  return {}
+}
+
+function birthPersonRecord(event: EventIndex) {
+  const childName = event.declaration['child.name'] as NameFieldValue
+  const childNid = event.declaration['child.nid'] as string | undefined
+  const motherNid = event.declaration['mother.nid'] as string | undefined
+  const fatherNid = event.declaration['father.nid'] as string | undefined
+  // @TODO: birth_place?
+
+  return {
+    '@context': context,
+    '@type': 'CRVS_Person',
+    '@id': `urn:uuid:${event.id}`,
+
+    ...(childNid && {
+      identifier: spdci.identifier({ type: 'NID', value: childNid })
+    }),
+
+    name: spdci.name(childName),
+    sex: event.declaration['child.gender'],
+    birth_date: event.dateOfEvent,
+
+    ...(motherNid && {
+      parent1_identifier: spdci.identifier({ type: 'NID', value: motherNid })
+    }),
+
+    ...(fatherNid && {
+      parent2_identifier: spdci.identifier({ type: 'NID', value: fatherNid })
     })
   }
-
-  return spdci.place({
-    identifier: location.id,
-    additionalType: location.type ?? undefined
-  })
-}
-
-function birthPersonRecord(registration: BirthRegistration) {
-  const father =
-    registration.father?.detailsExist === true ? registration.father : undefined
-  const mother =
-    registration.mother?.detailsExist === true ? registration.mother : undefined
-
-  /* eslint-disable @typescript-eslint/no-non-null-assertion */
-  const motherIdentifier = compact(
-    mother?.identifier?.map((identity) =>
-      identity != null ? identifier(identity) : undefined
-    )
-  )
-
-  const fatherIdentifier = compact(
-    father?.identifier?.map((identity) =>
-      identity != null ? identifier(identity) : undefined
-    )
-  )
-  /* eslint-enable @typescript-eslint/no-non-null-assertion */
-
-  return {
-    identifier: compact(
-      registration.child.identifier?.map((identity) =>
-        identity !== null ? identifier(identity) : null
-      )
-    ),
-    birthDate: registration.child.birthDate,
-    ...name({
-      firstNames: registration.child.name[0].firstNames,
-      familyName: registration.child.name[0].familyName
-    }),
-    sex: sex(registration.child.gender),
-    birthPlace: locationToSpdciPlace(registration.eventLocation),
-    relations: compact([
-      mother !== undefined
-        ? spdci.mother({
-            identifier: motherIdentifier,
-            givenName: mother.name?.[0]?.firstNames ?? undefined,
-            familyName: mother.name?.[0]?.familyName ?? undefined,
-            homeLocation: mother.address?.[0]?.partOf ?? undefined
-          })
-        : null,
-      father !== undefined
-        ? spdci.father({
-            identifier: fatherIdentifier,
-            givenName: father.name?.[0]?.firstNames ?? undefined,
-            familyName: father.name?.[0]?.familyName ?? undefined,
-            homeLocation: father.address?.[0]?.partOf ?? undefined
-          })
-        : null
-    ])
-  }
-}
-
-function deathPersonRecord(registration: DeathRegistration) {
-  const father =
-    registration.father?.detailsExist === true ? registration.father : undefined
-  const mother =
-    registration.mother?.detailsExist === true ? registration.mother : undefined
-
-  /* eslint-disable @typescript-eslint/no-non-null-assertion */
-  const motherIdentifier = compact(
-    mother?.identifier?.map((identity) =>
-      identity != null ? identifier(identity) : undefined
-    )
-  )
-
-  const fatherIdentifier = compact(
-    father?.identifier?.map((identity) =>
-      identity != null ? identifier(identity) : undefined
-    )
-  )
-  /* eslint-enable @typescript-eslint/no-non-null-assertion */
-
-  return {
-    identifier: compact(
-      registration.deceased.identifier?.map((identity) =>
-        identity !== null ? identifier(identity) : null
-      )
-    ),
-    birthDate: registration.deceased?.birthDate ?? undefined,
-    deathDate: registration.deceased?.deceased?.deathDate ?? undefined,
-    ...name({
-      firstNames: registration.deceased.name[0].firstNames,
-      familyName: registration.deceased.name[0].familyName
-    }),
-    sex: sex(registration.deceased.gender),
-    deathPlace: locationToSpdciPlace(registration.eventLocation),
-    relations: compact([
-      mother !== undefined
-        ? spdci.mother({
-            identifier: motherIdentifier,
-            givenName: mother.name?.[0]?.firstNames ?? undefined,
-            familyName: mother.name?.[0]?.familyName ?? undefined
-          })
-        : null,
-      father !== undefined
-        ? spdci.father({
-            identifier: fatherIdentifier,
-            givenName: father.name?.[0]?.firstNames ?? undefined,
-            familyName: father.name?.[0]?.familyName ?? undefined
-          })
-        : null
-    ])
-  }
-}
-
-function marriagePersonRecord(registration: MarriageRegistration) {
-  return {
-    identifier: compact(
-      registration.bride?.identifier?.map((identity) =>
-        identity !== null ? identifier(identity) : null
-      )
-    ),
-    ...name({
-      firstNames: registration.bride.name[0].firstNames,
-      familyName: registration.bride.name[0].familyName
-    }),
-    marriagedate: registration.bride?.dateOfMarriage,
-    relations: [
-      {
-        identifier: compact(
-          registration.groom?.identifier?.map((identity) =>
-            identity !== null ? identifier(identity) : null
-          )
-        ),
-        ...name({
-          firstNames: registration.groom.name[0].firstNames,
-          familyName: registration.groom.name[0].familyName
-        })
-      }
-    ],
-    marriagePlace: locationToSpdciPlace(registration.eventLocation)
-  }
-}
-
-function isBirthEventSearchSet(
-  registration: BirthRegistration | DeathRegistration | MarriageRegistration
-): registration is BirthRegistration {
-  return registration.__typename === 'BirthRegistration'
-}
-
-function isMarriageEventSearchSet(
-  registration: BirthRegistration | DeathRegistration | MarriageRegistration
-): registration is MarriageRegistration {
-  return registration.__typename === 'MarriageRegistration'
 }
 
 export function searchResponseBuilder(
-  registrations: Registration[],
+  registrations: EventIndex[],
   {
     referenceId,
     timestamp,
@@ -237,7 +107,7 @@ export function searchResponseBuilder(
     event
   }: {
     referenceId: string
-    timestamp: components['schemas']['DateTime']
+    timestamp: string
     pageSize: number
     pageNumber: number
     totalCount: number
@@ -250,15 +120,12 @@ export function searchResponseBuilder(
     timestamp,
     status: 'succ',
     data: {
+      version: '1.9.0',
       reg_record_type: 'person',
       reg_type: event,
-      reg_records: registrations.map((registration) =>
-        isBirthEventSearchSet(registration)
-          ? birthPersonRecord(registration)
-          : isMarriageEventSearchSet(registration)
-          ? marriagePersonRecord(registration)
-          : deathPersonRecord(registration)
-      )
+      reg_records: registrations.map(
+        (event) => birthPersonRecord(event) // @TODO: deathPersonRecord(event)
+      ) as any // OpenAPI type is Record<string, never>[] because of limitation in JSON-LD
     },
     pagination: {
       page_number: pageNumber,
@@ -284,16 +151,17 @@ export function registrySyncSearchBuilder(
       version: '1.0.0',
       message_id: request.header.message_id,
       message_ts: new Date().toISOString(),
-      action: 'search',
+      action: 'on-search',
       status: 'succ',
       total_count: totalCount,
       sender_id: request.header.sender_id,
-      receiver_id: request.header.receiver_id
+      receiver_id: request.header.receiver_id,
+      is_msg_encrypted: false // @TODO
     },
     message: {
       transaction_id: request.message.transaction_id,
       correlation_id: correlationId ?? randomUUID(),
-      search_response: responses.flatMap(
+      search_response: responses.map(
         ({
           registrations,
           originalRequest,
@@ -302,17 +170,15 @@ export function registrySyncSearchBuilder(
           pageNumber,
           totalItems
         }) =>
-          registrations.length > 0
-            ? searchResponseBuilder(registrations, {
-                referenceId: originalRequest.reference_id,
-                timestamp: responseFinishedTimestamp.toISOString(),
-                pageSize,
-                pageNumber,
-                totalCount: totalItems,
-                locale: originalRequest.locale,
-                event: originalRequest.search_criteria.reg_type
-              })
-            : []
+          searchResponseBuilder(registrations, {
+            referenceId: originalRequest.reference_id,
+            timestamp: responseFinishedTimestamp.toISOString(),
+            pageSize,
+            pageNumber,
+            totalCount: totalItems,
+            locale: originalRequest.locale,
+            event: originalRequest.search_criteria.reg_type
+          })
       )
     }
   } satisfies operations['post_reg_sync_search']['responses']['default']['content']['application/json']

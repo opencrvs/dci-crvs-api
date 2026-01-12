@@ -1,5 +1,5 @@
 import type * as Hapi from '@hapi/hapi'
-import { type operations } from '../registry-core-api'
+import { type operations } from '../crvs-api'
 import {
   type AsyncSearchRequest,
   maybeEncryptedAsyncSearchRequestSchema

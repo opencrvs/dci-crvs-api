@@ -1,6 +1,6 @@
 import { CompactSign, calculateJwkThumbprint, exportJWK } from 'jose'
 import { getSigningKeys } from './keys'
-import { type components } from '../registry-core-api'
+import { type components } from '../crvs-api'
 
 export async function withSignature<A extends Record<PropertyKey, unknown>>(
   responsePayload: A

@@ -9,6 +9,7 @@
     "test:watch": "TZ=utc node --require ts-node/register --test --watch src/**/*.test.ts"
   },
   "dependencies": {
+    "@opencrvs/toolkit": "^1.9.5-rc.141fdf1",
     "@types/lodash": "^4.14.197",
     "date-fns": "^4.0.0",
     "lodash": "^4.17.21",

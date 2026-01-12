@@ -1,5 +1,5 @@
 import { FlattenedEncrypt, type FlattenedJWE, importJWK } from 'jose'
-import { type components } from '../registry-core-api'
+import { type components } from '../crvs-api'
 import { z } from 'zod'
 import { ValidationError, fromZodError } from 'zod-validation-error'
 

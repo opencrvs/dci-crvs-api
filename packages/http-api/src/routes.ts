@@ -1,9 +1,9 @@
 import type * as Hapi from '@hapi/hapi'
-import { asyncSearchHandler } from './async-search/async-search-handler'
+// import { asyncSearchHandler } from './async-search/async-search-handler'
 import { syncSearchHandler } from './sync-search/sync-search-handler'
 import { healthcheckHandler } from './healthcheck/healthcheck-handler'
 import { type ReqResWithAuthorization } from './server'
-import { OPENCRVS_TOKEN_URL } from 'opencrvs-api'
+import { OPENCRVS_TOKEN_URL } from './constants'
 import { getJwksHandler } from './.well-known/jwks-handler'
 import { getLocationsHandler } from './.well-known/locations-handler'
 
@@ -23,11 +23,11 @@ export const routes = [
     path: '/.well-known/locations.json',
     handler: getLocationsHandler
   },
-  {
-    method: 'POST',
-    path: '/registry/search',
-    handler: asyncSearchHandler
-  },
+  // {
+  //   method: 'POST',
+  //   path: '/registry/search',
+  //   handler: asyncSearchHandler
+  // },
   {
     method: 'POST',
     path: '/registry/sync/search',
