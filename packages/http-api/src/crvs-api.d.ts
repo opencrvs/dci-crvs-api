@@ -238,7 +238,7 @@ export interface components {
          *      */
         data: {
           /** @default 1.0.0 */
-          version: string
+          version?: string
           reg_type?: components['schemas']['SearchResponse']['search_response']['items']['data']['reg_type']
           /**
            * @description @context: https://schema.spdci.org/common/v1/api-schemas/RegistryEventTypeEnum.jsonld <br>
@@ -406,7 +406,7 @@ export interface components {
         timestamp: components['schemas']['MsgHeader_V1.0.0']['message_ts']
         search_criteria: {
           /** @default 1.0.0 */
-          version: string
+          version?: string
           reg_type?: components['schemas']['SearchResponse']['search_response']['items']['data']['reg_type']
           reg_record_type?: components['schemas']['SearchResponse']['search_response']['items']['data']['reg_record_type']
           /**
@@ -448,7 +448,7 @@ export interface components {
                  *       "expression": "GeBirthRecordById {\n  person(UIN: \"1\") {\n    BRN\n    name\n    gender\n    birthDate\n    birthPlace\n    parents\n  }\n}\n"
                  *     }
                  */
-                value?: Record<string, never>
+                value?: Record<string, any>
               }
             | {
                 /**
@@ -610,7 +610,7 @@ export interface components {
          *      */
         data?: {
           /** @default 1.0.0 */
-          version: string
+          version?: string
           /**
            * @description @context:https://schema.spdci.org/common/v1/api-schemas/RegistryType.jsonld <br>
            *     @type: "@context" <br>
@@ -685,7 +685,7 @@ export interface components {
         timestamp: components['schemas']['MsgHeader_V1.0.0']['message_ts']
         subscribe_criteria: {
           /** @default 1.0.0 */
-          version: string
+          version?: string
           /**
            * @description @context:https://schema.spdci.org/common/v1/api-schemas/RegistryType.jsonld <br>
            *     @type: "@context" <br>
@@ -789,7 +789,7 @@ export interface components {
         status_reason_message?: string
         subscriptions?: {
           /** @default 1.0.0 */
-          version: string
+          version?: string
           code: components['schemas']['UnSubscribeRequest']['subscription_codes']['items']
           status: components['schemas']['UnSubscribeResponse']['subscription_status']['items']['status']
           timestamp: components['schemas']['MsgHeader_V1.0.0']['message_ts']
@@ -874,7 +874,7 @@ export interface components {
                  *      */
                 data?: {
                   /** @default 1.0.0 */
-                  version: string
+                  version?: string
                   reg_type?: components['schemas']['SubscribeRequest']['subscribe_request']['items']['subscribe_criteria']['reg_type']
                   reg_record_type: components['schemas']['SubscribeRequest']['subscribe_request']['items']['subscribe_criteria']['notify_record_type']
                   /**

@@ -72,7 +72,7 @@ export function searchResponseBuilder(
     timestamp,
     status: 'succ',
     data: {
-      version: '1.9.0',
+      version: '1.0.0',
       reg_record_type: 'person',
       reg_type: event,
       reg_records: registrations.map(

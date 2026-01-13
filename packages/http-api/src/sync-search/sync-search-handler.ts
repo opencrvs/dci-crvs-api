@@ -1,8 +1,6 @@
 import type * as Hapi from '@hapi/hapi'
 import {
   registrySyncSearchBuilder,
-  // pagination,
-  // searchRequestToAdvancedSearchParameters,
   buildSearchParameters
 } from 'dci-opencrvs-bridge'
 import {
@@ -13,14 +11,13 @@ import { fromZodError } from 'zod-validation-error'
 import { ValidationError, AuthorizationError } from '../error'
 import { parseToken } from '../auth'
 import { type ReqResWithAuthorization } from '../server'
-// import { withSignature } from '../crypto/sign'
-// import { type operations } from '../crvs-api'
 import { verifySignature } from '../crypto/verify'
 import { decryptPayload } from '../crypto/decrypt'
-// import { encryptPayload } from '../crypto/encrypt'
 import { createClient } from '@opencrvs/toolkit/api'
 import { OPENCRVS_EVENTS_URL } from '../constants'
 import { operations } from '../crvs-api'
+import { withSignature } from '../crypto/sign'
+import { encryptPayload } from '../crypto/encrypt'
 
 export async function search(
   token: string,
@@ -38,7 +35,6 @@ export async function search(
         pageSize,
         pageNumber
       })
-      console.log('Search Query:', JSON.stringify(searchQuery, null, 2))
       const { results, total } = await client.event.search.query(searchQuery)
 
       return {
@@ -80,16 +76,15 @@ export async function syncSearchHandler(
     payload
   ) satisfies operations['post_reg_sync_search']['responses']['default']['content']['application/json']
 
-  // if (payload.header.is_msg_encrypted) {
-  //   return await withSignature({
-  //     ...unencryptedResponse,
-  //     message: await encryptPayload(
-  //       `${payload.header.sender_id}/.well-known/jwks.json`,
-  //       unencryptedResponse.message
-  //     )
-  //   })
-  // }
+  if (payload.header.is_msg_encrypted) {
+    return await withSignature({
+      ...unencryptedResponse,
+      message: await encryptPayload(
+        `${payload.header.sender_id}/.well-known/jwks.json`,
+        unencryptedResponse.message
+      )
+    })
+  }
 
-  // return await withSignature(unencryptedResponse)
-  return unencryptedResponse
+  return await withSignature(unencryptedResponse)
 }

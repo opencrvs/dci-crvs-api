@@ -15,7 +15,7 @@ const searchSort = z.object({
 
 const languageCode = z.string().regex(/^[a-z]{3,3}$/)
 
-const version = z.literal('1.0.0')
+const version = z.literal('1.0.0').default('1.0.0')
 
 const syncHeader = z.object({
   version,
@@ -41,10 +41,10 @@ const asyncHeader = z.object({
   is_msg_encrypted: z.boolean().optional().default(false)
 })
 
-const regType = z.enum([
-  'ocrvs:registry_type:birth',
-  'ocrvs:registry_type:death'
-])
+const regType = z
+  .string()
+  .describe('Any event type supported by OpenCRVS, e.g. birth, death')
+  .default('birth')
 
 const commonSearchCriteria = z.object({
   version,
@@ -54,7 +54,7 @@ const commonSearchCriteria = z.object({
 })
 
 const identifierTypeValue = z.object({
-  type: z.enum(['BRN', 'DRN', 'NID']),
+  type: z.enum(['UIN', 'BIRTH_REG_NO']),
   value: z.string()
 })
 
@@ -98,15 +98,15 @@ const expressionQuery = commonSearchCriteria.and(
     query: z.object({
       type: z.literal('ns:org:QueryType:expression'),
       value: z
-        .string()
+        .record(z.string(), z.any())
         .describe(
-          '{"createdAt":{"type":"range", "gte":"2020-01-01", "lte":"2026-01-10"}'
+          'e.g. `{"createdAt":{"type":"range", "gte":"2020-01-01", "lte":"2026-01-10"}}`'
         )
     })
   })
 )
 
-const searchCriteria = expressionQuery
+const searchCriteria = expressionQuery.or(identifierTypeQuery)
 
 export const searchRequestSchema = z.object({
   transaction_id: z.string().max(99),

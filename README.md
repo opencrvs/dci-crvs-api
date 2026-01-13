@@ -14,7 +14,7 @@ sequenceDiagram
 
 This repository provides [DCI standards](https://github.com/spdci/standards) compliant API for CRVS systems. It communicates between OpenCRVS and any other system that can communicate using the DCI standard.
 
-DCI API standards reference can be found [in SPDCI docs](https://spdci.github.io/standards/release/html/registry_core_api_v1.0.0.html).
+DCI API standards reference can be found [in SPDCI docs](https://api.spdci.org/release/html/crvs_api_v1.0.0.html).
 
 The package is a Node & TypeScript project and the API is built using [Hapi](https://hapi.dev/) as per OpenCRVS convention.
 
@@ -38,20 +38,18 @@ In local development you are able to get a local registrar's token with [OpenCRV
 
 dci-crvs-api validates the requests using Zod in [http-api/validations](./packages/http-api/src/validations.ts) and the supported parameters can be figured out using `maybeEncryptedSyncSearchRequestSchema` and `maybeEncryptedAsyncSearchRequestSchema` schemas.
 
-| Endpoint                      | Description                                                                              | Implementation status            |
-| ----------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------- |
-| `/health`                     | Health check endpoint                                                                    | ✅ dci-crvs-api@1.0.0            |
-| `/oauth2/client/token`        | Get a JWT token with OpenCRVS National System Admin supplied client_id and client_secret | ✅ dci-crvs-api@1.0.0            |
-| `/registry/search`            | Search person(s) in registry using an identifier or custom attributes (async, callback)  | ✅ dci-crvs-api@1.0.0            |
-| `/registry/sync/search`       | Search person(s) in registry using an identifier or custom attributes (sync)             | ✅ dci-crvs-api@1.0.0            |
-| `/.well-known/jwks.json`      | Exports a JSON Web Key Set containing CRVS public keys                                   | ✅ dci-crvs-api@1.0.0            |
-| `/.well-known/locations.json` | Contains the location tree of a CRVS using SPDCI `Place`                                 | ✅ dci-crvs-api@1.0.0            |
-| `/registry/subscribe`         | Notify a social protection system with webhooks about deaths                             | ⏩ Upcoming for dci-crvs-api@2.0 |
+| Endpoint                      | Description                                                                              | Implementation status |
+| ----------------------------- | ---------------------------------------------------------------------------------------- | --------------------- |
+| `/health`                     | Health check endpoint                                                                    | ✅                    |
+| `/oauth2/client/token`        | Get a JWT token with OpenCRVS National System Admin supplied client_id and client_secret | ✅                    |
+| `/registry/search`            | Search person(s) in registry using an identifier or custom attributes (async, callback)  | ❌                    |
+| `/registry/sync/search`       | Search person(s) in registry using an identifier or custom attributes (sync)             | ✅                    |
+| `/.well-known/jwks.json`      | Exports a JSON Web Key Set containing CRVS public keys                                   | ✅                    |
+| `/.well-known/locations.json` | Contains the location tree of a CRVS using SPDCI `Place`                                 | ✅                    |
 
 ## Monorepo structure
 
-| Package                                                | Description                                                                    |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| [`http-api`](/packages/http-api)                       | Handles HTTP input & output, payload encryption, validation of JWTs            |
-| [`dci-opencrvs-bridge`](/packages/dci-opencrvs-bridge) | Converts data from DCI schemas to OpenCRVS search queries and vice versa       |
-| [`opencrvs-api`](/packages/opencrvs-api)               | Allows fetching data from OpenCRVS, handles all communication to a CRVS system |
+| Package                                                | Description                                                              |
+| ------------------------------------------------------ | ------------------------------------------------------------------------ |
+| [`http-api`](/packages/http-api)                       | HTTP server                                                              |
+| [`dci-opencrvs-bridge`](/packages/dci-opencrvs-bridge) | Converts data from DCI schemas to OpenCRVS search queries and vice versa |
