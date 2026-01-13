@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import type {
   operations,
   components,
@@ -6,52 +5,9 @@ import type {
   EventType
 } from 'http-api'
 import type { SearchResponseWithMetadata } from '../types'
-import { compact } from 'lodash/fp'
 import { randomUUID } from 'node:crypto'
 import * as spdci from './json-ld'
 import { EventIndex, NameFieldValue } from '@opencrvs/toolkit/events'
-
-const name = ({
-  firstNames,
-  familyName
-}: {
-  firstNames: string | null // The names cannot be undefined, but they should be able to be null, to mark as it being intentionally empty
-  familyName: string | null // ^
-}) => ({
-  givenName: firstNames,
-  familyName
-})
-
-const sex = (value: string) => {
-  switch (value) {
-    case 'male':
-      return 'male'
-    case 'female':
-      return 'female'
-    case 'other':
-      return 'other'
-    default:
-      return 'unknown'
-  }
-}
-
-const identifier = ({ id, type }: any) => {
-  if (id === undefined || id === null) return null
-
-  switch (type) {
-    case 'DEATH_REGISTRATION_NUMBER':
-      return { name: 'DRN', identifier: id }
-    case 'BIRTH_REGISTRATION_NUMBER':
-      return { name: 'BRN', identifier: id }
-    case 'MARRIAGE_REGISTRATION_NUMBER':
-      return { name: 'MRN', identifier: id }
-    case 'NATIONAL_ID':
-      return { name: 'NID', identifier: id }
-  }
-
-  // Unidentified identifier type
-  return null
-}
 
 const context = {
   '@vocab': 'https://schema.spdci.org/common/v1',
@@ -59,10 +15,6 @@ const context = {
   schema: 'http://schema.org/',
   rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
   owl: 'http://www.w3.org/2002/07/owl#'
-}
-
-function locationToSpdciPlace(location: any) {
-  return {}
 }
 
 function birthPersonRecord(event: EventIndex) {
