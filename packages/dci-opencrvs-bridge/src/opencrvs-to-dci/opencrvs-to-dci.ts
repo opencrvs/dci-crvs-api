@@ -22,7 +22,6 @@ function birthPersonRecord(event: EventIndex) {
   const childNid = event.declaration['child.nid'] as string | undefined
   const motherNid = event.declaration['mother.nid'] as string | undefined
   const fatherNid = event.declaration['father.nid'] as string | undefined
-  // @TODO: birth_place?
 
   return {
     '@context': context,
@@ -36,6 +35,7 @@ function birthPersonRecord(event: EventIndex) {
     name: spdci.name(childName),
     sex: event.declaration['child.gender'],
     birth_date: event.dateOfEvent,
+    birth_place: (event as any).placeOfEvent, // @FIXME: placeOfEvent is not yet typed in EventIndex
 
     ...(motherNid && {
       parent1_identifier: spdci.identifier({ type: 'NID', value: motherNid })
