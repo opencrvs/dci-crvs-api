@@ -9,7 +9,7 @@ const paginationRequest = z.object({
 })
 
 const searchSort = z.object({
-  attribute_name: z.string().optional(),
+  attribute_name: z.string(),
   sort_order: z.enum(['asc', 'desc'])
 })
 
