@@ -35,15 +35,26 @@ export async function search(
         pageSize,
         pageNumber
       })
-      const { results, total } = await client.event.search.query(searchQuery)
 
-      return {
-        registrations: results,
-        responseFinishedTimestamp: new Date(),
-        originalRequest: searchRequest,
-        pageNumber,
-        pageSize,
-        totalItems: total
+      try {
+        const { results, total } = await client.event.search.query(searchQuery)
+
+        return {
+          registrations: results,
+          responseFinishedTimestamp: new Date(),
+          originalRequest: searchRequest,
+          pageNumber,
+          pageSize,
+          totalItems: total
+        }
+      } catch (e: any) {
+        const status = e?.meta?.response?.status
+
+        if (status === 401) {
+          throw new AuthorizationError('Invalid authorization token')
+        }
+
+        throw new Error(e)
       }
     })
   )
