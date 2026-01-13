@@ -14,9 +14,7 @@ function isExpressionQuery(
 function isNationalIdQuery(
   criteria: SearchCriteria
 ): criteria is IdentifierTypeQuery {
-  return (
-    criteria.query_type === 'idtype-value' && criteria.query.value === 'NID'
-  )
+  return criteria.query_type === 'idtype-value' && criteria.query.type === 'UIN'
 }
 
 function isRegistrationNumberQuery(
@@ -24,7 +22,7 @@ function isRegistrationNumberQuery(
 ): criteria is IdentifierTypeQuery {
   return (
     criteria.query_type === 'idtype-value' &&
-    criteria.query.value === 'BIRTH_REG_NO'
+    criteria.query.type === 'BIRTH_REG_NO'
   )
 }
 
@@ -35,7 +33,11 @@ export function buildSearchParameters(
   const parameters = {
     limit: pageSize,
     offset: (pageNumber - 1) * pageSize,
-    query: {}
+    query: {},
+    sort: criteria.sort?.map((sortItem) => ({
+      field: sortItem.attribute_name,
+      direction: sortItem.sort_order
+    }))
   } satisfies SearchQuery
 
   if (isExpressionQuery(criteria)) {
