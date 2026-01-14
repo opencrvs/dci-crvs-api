@@ -47,6 +47,25 @@ function birthPersonRecord(event: EventIndex) {
   }
 }
 
+function deathPersonRecord(event: EventIndex) {
+  const deceasedName = event.declaration['deceased.name'] as NameFieldValue
+  const deceasedNid = event.declaration['deceased.nid'] as string | undefined
+
+  return {
+    '@context': context,
+    '@type': 'CRVS_Person',
+    '@id': `urn:uuid:${event.id}`,
+
+    ...(deceasedNid && {
+      identifier: spdci.identifier({ type: 'NID', value: deceasedNid })
+    }),
+
+    name: spdci.name(deceasedName),
+    sex: event.declaration['child.gender'],
+    death_place: (event as any).placeOfEvent // @FIXME: placeOfEvent is not yet typed in EventIndex
+  }
+}
+
 export function searchResponseBuilder(
   registrations: EventIndex[],
   {
@@ -75,8 +94,10 @@ export function searchResponseBuilder(
       version: '1.0.0',
       reg_record_type: 'person',
       reg_type: event,
-      reg_records: registrations.map(
-        (event) => birthPersonRecord(event) // @TODO: deathPersonRecord(event)
+      reg_records: registrations.map((event) =>
+        event.type === 'birth'
+          ? birthPersonRecord(event)
+          : deathPersonRecord(event)
       ) as any // OpenAPI type is Record<string, never>[] because of limitation in JSON-LD
     },
     pagination: {
