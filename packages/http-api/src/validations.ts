@@ -43,18 +43,21 @@ const asyncHeader = z.object({
 
 const regType = z
   .string()
-  .describe('Any event type supported by OpenCRVS, e.g. birth, death')
-  .default('birth')
+  .describe('Registry type per DCI spec, e.g. ns:org:RegistryType:Civil')
+  .default('ns:org:RegistryType:Civil')
 
 const commonSearchCriteria = z.object({
   version,
   reg_type: regType,
+  reg_event_type: z
+    .string()
+    .describe('Event type for filtering, e.g. BIRTH, DEATH'), // TODO: Validate against countryconfig events endpoint
   sort: z.array(searchSort).optional(),
   pagination: paginationRequest.optional()
 })
 
 const identifierTypeValue = z.object({
-  type: z.enum(['UIN', 'BIRTH_REG_NO']),
+  type: z.enum(['UIN', 'BRN']),
   value: z.string()
 })
 
@@ -68,9 +71,9 @@ const identifierTypeQuery = commonSearchCriteria.and(
 
 const expressionCondition = z.enum(['and'])
 
-const expression = z.enum(['gt', 'lt', 'eq', 'ge', 'le'])
+const expression = z.enum(['gt', 'lt', 'eq', 'ge', 'le', 'in'])
 
-const expressionSupportedFields = z.enum(['birthdate', 'birthplace'])
+const expressionSupportedFields = z.string() // Allow any attribute name per DCI spec
 
 const expressionPredicate = z.object({
   attribute_name: expressionSupportedFields,
@@ -106,7 +109,9 @@ const expressionQuery = commonSearchCriteria.and(
   })
 )
 
-const searchCriteria = expressionQuery.or(identifierTypeQuery)
+const searchCriteria = expressionQuery
+  .or(identifierTypeQuery)
+  .or(predicateQuery)
 
 export const searchRequestSchema = z.object({
   transaction_id: z.string().max(99),
@@ -176,4 +181,4 @@ export type SearchCriteria = TypeOf<typeof searchCriteria>
 export type PredicateQuery = TypeOf<typeof predicateQuery>
 export type IdentifierTypeQuery = TypeOf<typeof identifierTypeQuery>
 export type ExpressionQuery = TypeOf<typeof expressionQuery>
-export type EventType = TypeOf<typeof regType>
+export type RegistryType = TypeOf<typeof regType>

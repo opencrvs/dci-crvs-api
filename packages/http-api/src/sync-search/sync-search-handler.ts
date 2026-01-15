@@ -50,11 +50,15 @@ export async function search(
       } catch (e: any) {
         const status = e?.meta?.response?.status
 
+        console.error('Error during search query:', e)
+
         if (status === 401) {
           throw new AuthorizationError('Invalid authorization token')
         }
 
-        throw new Error(e)
+        throw new ValidationError(
+          `Search query failed: ${e.message || 'Unknown error'}`
+        )
       }
     })
   )

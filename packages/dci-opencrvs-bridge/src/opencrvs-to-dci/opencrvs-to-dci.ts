@@ -2,7 +2,7 @@ import type {
   operations,
   components,
   SyncSearchRequest,
-  EventType
+  RegistryType
 } from 'http-api'
 import type { SearchResponseWithMetadata } from '../types'
 import { randomUUID } from 'node:crypto'
@@ -22,14 +22,23 @@ function birthPersonRecord(event: EventIndex) {
   const childNid = event.declaration['child.nid'] as string | undefined
   const motherNid = event.declaration['mother.nid'] as string | undefined
   const fatherNid = event.declaration['father.nid'] as string | undefined
+  const registrationNumber = (event as any).legalStatuses?.REGISTERED
+    ?.registrationNumber as string | undefined
+
+  const identifiers = [
+    ...(childNid ? [spdci.identifier({ type: 'NID', value: childNid })] : []),
+    ...(registrationNumber
+      ? [spdci.identifier({ type: 'BRN', value: registrationNumber })]
+      : [])
+  ]
 
   return {
     '@context': context,
     '@type': 'CRVS_Person',
     '@id': `urn:uuid:${event.id}`,
 
-    ...(childNid && {
-      identifier: spdci.identifier({ type: 'NID', value: childNid })
+    ...(identifiers.length > 0 && {
+      identifiers
     }),
 
     name: spdci.name(childName),
@@ -50,18 +59,29 @@ function birthPersonRecord(event: EventIndex) {
 function deathPersonRecord(event: EventIndex) {
   const deceasedName = event.declaration['deceased.name'] as NameFieldValue
   const deceasedNid = event.declaration['deceased.nid'] as string | undefined
+  const registrationNumber = (event as any).legalStatuses?.REGISTERED
+    ?.registrationNumber as string | undefined
+
+  const identifiers = [
+    ...(deceasedNid
+      ? [spdci.identifier({ type: 'NID', value: deceasedNid })]
+      : []),
+    ...(registrationNumber
+      ? [spdci.identifier({ type: 'DRN', value: registrationNumber })]
+      : [])
+  ]
 
   return {
     '@context': context,
     '@type': 'CRVS_Person',
     '@id': `urn:uuid:${event.id}`,
 
-    ...(deceasedNid && {
-      identifier: spdci.identifier({ type: 'NID', value: deceasedNid })
+    ...(identifiers.length > 0 && {
+      identifiers
     }),
 
     name: spdci.name(deceasedName),
-    sex: event.declaration['child.gender'],
+    sex: event.declaration['deceased.gender'],
     death_place: (event as any).placeOfEvent // @FIXME: placeOfEvent is not yet typed in EventIndex
   }
 }
@@ -83,7 +103,7 @@ export function searchResponseBuilder(
     pageNumber: number
     totalCount: number
     locale: string
-    event: EventType
+    event: RegistryType
   }
 ) {
   return {
