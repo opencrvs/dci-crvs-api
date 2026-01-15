@@ -51,13 +51,13 @@ const commonSearchCriteria = z.object({
   reg_type: regType,
   reg_event_type: z
     .string()
-    .describe('Event type for filtering, e.g. BIRTH, DEATH'), // TODO: Validate against countryconfig events endpoint
+    .describe('Event type for filtering, e.g. birth, death'), // TODO: Validate against countryconfig events endpoint
   sort: z.array(searchSort).optional(),
   pagination: paginationRequest.optional()
 })
 
 const identifierTypeValue = z.object({
-  type: z.enum(['UIN', 'BRN']),
+  type: z.enum(['UIN', 'BRN', 'DRN']),
   value: z.string()
 })
 

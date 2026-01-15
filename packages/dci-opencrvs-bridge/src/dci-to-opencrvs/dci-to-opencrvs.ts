@@ -21,7 +21,10 @@ function isNationalIdQuery(
 function isRegistrationNumberQuery(
   criteria: SearchCriteria
 ): criteria is IdentifierTypeQuery {
-  return criteria.query_type === 'idtype-value' && criteria.query.type === 'BRN'
+  return (
+    criteria.query_type === 'idtype-value' &&
+    (criteria.query.type === 'BRN' || criteria.query.type === 'DRN')
+  )
 }
 
 function isPredicateQuery(
@@ -104,9 +107,11 @@ export function buildSearchParameters(
       clauses: [
         {
           eventType: criteria.reg_event_type,
-          [nidField]: {
-            type: 'anyOf',
-            terms: [criteria.query.value]
+          data: {
+            [nidField]: {
+              type: 'exact',
+              term: criteria.query.value
+            }
           }
         }
       ]

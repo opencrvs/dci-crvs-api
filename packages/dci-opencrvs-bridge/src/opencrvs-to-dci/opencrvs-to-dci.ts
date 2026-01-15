@@ -112,7 +112,7 @@ export function searchResponseBuilder(
     status: 'succ',
     data: {
       version: '1.0.0',
-      reg_record_type: 'person',
+      reg_record_type: 'spdci-extensions-dci:Person',
       reg_type: event,
       reg_records: registrations.map((event) =>
         event.type === 'birth'
