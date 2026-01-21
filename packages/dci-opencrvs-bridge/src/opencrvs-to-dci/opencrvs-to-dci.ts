@@ -25,8 +25,8 @@ function birthPersonRecord(event: EventIndex) {
   const registrationNumber = (event as any).legalStatuses?.REGISTERED
     ?.registrationNumber as string | undefined
 
-  const identifiers = [
-    ...(childNid ? [spdci.identifier({ type: 'NID', value: childNid })] : []),
+  const identifier = [
+    ...(childNid ? [spdci.identifier({ type: 'UIN', value: childNid })] : []),
     ...(registrationNumber
       ? [spdci.identifier({ type: 'BRN', value: registrationNumber })]
       : [])
@@ -37,8 +37,8 @@ function birthPersonRecord(event: EventIndex) {
     '@type': 'CRVS_Person',
     '@id': `urn:uuid:${event.id}`,
 
-    ...(identifiers.length > 0 && {
-      identifiers
+    ...(identifier.length > 0 && {
+      identifier
     }),
 
     name: spdci.name(childName),
@@ -47,11 +47,11 @@ function birthPersonRecord(event: EventIndex) {
     birth_place: (event as any).placeOfEvent, // @FIXME: placeOfEvent is not yet typed in EventIndex
 
     ...(motherNid && {
-      parent1_identifier: spdci.identifier({ type: 'NID', value: motherNid })
+      parent1_identifier: spdci.identifier({ type: 'UIN', value: motherNid })
     }),
 
     ...(fatherNid && {
-      parent2_identifier: spdci.identifier({ type: 'NID', value: fatherNid })
+      parent2_identifier: spdci.identifier({ type: 'UIN', value: fatherNid })
     })
   }
 }
@@ -62,9 +62,9 @@ function deathPersonRecord(event: EventIndex) {
   const registrationNumber = (event as any).legalStatuses?.REGISTERED
     ?.registrationNumber as string | undefined
 
-  const identifiers = [
+  const identifier = [
     ...(deceasedNid
-      ? [spdci.identifier({ type: 'NID', value: deceasedNid })]
+      ? [spdci.identifier({ type: 'UIN', value: deceasedNid })]
       : []),
     ...(registrationNumber
       ? [spdci.identifier({ type: 'DRN', value: registrationNumber })]
@@ -76,8 +76,8 @@ function deathPersonRecord(event: EventIndex) {
     '@type': 'CRVS_Person',
     '@id': `urn:uuid:${event.id}`,
 
-    ...(identifiers.length > 0 && {
-      identifiers
+    ...(identifier.length > 0 && {
+      identifier
     }),
 
     name: spdci.name(deceasedName),
