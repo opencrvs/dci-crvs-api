@@ -78,6 +78,7 @@ export function buildSearchParameters(
       clauses: [
         {
           eventType: criteria.reg_event_type,
+          status: { type: 'exact', term: 'REGISTERED' },
           ...criteria.query.value
         }
       ]
@@ -90,6 +91,7 @@ export function buildSearchParameters(
       clauses: [
         {
           eventType: criteria.reg_event_type,
+          status: { type: 'exact', term: 'REGISTERED' },
           'legalStatuses.REGISTERED.registrationNumber': {
             type: 'exact',
             term: criteria.query.value
@@ -107,6 +109,7 @@ export function buildSearchParameters(
       clauses: [
         {
           eventType: criteria.reg_event_type,
+          status: { type: 'exact', term: 'REGISTERED' },
           data: {
             [nidField]: {
               type: 'exact',
@@ -131,6 +134,7 @@ export function buildSearchParameters(
       clauses: [
         {
           eventType: criteria.reg_event_type,
+          status: 'REGISTERED',
           ...Object.assign({}, ...clauses)
         }
       ]
