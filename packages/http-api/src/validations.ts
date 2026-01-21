@@ -100,11 +100,15 @@ const expressionQuery = commonSearchCriteria.and(
     query_type: z.literal('expression'),
     query: z.object({
       type: z.literal('ns:org:QueryType:expression'),
-      value: z
-        .record(z.string(), z.any())
-        .describe(
-          'e.g. `{"createdAt":{"type":"range", "gte":"2020-01-01", "lte":"2026-01-10"}}`'
-        )
+      value: z.object({
+        expression: z.object({
+          query: z
+            .record(z.string(), z.any())
+            .describe(
+              'e.g. `{"createdAt":{"type":"range", "gte":"2020-01-01", "lte":"2026-01-10"}}`'
+            )
+        })
+      })
     })
   })
 )

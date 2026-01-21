@@ -79,7 +79,7 @@ export function buildSearchParameters(
         {
           eventType: criteria.reg_event_type,
           status: { type: 'exact', term: 'REGISTERED' },
-          ...criteria.query.value
+          ...criteria.query.value.expression.query
         }
       ]
     }
