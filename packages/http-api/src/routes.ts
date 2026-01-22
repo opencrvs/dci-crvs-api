@@ -63,7 +63,8 @@ export const routes = [
     path: '/oauth2/client/token',
     handler: {
       proxy: {
-        uri: `${OPENCRVS_TOKEN_URL.toString()}{query}`
+        uri: `${OPENCRVS_TOKEN_URL.toString()}{query}`,
+        passThrough: true
       }
     },
     options: {
