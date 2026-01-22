@@ -1,93 +1,103 @@
-import { describe, it } from 'node:test'
-import { searchRequestToAdvancedSearchParameters } from './dci-to-opencrvs'
-import assert from 'node:assert'
+import { describe, test } from 'node:test'
+import { strict as assert } from 'node:assert'
+import { buildSearchParameters } from './dci-to-opencrvs'
 
-describe('DCI standard to OpenCRVS', () => {
-  // `gt` => date + 1 day
-  // `ge` => date
-  // `lt` => date - 1 day
-  // `le` => date
-  it('converts gt and lt properly', () => {
-    const parameters = searchRequestToAdvancedSearchParameters(
-      {
-        reference_id: '123456789020211216223812',
-        timestamp: '2022-12-04T17:20:07-04:00',
-        search_criteria: {
-          reg_type: 'ocrvs:registry_type:birth',
-          sort: [{ attribute_name: 'dateOfDeclaration', sort_order: 'asc' }],
-          pagination: { page_size: 5, page_number: 1 },
-          query_type: 'predicate',
-          query: [
-            {
-              expression1: {
-                attribute_name: 'birthdate',
-                operator: 'gt',
-                attribute_value: '2010-05-04T00:00:00.000Z'
-              },
-              condition: 'and',
-              expression2: {
-                attribute_name: 'birthdate',
-                operator: 'lt',
-                attribute_value: '2022-05-04T00:00:00.000Z'
+describe('buildSearchParameters', () => {
+  const pageSize = 20
+  const pageNumber = 1
+
+  test('expression query', () => {
+    const criteria = {
+      version: '1.0.0' as const,
+      reg_type: 'ns:org:RegistryType:Civil',
+      reg_event_type: 'birth',
+      query_type: 'expression' as const,
+      query: {
+        type: 'ns:org:QueryType:expression' as const,
+        value: {
+          expression: {
+            query: {
+              createdAt: {
+                type: 'range',
+                gte: '2025-01-01',
+                lte: '2025-12-31'
               }
             }
-          ]
-        },
-        locale: 'eng'
-      },
-      0,
-      5
-    )
+          }
+        }
+      }
+    }
 
-    assert.strictEqual(
-      parameters.advancedSearchParameters.childDoBStart,
-      '2010-05-05'
-    )
-    assert.strictEqual(
-      parameters.advancedSearchParameters.childDoBEnd,
-      '2022-05-03'
+    const result = buildSearchParameters(criteria, { pageSize, pageNumber })
+
+    assert.equal(result.limit, 20)
+    assert.equal(result.offset, 0)
+    assert.equal(result.query.type, 'and')
+    assert.equal(result.query.clauses[0].eventType, 'birth')
+    assert.equal(result.query.clauses[0].createdAt.type, 'range')
+  })
+
+  test('BRN idtype-value query', () => {
+    const criteria = {
+      version: '1.0.0' as const,
+      reg_type: 'ns:org:RegistryType:Civil',
+      reg_event_type: 'birth',
+      query_type: 'idtype-value' as const,
+      query: {
+        type: 'BRN' as const,
+        value: '12345'
+      }
+    }
+
+    const result = buildSearchParameters(criteria, { pageSize, pageNumber })
+
+    assert.equal(result.query.type, 'and')
+    assert.deepEqual(
+      result.query.clauses[0]['legalStatuses.REGISTERED.registrationNumber'],
+      {
+        type: 'exact',
+        term: '12345'
+      }
     )
   })
 
-  it('converts ge and le properly', () => {
-    const parameters = searchRequestToAdvancedSearchParameters(
-      {
-        reference_id: '123456789020211216223812',
-        timestamp: '2022-12-04T17:20:07-04:00',
-        search_criteria: {
-          reg_type: 'ocrvs:registry_type:birth',
-          sort: [{ attribute_name: 'dateOfDeclaration', sort_order: 'asc' }],
-          pagination: { page_size: 5, page_number: 1 },
-          query_type: 'predicate',
-          query: [
-            {
-              expression1: {
-                attribute_name: 'birthdate',
-                operator: 'ge',
-                attribute_value: '2010-05-04'
-              },
-              condition: 'and',
-              expression2: {
-                attribute_name: 'birthdate',
-                operator: 'le',
-                attribute_value: '2022-05-04'
-              }
-            }
-          ]
-        },
-        locale: 'eng'
-      },
-      0,
-      5
-    )
+  test('UIN idtype-value query for birth', () => {
+    const criteria = {
+      version: '1.0.0' as const,
+      reg_type: 'ns:org:RegistryType:Civil',
+      reg_event_type: 'birth',
+      query_type: 'idtype-value' as const,
+      query: {
+        type: 'UIN' as const,
+        value: '67890'
+      }
+    }
 
-    assert.strictEqual(
-      parameters.advancedSearchParameters.childDoBStart,
-      '2010-05-04'
-    )
-    assert.strictEqual(
-      parameters.advancedSearchParameters.childDoBEnd,
-      '2022-05-04'
-    )
+    const result = buildSearchParameters(criteria, { pageSize, pageNumber })
+
+    assert.deepEqual(result.query.clauses[0].data['child.nid'], {
+      type: 'exact',
+      term: '67890'
+    })
+  })
+
+  test('UIN idtype-value query for death', () => {
+    const criteria = {
+      version: '1.0.0' as const,
+      reg_type: 'ns:org:RegistryType:Civil',
+      reg_event_type: 'death',
+      query_type: 'idtype-value' as const,
+      query: {
+        type: 'UIN' as const,
+        value: '11111'
+      }
+    }
+
+    const result = buildSearchParameters(criteria, { pageSize, pageNumber })
+
+    assert.deepEqual(result.query.clauses[0].data['deceased.nid'], {
+      type: 'exact',
+      term: '11111'
+    })
   })
 })

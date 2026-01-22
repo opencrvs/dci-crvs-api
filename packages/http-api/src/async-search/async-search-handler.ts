@@ -1,15 +1,14 @@
 import type * as Hapi from '@hapi/hapi'
-import { type operations } from '../registry-core-api'
+import { type operations } from '../crvs-api'
 import {
   type AsyncSearchRequest,
   maybeEncryptedAsyncSearchRequestSchema
 } from '../validations'
 import { fromZodError } from 'zod-validation-error'
-import { ValidationError } from '../error'
+import { AuthorizationError, ValidationError } from '../error'
 import { search } from '../sync-search/sync-search-handler'
-import { validateToken, AuthorizationError } from 'opencrvs-api'
 import { registrySyncSearchBuilder } from 'dci-opencrvs-bridge'
-import { parseToken } from '../auth'
+import { parseToken, validateToken } from '../auth'
 import { randomUUID } from 'node:crypto'
 import { type ReqResWithAuthorization } from '../server'
 import { withSignature } from '../crypto/sign'

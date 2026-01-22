@@ -6,6 +6,19 @@ export class ValidationError extends Error {
     this.name = 'ValidationError'
   }
 }
+export class AuthorizationError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'AuthorizationError'
+  }
+}
+
+export class DailyQuotaExceededError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'DailyQuotaExceededError'
+  }
+}
 
 export function error(
   res: Hapi.ResponseToolkit<Hapi.ReqRefDefaults>,

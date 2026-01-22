@@ -1,140 +1,145 @@
-import { type SearchEventsQueryVariables, Event } from 'opencrvs-api'
 import {
-  type SyncSearchRequest,
+  type ExpressionQuery,
   type SearchCriteria,
-  type IdentifierTypeQuery
+  type IdentifierTypeQuery,
+  type PredicateQuery
 } from 'http-api'
-import { subDays, formatISOWithOptions, addDays, parseISO } from 'date-fns/fp'
+import { type SearchQuery } from '@opencrvs/toolkit/events'
 
-const formatDate = formatISOWithOptions({ representation: 'date' })
-
-function isIdentifierTypeQuery(
+function isExpressionQuery(
   criteria: SearchCriteria
-): criteria is IdentifierTypeQuery {
-  return criteria.query_type === 'idtype-value'
+): criteria is ExpressionQuery {
+  return criteria.query_type === 'expression'
 }
 
-function parameters(criteria: SearchCriteria) {
-  const parameters: SearchEventsQueryVariables['advancedSearchParameters'] = {}
+function isNationalIdQuery(
+  criteria: SearchCriteria
+): criteria is IdentifierTypeQuery {
+  return criteria.query_type === 'idtype-value' && criteria.query.type === 'UIN'
+}
 
-  parameters.event = {
-    'ocrvs:registry_type:birth': Event.Birth,
-    'ocrvs:registry_type:death': Event.Death,
-    'ocrvs:registry_type:marriage': Event.Marriage
-  }[criteria.reg_type]
+function isRegistrationNumberQuery(
+  criteria: SearchCriteria
+): criteria is IdentifierTypeQuery {
+  return (
+    criteria.query_type === 'idtype-value' &&
+    (criteria.query.type === 'BRN' || criteria.query.type === 'DRN')
+  )
+}
 
-  if (isIdentifierTypeQuery(criteria)) {
-    if (criteria.query.type === 'BRN') {
-      parameters.registrationNumber = criteria.query.value
-    } else if (criteria.query.type === 'DRN') {
-      parameters.registrationNumber = criteria.query.value
-    } else if (criteria.query.type === 'MRN') {
-      parameters.registrationNumber = criteria.query.value
-    } else if (criteria.query.type === 'OPENCRVS_RECORD_ID') {
-      parameters.recordId = criteria.query.value
-    } else if (criteria.query.type === 'NID') {
-      parameters.nationalId = criteria.query.value
+function isPredicateQuery(
+  criteria: SearchCriteria
+): criteria is PredicateQuery {
+  return criteria.query_type === 'predicate'
+}
+
+function mapPredicateExpression(expr: {
+  attribute_name: string
+  operator: string
+  attribute_value: string
+}) {
+  const field = expr.attribute_name
+  const value = expr.attribute_value
+  switch (expr.operator) {
+    case 'eq':
+      return { [field]: { type: 'exact', term: value } }
+    case 'ge':
+      return { [field]: { type: 'range', gte: value } }
+    case 'le':
+      return { [field]: { type: 'range', lte: value } }
+    case 'gt':
+      return { [field]: { type: 'range', gt: value } }
+    case 'lt':
+      return { [field]: { type: 'range', lt: value } }
+    case 'in':
+      return { [field]: { type: 'anyOf', terms: value.split(',') } } // Assume comma-separated values
+    default:
+      throw new Error(`Unsupported predicate operator: ${expr.operator}`)
+  }
+}
+
+export function buildSearchParameters(
+  criteria: SearchCriteria,
+  { pageSize, pageNumber }: { pageSize: number; pageNumber: number }
+): SearchQuery {
+  const parameters = {
+    limit: pageSize,
+    offset: (pageNumber - 1) * pageSize,
+    query: {},
+    sort: criteria.sort?.map((sortItem) => ({
+      field: sortItem.attribute_name,
+      direction: sortItem.sort_order
+    }))
+  } satisfies SearchQuery
+
+  if (isExpressionQuery(criteria)) {
+    parameters.query = {
+      type: 'and',
+      clauses: [
+        {
+          eventType: criteria.reg_event_type,
+          status: { type: 'exact', term: 'REGISTERED' },
+          ...criteria.query.value.expression.query
+        }
+      ]
     }
-  } else {
-    for (const criterion of criteria.query) {
-      if (criteria.reg_type === 'ocrvs:registry_type:birth') {
-        if (
-          criterion.expression1.attribute_name === 'birthdate' &&
-          criterion.expression2 !== undefined
-        ) {
-          if (criterion.expression1.operator === 'ge') {
-            parameters.childDoBStart = formatDate(
-              parseISO(criterion.expression1.attribute_value)
-            )
-          }
+  }
 
-          if (criterion.expression1.operator === 'gt') {
-            parameters.childDoBStart = formatDate(
-              addDays(1)(parseISO(criterion.expression1.attribute_value))
-            )
+  if (isRegistrationNumberQuery(criteria)) {
+    parameters.query = {
+      type: 'and',
+      clauses: [
+        {
+          eventType: criteria.reg_event_type,
+          status: { type: 'exact', term: 'REGISTERED' },
+          'legalStatuses.REGISTERED.registrationNumber': {
+            type: 'exact',
+            term: criteria.query.value
           }
-
-          if (criterion.expression2.operator === 'le') {
-            parameters.childDoBEnd = formatDate(
-              parseISO(criterion.expression2.attribute_value)
-            )
-          }
-
-          if (criterion.expression2.operator === 'lt') {
-            parameters.childDoBEnd = formatDate(
-              subDays(1)(parseISO(criterion.expression2.attribute_value))
-            )
-          }
-
-          if (criterion.expression1.operator === 'eq') {
-            parameters.childDoB = formatDate(
-              parseISO(criterion.expression1.attribute_value)
-            )
-          }
-        } else if (criterion.expression1.attribute_name === 'birthplace') {
-          parameters.declarationJurisdictionId =
-            criterion.expression1.attribute_value
         }
-      } else if (criteria.reg_type === 'ocrvs:registry_type:death') {
-        if (criterion.expression1.attribute_name === 'birthdate') {
-          if (criterion.expression1.operator === 'ge') {
-            parameters.deceasedDoBStart = formatDate(
-              parseISO(criterion.expression1.attribute_value)
-            )
-          }
+      ]
+    }
+  }
 
-          if (criterion.expression1.operator === 'gt') {
-            parameters.deceasedDoBStart = formatDate(
-              addDays(1)(parseISO(criterion.expression1.attribute_value))
-            )
+  if (isNationalIdQuery(criteria)) {
+    const nidField =
+      criteria.reg_event_type === 'birth' ? 'child.nid' : 'deceased.nid'
+    parameters.query = {
+      type: 'and',
+      clauses: [
+        {
+          eventType: criteria.reg_event_type,
+          status: { type: 'exact', term: 'REGISTERED' },
+          data: {
+            [nidField]: {
+              type: 'exact',
+              term: criteria.query.value
+            }
           }
-
-          if (criterion.expression2?.operator === 'le') {
-            parameters.deceasedDoBEnd = formatDate(
-              parseISO(criterion.expression2.attribute_value)
-            )
-          }
-
-          if (criterion.expression2?.operator === 'lt') {
-            parameters.deceasedDoBEnd = formatDate(
-              subDays(1)(parseISO(criterion.expression2.attribute_value))
-            )
-          }
-
-          if (criterion.expression1.operator === 'eq') {
-            parameters.deceasedDoB = formatDate(
-              parseISO(criterion.expression1.attribute_value)
-            )
-          }
-        } else if (criterion.expression1.attribute_name === 'birthplace') {
-          parameters.declarationJurisdictionId =
-            criterion.expression1.attribute_value
         }
+      ]
+    }
+  }
+
+  if (isPredicateQuery(criteria)) {
+    const clauses: Array<Record<string, any>> = []
+    for (const item of criteria.query) {
+      clauses.push(mapPredicateExpression(item.expression1))
+      if (item.expression2 !== undefined) {
+        clauses.push(mapPredicateExpression(item.expression2))
       }
+    }
+    parameters.query = {
+      type: 'and',
+      clauses: [
+        {
+          eventType: criteria.reg_event_type,
+          status: 'REGISTERED',
+          ...Object.assign({}, ...clauses)
+        }
+      ]
     }
   }
 
   return parameters
-}
-
-export function searchRequestToAdvancedSearchParameters(
-  request: SyncSearchRequest['message']['search_request'][number],
-  skip: number,
-  count: number
-): SearchEventsQueryVariables {
-  const criteria = request.search_criteria
-  const sort = request.search_criteria.sort
-  const sortBy = sort?.map(
-    ({ attribute_name: column = '', sort_order: order }) => ({
-      column,
-      order
-    })
-  )
-
-  return {
-    advancedSearchParameters: parameters(criteria),
-    sortBy,
-    skip,
-    count
-  }
 }

@@ -1,6 +1,6 @@
 {
   "name": "dci-crvs-api",
-  "version": "1.0.0",
+  "version": "1.9.0-rc.1",
   "main": "src/index.ts",
   "author": "Pyry Rouvila <pyry@opencrvs.org>",
   "license": "MIT",
