@@ -11,17 +11,32 @@ export const routes = [
   {
     method: 'GET',
     path: '/health',
-    handler: healthcheckHandler
+    handler: healthcheckHandler,
+    options: {
+      description: 'Health check endpoint',
+      notes: 'Returns the health status of the API service',
+      tags: ['api', 'health']
+    }
   },
   {
     method: 'GET',
     path: '/.well-known/jwks.json',
-    handler: getJwksHandler
+    handler: getJwksHandler,
+    options: {
+      description: 'JSON Web Key Set endpoint',
+      notes: 'Provides the public keys for JWT verification',
+      tags: ['api', 'auth']
+    }
   },
   {
     method: 'GET',
     path: '/.well-known/locations.json',
-    handler: getLocationsHandler
+    handler: getLocationsHandler,
+    options: {
+      description: 'Locations endpoint',
+      notes: 'Returns available locations for CRVS operations',
+      tags: ['api', 'metadata']
+    }
   },
   // {
   //   method: 'POST',
@@ -31,7 +46,17 @@ export const routes = [
   {
     method: 'POST',
     path: '/registry/sync/search',
-    handler: syncSearchHandler
+    handler: syncSearchHandler,
+    options: {
+      description: 'Synchronous search for CRVS records',
+      notes:
+        'Search for birth/death records using various criteria including BRN, UIN, or expression queries',
+      tags: ['api', 'search'],
+      payload: {
+        output: 'data',
+        parse: true
+      }
+    }
   },
   {
     method: 'POST',
@@ -40,6 +65,11 @@ export const routes = [
       proxy: {
         uri: `${OPENCRVS_TOKEN_URL.toString()}{query}`
       }
+    },
+    options: {
+      description: 'OAuth2 client token endpoint',
+      notes: 'Proxies token requests to the OpenCRVS authentication service',
+      tags: ['api', 'auth']
     }
   }
 ] satisfies Array<Hapi.ServerRoute<ReqResWithAuthorization>>
