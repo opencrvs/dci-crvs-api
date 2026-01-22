@@ -15,10 +15,14 @@ describe('buildSearchParameters', () => {
       query: {
         type: 'ns:org:QueryType:expression' as const,
         value: {
-          createdAt: {
-            type: 'range',
-            gte: '2025-01-01',
-            lte: '2025-12-31'
+          expression: {
+            query: {
+              createdAt: {
+                type: 'range',
+                gte: '2025-01-01',
+                lte: '2025-12-31'
+              }
+            }
           }
         }
       }
