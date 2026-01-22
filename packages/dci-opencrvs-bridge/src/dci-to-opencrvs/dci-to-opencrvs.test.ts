@@ -75,9 +75,9 @@ describe('buildSearchParameters', () => {
 
     const result = buildSearchParameters(criteria, { pageSize, pageNumber })
 
-    assert.deepEqual(result.query.clauses[0]['child.nid'], {
-      type: 'anyOf',
-      terms: ['67890']
+    assert.deepEqual(result.query.clauses[0].data['child.nid'], {
+      type: 'exact',
+      term: '67890'
     })
   })
 
@@ -95,9 +95,9 @@ describe('buildSearchParameters', () => {
 
     const result = buildSearchParameters(criteria, { pageSize, pageNumber })
 
-    assert.deepEqual(result.query.clauses[0]['deceased.nid'], {
-      type: 'anyOf',
-      terms: ['11111']
+    assert.deepEqual(result.query.clauses[0].data['deceased.nid'], {
+      type: 'exact',
+      term: '11111'
     })
   })
 })
