@@ -19,7 +19,7 @@
     "@opencrvs/toolkit": "^1.9.5-rc.141fdf1",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.14.197",
-    "@types/node": "^20.5.3",
+    "@types/node": "^24.0.0",
     "hapi-pino": "^13.0.0",
     "jose": "^5.0.0",
     "jsonwebtoken": "^9.0.3",
