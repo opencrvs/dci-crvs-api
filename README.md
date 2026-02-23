@@ -8,7 +8,7 @@ sequenceDiagram
     Note over DCI-CRVS-API: Validates DCI-CRVS standards through Zod
     Note over DCI-CRVS-API: Converts Zod objects to OpenCRVS queries
     DCI-CRVS-API->>OpenCRVS: Fetch records in OpenCRVS format
-    Note over DCI-CRVS-API: Converts OpenCRVS GraphQL response to DCI-CRVS standard
+    Note over DCI-CRVS-API: Converts OpenCRVS tRPC response to DCI-CRVS standard
     DCI-CRVS-API->>Integrating client (e.g. G2P): Responds synchronously or asynchronously<br>in DCI CRVS standards format
 ```
 
