@@ -16,7 +16,7 @@ This repository provides a [DCI standards](https://github.com/spdci/standards)-c
 
 DCI API standards reference can be found [in SPDCI docs](https://api.spdci.org/release/html/crvs_api_v1.0.0.html).
 
-The package is a Node & TypeScript project and the API is built using [Hapi](https://hapi.dev/) as per OpenCRVS convention.
+The package is a Node & TypeScript project and the HTTP API is built using [Hapi](https://hapi.dev/).
 
 ## Prerequisites
 
