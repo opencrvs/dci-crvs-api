@@ -38,6 +38,9 @@ async function asyncSearch(
   }
   const response = await fetch(request.header.sender_uri, {
     method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
     body: JSON.stringify(await withSignature(syncSearchResponse))
   })
   if (!response.ok) {
@@ -68,16 +71,15 @@ export async function asyncSearchHandler(
   const payload = await decryptPayload(result.data)
 
   const correlationId = randomUUID()
-  // We are not awaiting for this promise to resolve
-  // for it to be an *async* request
-  asyncSearch(token, payload, correlationId)
-  return h
-    .response({
-      message: {
-        ack_status: 'ACK',
-        timestamp: new Date().toISOString(),
-        correlation_id: correlationId
-      }
-    } satisfies operations['post_reg_search']['responses']['default']['content']['application/json'])
-    .code(202)
+  void asyncSearch(token, payload, correlationId).catch((error) => {
+    console.error('Async search callback failed:', error)
+  })
+
+  return h.response({
+    message: {
+      ack_status: 'ACK',
+      timestamp: new Date().toISOString(),
+      correlation_id: correlationId
+    }
+  } satisfies operations['post_reg_search']['responses']['default']['content']['application/json'])
 }

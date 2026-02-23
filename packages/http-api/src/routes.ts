@@ -1,5 +1,5 @@
 import type * as Hapi from '@hapi/hapi'
-// import { asyncSearchHandler } from './async-search/async-search-handler'
+import { asyncSearchHandler } from './async-search/async-search-handler'
 import { syncSearchHandler } from './sync-search/sync-search-handler'
 import { healthcheckHandler } from './healthcheck/healthcheck-handler'
 import { type ReqResWithAuthorization } from './server'
@@ -38,11 +38,21 @@ export const routes = [
       tags: ['api', 'metadata']
     }
   },
-  // {
-  //   method: 'POST',
-  //   path: '/registry/search',
-  //   handler: asyncSearchHandler
-  // },
+  {
+    method: 'POST',
+    path: '/registry/search',
+    handler: asyncSearchHandler,
+    options: {
+      description: 'Asynchronous search for CRVS records',
+      notes:
+        'Validates request and acknowledges immediately, then posts search results to sender callback URL',
+      tags: ['api', 'search'],
+      payload: {
+        output: 'data',
+        parse: true
+      }
+    }
+  },
   {
     method: 'POST',
     path: '/registry/sync/search',
